@@ -60,6 +60,18 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
+			"region": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+
+			"subnet_ids": &schema.Schema{
+				Type:          schema.TypeList,
+				Optional:      true,
+				Elem:          &schema.Schema{Type: schema.TypeString},
+				ConflictsWith: []string{"availability_zones", "availability_zone"},
+			},
+
 			"capacity": &schema.Schema{
 				Type:     schema.TypeSet,
 				Required: true,
@@ -1237,8 +1249,21 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 	d.Set("elastic_ips", g.Compute.ElasticIPs)
 	d.Set("private_ips", g.Compute.PrivateIPs)
 
-	// Set capacity.
+	// Set Region
+	if g.Region != nil {
+		if v, ok := d.GetOk("region"); ok && v != nil {
+			d.Set("region", g.Region)
+		}
+	}
 
+	// Set SubnetIds
+	if g.Compute.SubnetIDs != nil {
+		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
+			d.Set("subnet_ids", g.Compute.SubnetIDs)
+		}
+	}
+
+	// Set Capacity
 	if g.Capacity != nil {
 		targetCapacitySetInCapacity := true
 		if v, ok := d.GetOk("target_capacity"); ok && v != nil {
@@ -1415,6 +1440,23 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	if d.HasChange("description") {
 		group.SetDescription(spotinst.String(d.Get("description").(string)))
 		update = true
+	}
+
+	if d.HasChange("region") {
+		group.SetRegion(spotinst.String(d.Get("region").(string)))
+		update = true
+	}
+
+	if d.HasChange("subnet_ids") {
+		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
+			if subnetIDs, err := expandAWSGroupSubnetIDs(v); err == nil {
+				if group.Compute == nil {
+					group.SetCompute(&aws.Compute{})
+				}
+				group.Compute.SetSubnetIDs(subnetIDs)
+				update = true
+			}
+		}
 	}
 
 	if d.HasChange("capacity") {
@@ -1664,29 +1706,33 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if d.HasChange("availability_zone") {
-		if v, ok := d.GetOk("availability_zone"); ok {
-			if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-				return err
-			} else {
-				if group.Compute == nil {
-					group.SetCompute(&aws.Compute{})
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if v, ok := d.GetOk("availability_zone"); ok {
+				if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
+					return err
+				} else {
+					if group.Compute == nil {
+						group.SetCompute(&aws.Compute{})
+					}
+					group.Compute.SetAvailabilityZones(zones)
+					update = true
 				}
-				group.Compute.SetAvailabilityZones(zones)
-				update = true
 			}
 		}
 	}
 
 	if d.HasChange("availability_zones") {
-		if v, ok := d.GetOk("availability_zones"); ok {
-			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
-				return err
-			} else {
-				if group.Compute == nil {
-					group.SetCompute(&aws.Compute{})
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if v, ok := d.GetOk("availability_zones"); ok {
+				if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+					return err
+				} else {
+					if group.Compute == nil {
+						group.SetCompute(&aws.Compute{})
+					}
+					group.Compute.SetAvailabilityZones(zones)
+					update = true
 				}
-				group.Compute.SetAvailabilityZones(zones)
-				update = true
 			}
 		}
 	}
@@ -2436,12 +2482,8 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	group.SetDescription(spotinst.String(d.Get("description").(string)))
 	group.Compute.SetProduct(spotinst.String(d.Get("product").(string)))
 
-	if tfPrivateIPs, ok := d.GetOk("private_ips"); ok {
-		if privateIPsArr, err := expandAWSGroupPrivateIPs(tfPrivateIPs); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetPrivateIPs(privateIPsArr)
-		}
+	if v, ok := d.GetOk("region"); ok {
+		group.SetRegion(spotinst.String(v.(string)))
 	}
 
 	if v, ok := d.GetOk("capacity"); ok {
@@ -2462,6 +2504,22 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.SetStrategy(strategy)
+		}
+	}
+
+	if v, ok := d.GetOk("subnet_ids"); ok {
+		if subnetIDs, err := expandAWSGroupSubnetIDs(v); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetSubnetIDs(subnetIDs)
+		}
+	}
+
+	if v, ok := d.GetOk("private_ips"); ok {
+		if privateIPs, err := expandAWSGroupPrivateIPs(v); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetPrivateIPs(privateIPs)
 		}
 	}
 
@@ -2522,18 +2580,22 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	}
 
 	if v, ok := d.GetOk("availability_zone"); ok {
-		if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetAvailabilityZones(zones)
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
+				return nil, err
+			} else {
+				group.Compute.SetAvailabilityZones(zones)
+			}
 		}
 	}
 
 	if v, ok := d.GetOk("availability_zones"); ok {
-		if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetAvailabilityZones(zones)
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+				return nil, err
+			} else {
+				group.Compute.SetAvailabilityZones(zones)
+			}
 		}
 	}
 
@@ -3858,44 +3920,65 @@ func expandAWSGroupCodeDeployIntegrationDeploymentGroups(data interface{}, nulli
 	return deploymentGroups, nil
 }
 
+// expandAWSGroupSubnetIDs expands the Subnet IDs block.
+func expandAWSGroupSubnetIDs(data interface{}) ([]string, error) {
+	list := data.([]interface{})
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if subnetID, ok := v.(string); ok && subnetID != "" {
+			result = append(result, subnetID)
+		}
+	}
+
+	log.Printf("[DEBUG] Group subnet IDs configuration: %s", stringutil.Stringify(result))
+	return result, nil
+}
+
 // expandAWSGroupElasticIPs expands the Elastic IPs block.
 func expandAWSGroupPrivateIPs(data interface{}) ([]string, error) {
 	list := data.([]interface{})
 	result := make([]string, 0, len(list))
-	for _, str := range list {
-		if privateIP, ok := str.(string); ok {
-			log.Printf("[DEBUG] Group private IP configuration: %s", stringutil.Stringify(privateIP))
+
+	for _, v := range list {
+		if privateIP, ok := v.(string); ok && privateIP != "" {
 			result = append(result, privateIP)
 		}
 	}
+
+	log.Printf("[DEBUG] Group private IPs configuration: %s", stringutil.Stringify(result))
 	return result, nil
 }
 
 // expandAWSGroupElasticIPs expands the Elastic IPs block.
 func expandAWSGroupElasticIPs(data interface{}, nullify bool) ([]string, error) {
 	list := data.([]interface{})
-	eips := make([]string, 0, len(list))
-	for _, str := range list {
-		if eip, ok := str.(string); ok {
-			log.Printf("[DEBUG] Group elastic IP configuration: %s", stringutil.Stringify(eip))
-			eips = append(eips, eip)
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if elasticIP, ok := v.(string); ok && elasticIP != "" {
+			result = append(result, elasticIP)
 		}
 	}
-	return eips, nil
+
+	log.Printf("[DEBUG] Group elastic IPs configuration: %s", stringutil.Stringify(result))
+	return result, nil
 }
 
 // expandAWSGroupTags expands the Tags block.
 func expandAWSGroupTags(data interface{}, nullify bool) ([]*aws.Tag, error) {
 	list := data.(map[string]interface{})
-	tags := make([]*aws.Tag, 0, len(list))
+	result := make([]*aws.Tag, 0, len(list))
+
 	for k, v := range list {
 		tag := &aws.Tag{}
 		tag.SetKey(spotinst.String(k))
 		tag.SetValue(spotinst.String(v.(string)))
-		log.Printf("[DEBUG] Group tag configuration: %s", stringutil.Stringify(tag))
-		tags = append(tags, tag)
+		result = append(result, tag)
 	}
-	return tags, nil
+
+	log.Printf("[DEBUG] Group tags configuration: %s", stringutil.Stringify(result))
+	return result, nil
 }
 
 // expandAWSGroupTagsKV expands the Tags KV block.
