@@ -60,6 +60,18 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
+			"region": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+
+			"subnet_ids": &schema.Schema{
+				Type:          schema.TypeList,
+				Optional:      true,
+				Elem:          &schema.Schema{Type: schema.TypeString},
+				ConflictsWith: []string{"availability_zones", "availability_zone"},
+			},
+
 			"capacity": &schema.Schema{
 				Type:     schema.TypeSet,
 				Required: true,
@@ -1237,8 +1249,21 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 	d.Set("elastic_ips", g.Compute.ElasticIPs)
 	d.Set("private_ips", g.Compute.PrivateIPs)
 
-	// Set capacity.
+	// Set Region
+	if g.Region != nil {
+		if v, ok := d.GetOk("region"); ok && v != nil {
+			d.Set("region", g.Region)
+		}
+	}
 
+	// Set SubnetIds
+	if g.Compute.SubnetIds != nil {
+		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
+			d.Set("subnet_ids", g.Compute.SubnetIds)
+		}
+	}
+
+	// Set Capacity
 	if g.Capacity != nil {
 		targetCapacitySetInCapacity := true
 		if v, ok := d.GetOk("target_capacity"); ok && v != nil {
@@ -1415,6 +1440,23 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	if d.HasChange("description") {
 		group.SetDescription(spotinst.String(d.Get("description").(string)))
 		update = true
+	}
+
+	if d.HasChange("region") {
+		group.SetRegion(spotinst.String(d.Get("region").(string)))
+		update = true
+	}
+
+	if d.HasChange("subnet_ids") {
+		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
+			if ids, err := expandAWSGroupSubnetIds(v); err == nil {
+				if group.Compute == nil {
+					group.SetCompute(&aws.Compute{})
+				}
+				group.Compute.SetSubnetIds(ids)
+				update = true
+			}
+		}
 	}
 
 	if d.HasChange("capacity") {
@@ -1664,29 +1706,33 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if d.HasChange("availability_zone") {
-		if v, ok := d.GetOk("availability_zone"); ok {
-			if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-				return err
-			} else {
-				if group.Compute == nil {
-					group.SetCompute(&aws.Compute{})
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if v, ok := d.GetOk("availability_zone"); ok {
+				if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
+					return err
+				} else {
+					if group.Compute == nil {
+						group.SetCompute(&aws.Compute{})
+					}
+					group.Compute.SetAvailabilityZones(zones)
+					update = true
 				}
-				group.Compute.SetAvailabilityZones(zones)
-				update = true
 			}
 		}
 	}
 
 	if d.HasChange("availability_zones") {
-		if v, ok := d.GetOk("availability_zones"); ok {
-			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
-				return err
-			} else {
-				if group.Compute == nil {
-					group.SetCompute(&aws.Compute{})
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if v, ok := d.GetOk("availability_zones"); ok {
+				if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+					return err
+				} else {
+					if group.Compute == nil {
+						group.SetCompute(&aws.Compute{})
+					}
+					group.Compute.SetAvailabilityZones(zones)
+					update = true
 				}
-				group.Compute.SetAvailabilityZones(zones)
-				update = true
 			}
 		}
 	}
@@ -2436,6 +2482,24 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	group.SetDescription(spotinst.String(d.Get("description").(string)))
 	group.Compute.SetProduct(spotinst.String(d.Get("product").(string)))
 
+	if v, ok := d.GetOk("region"); ok {
+		group.SetRegion(spotinst.String(v.(string)))
+	}
+
+	if tfSubnetIds, ok := d.GetOk("subnet_ids"); ok {
+		if v, ok := d.GetOk("region"); !ok || v == nil {
+			var errMsg = "subnet_ids requires a region field"
+			log.Printf("[ERROR] %s", errMsg)
+			return nil, errors.New(errMsg)
+		}
+
+		if subnetIdsArr, err := expandAWSGroupSubnetIds(tfSubnetIds); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetSubnetIds(subnetIdsArr)
+		}
+	}
+
 	if tfPrivateIPs, ok := d.GetOk("private_ips"); ok {
 		if privateIPsArr, err := expandAWSGroupPrivateIPs(tfPrivateIPs); err != nil {
 			return nil, err
@@ -2522,18 +2586,22 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	}
 
 	if v, ok := d.GetOk("availability_zone"); ok {
-		if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetAvailabilityZones(zones)
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
+				return nil, err
+			} else {
+				group.Compute.SetAvailabilityZones(zones)
+			}
 		}
 	}
 
 	if v, ok := d.GetOk("availability_zones"); ok {
-		if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetAvailabilityZones(zones)
+		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+				return nil, err
+			} else {
+				group.Compute.SetAvailabilityZones(zones)
+			}
 		}
 	}
 
@@ -3856,6 +3924,20 @@ func expandAWSGroupCodeDeployIntegrationDeploymentGroups(data interface{}, nulli
 		deploymentGroups = append(deploymentGroups, deploymentGroup)
 	}
 	return deploymentGroups, nil
+}
+
+// expandAWSGroupSubnetIds expands the Subnet Ids block.
+func expandAWSGroupSubnetIds(data interface{}) ([]string, error) {
+	list := data.([]interface{})
+	result := make([]string, 0, len(list))
+	for _, str := range list {
+		if subnetIds, ok := str.(string); ok {
+			log.Printf("[DEBUG] Group subnet ids configuration: %s", stringutil.Stringify(subnetIds))
+			result = append(result, subnetIds)
+		}
+	}
+	log.Printf("[DEBUG] Finished casting all Group subnet ids")
+	return result, nil
 }
 
 // expandAWSGroupElasticIPs expands the Elastic IPs block.
