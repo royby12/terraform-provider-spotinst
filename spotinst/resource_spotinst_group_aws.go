@@ -1257,9 +1257,9 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	// Set SubnetIds
-	if g.Compute.SubnetIds != nil {
+	if g.Compute.SubnetIDs != nil {
 		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
-			d.Set("subnet_ids", g.Compute.SubnetIds)
+			d.Set("subnet_ids", g.Compute.SubnetIDs)
 		}
 	}
 
@@ -1449,11 +1449,11 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 	if d.HasChange("subnet_ids") {
 		if v, ok := d.GetOk("subnet_ids"); ok && v != nil {
-			if ids, err := expandAWSGroupSubnetIds(v); err == nil {
+			if subnetIDs, err := expandAWSGroupSubnetIDs(v); err == nil {
 				if group.Compute == nil {
 					group.SetCompute(&aws.Compute{})
 				}
-				group.Compute.SetSubnetIds(ids)
+				group.Compute.SetSubnetIDs(subnetIDs)
 				update = true
 			}
 		}
@@ -2486,28 +2486,6 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 		group.SetRegion(spotinst.String(v.(string)))
 	}
 
-	if tfSubnetIds, ok := d.GetOk("subnet_ids"); ok {
-		if v, ok := d.GetOk("region"); !ok || v == nil {
-			var errMsg = "subnet_ids requires a region field"
-			log.Printf("[ERROR] %s", errMsg)
-			return nil, errors.New(errMsg)
-		}
-
-		if subnetIdsArr, err := expandAWSGroupSubnetIds(tfSubnetIds); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetSubnetIds(subnetIdsArr)
-		}
-	}
-
-	if tfPrivateIPs, ok := d.GetOk("private_ips"); ok {
-		if privateIPsArr, err := expandAWSGroupPrivateIPs(tfPrivateIPs); err != nil {
-			return nil, err
-		} else {
-			group.Compute.SetPrivateIPs(privateIPsArr)
-		}
-	}
-
 	if v, ok := d.GetOk("capacity"); ok {
 		_, exists := d.GetOkExists("target_capacity")
 		if capacity, err := expandAWSGroupCapacity(v, nullify, !exists, false); err != nil {
@@ -2526,6 +2504,22 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.SetStrategy(strategy)
+		}
+	}
+
+	if v, ok := d.GetOk("subnet_ids"); ok {
+		if subnetIDs, err := expandAWSGroupSubnetIDs(v); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetSubnetIDs(subnetIDs)
+		}
+	}
+
+	if v, ok := d.GetOk("private_ips"); ok {
+		if privateIPs, err := expandAWSGroupPrivateIPs(v); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetPrivateIPs(privateIPs)
 		}
 	}
 
@@ -3926,17 +3920,18 @@ func expandAWSGroupCodeDeployIntegrationDeploymentGroups(data interface{}, nulli
 	return deploymentGroups, nil
 }
 
-// expandAWSGroupSubnetIds expands the Subnet Ids block.
-func expandAWSGroupSubnetIds(data interface{}) ([]string, error) {
+// expandAWSGroupSubnetIDs expands the Subnet IDs block.
+func expandAWSGroupSubnetIDs(data interface{}) ([]string, error) {
 	list := data.([]interface{})
 	result := make([]string, 0, len(list))
-	for _, str := range list {
-		if subnetIds, ok := str.(string); ok {
-			log.Printf("[DEBUG] Group subnet ids configuration: %s", stringutil.Stringify(subnetIds))
-			result = append(result, subnetIds)
+
+	for _, v := range list {
+		if subnetID, ok := v.(string); ok && subnetID != "" {
+			result = append(result, subnetID)
 		}
 	}
-	log.Printf("[DEBUG] Finished casting all Group subnet ids")
+
+	log.Printf("[DEBUG] Group subnet IDs configuration: %s", stringutil.Stringify(result))
 	return result, nil
 }
 
@@ -3944,40 +3939,46 @@ func expandAWSGroupSubnetIds(data interface{}) ([]string, error) {
 func expandAWSGroupPrivateIPs(data interface{}) ([]string, error) {
 	list := data.([]interface{})
 	result := make([]string, 0, len(list))
-	for _, str := range list {
-		if privateIP, ok := str.(string); ok {
-			log.Printf("[DEBUG] Group private IP configuration: %s", stringutil.Stringify(privateIP))
+
+	for _, v := range list {
+		if privateIP, ok := v.(string); ok && privateIP != "" {
 			result = append(result, privateIP)
 		}
 	}
+
+	log.Printf("[DEBUG] Group private IPs configuration: %s", stringutil.Stringify(result))
 	return result, nil
 }
 
 // expandAWSGroupElasticIPs expands the Elastic IPs block.
 func expandAWSGroupElasticIPs(data interface{}, nullify bool) ([]string, error) {
 	list := data.([]interface{})
-	eips := make([]string, 0, len(list))
-	for _, str := range list {
-		if eip, ok := str.(string); ok {
-			log.Printf("[DEBUG] Group elastic IP configuration: %s", stringutil.Stringify(eip))
-			eips = append(eips, eip)
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if elasticIP, ok := v.(string); ok && elasticIP != "" {
+			result = append(result, elasticIP)
 		}
 	}
-	return eips, nil
+
+	log.Printf("[DEBUG] Group elastic IPs configuration: %s", stringutil.Stringify(result))
+	return result, nil
 }
 
 // expandAWSGroupTags expands the Tags block.
 func expandAWSGroupTags(data interface{}, nullify bool) ([]*aws.Tag, error) {
 	list := data.(map[string]interface{})
-	tags := make([]*aws.Tag, 0, len(list))
+	result := make([]*aws.Tag, 0, len(list))
+
 	for k, v := range list {
 		tag := &aws.Tag{}
 		tag.SetKey(spotinst.String(k))
 		tag.SetValue(spotinst.String(v.(string)))
-		log.Printf("[DEBUG] Group tag configuration: %s", stringutil.Stringify(tag))
-		tags = append(tags, tag)
+		result = append(result, tag)
 	}
-	return tags, nil
+
+	log.Printf("[DEBUG] Group tags configuration: %s", stringutil.Stringify(result))
+	return result, nil
 }
 
 // expandAWSGroupTagsKV expands the Tags KV block.

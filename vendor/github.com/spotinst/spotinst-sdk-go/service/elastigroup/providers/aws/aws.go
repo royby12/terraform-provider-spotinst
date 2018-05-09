@@ -63,13 +63,13 @@ type Group struct {
 	ID          *string      `json:"id,omitempty"`
 	Name        *string      `json:"name,omitempty"`
 	Description *string      `json:"description,omitempty"`
+	Region      *string      `json:"region,omitempty"`
 	Capacity    *Capacity    `json:"capacity,omitempty"`
 	Compute     *Compute     `json:"compute,omitempty"`
 	Strategy    *Strategy    `json:"strategy,omitempty"`
 	Scaling     *Scaling     `json:"scaling,omitempty"`
 	Scheduling  *Scheduling  `json:"scheduling,omitempty"`
 	Integration *Integration `json:"thirdPartiesIntegration,omitempty"`
-	Region      *string      `json:"region,omitempty"`
 
 	// forceSendFields is a list of field names (e.g. "Keys") to
 	// unconditionally include in API requests. By default, fields with
@@ -364,7 +364,7 @@ type Compute struct {
 	ElasticIPs          []string             `json:"elasticIps,omitempty"`
 	EBSVolumePool       []*EBSVolume         `json:"ebsVolumePool,omitempty"`
 	PrivateIPs          []string             `json:"privateIps,omitempty"`
-	SubnetIds			[]string             `json:"subnetIds,omitempty"`
+	SubnetIDs           []string             `json:"subnetIds,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -948,6 +948,7 @@ func (o *Group) SetRegion(v *string) *Group {
 	}
 	return o
 }
+
 // endregion
 
 // region Integration
@@ -1974,9 +1975,9 @@ func (o *Compute) SetEBSVolumePool(v []*EBSVolume) *Compute {
 	return o
 }
 
-func (o *Compute) SetSubnetIds(v []string) *Compute {
-	if o.SubnetIds = v; o.SubnetIds == nil {
-		o.nullFields = append(o.nullFields, "SubnetIds")
+func (o *Compute) SetSubnetIDs(v []string) *Compute {
+	if o.SubnetIDs = v; o.SubnetIDs == nil {
+		o.nullFields = append(o.nullFields, "SubnetIDs")
 	}
 	return o
 }
