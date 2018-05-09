@@ -285,6 +285,26 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				Set: hashAWSGroupPersistence,
 			},
 
+			"revert_to_spot": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"perform_at": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"time_windows": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
+					},
+				},
+			},
+
 			"signal": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -1300,6 +1320,12 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 				return fmt.Errorf("failed to set persistence configuration: %#v", err)
 			}
 		}
+
+		if g.Strategy.RevertToSpot != nil {
+			if err := d.Set("revert_to_spot", flattenAWSGroupRevertToSpot(g.Strategy.RevertToSpot)); err != nil {
+				return fmt.Errorf("failed to set revertToSpot configuration: %#v", err)
+			}
+		}
 	}
 
 	if g.Scheduling != nil {
@@ -1930,6 +1956,29 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("revert_to_spot") {
+		if v, ok := d.GetOk("revert_to_spot"); ok {
+			if revertToSpot, err := expandAWSGroupRevertToSpot(v, nullify); err != nil {
+				return err
+			} else {
+				if group.Strategy == nil {
+					group.SetStrategy(&aws.Strategy{})
+				}
+				if group.Strategy.RevertToSpot == nil {
+					group.Strategy.SetRevertToSpot(&aws.RevertToSpot{})
+				}
+				group.Strategy.SetRevertToSpot(revertToSpot)
+				update = true
+			}
+		} else {
+			if group.Strategy == nil {
+				group.SetStrategy(&aws.Strategy{})
+			}
+			group.Strategy.SetRevertToSpot(nil)
+			update = true
+		}
+	}
+
 	if d.HasChange("scaling_up_policy") {
 		if v, ok := d.GetOk("scaling_up_policy"); ok {
 			if policies, err := expandAWSGroupScalingPolicies(v, nullify); err != nil {
@@ -2364,6 +2413,13 @@ func flattenAWSGroupPersistence(persistence *aws.Persistence) []interface{} {
 	return []interface{}{result}
 }
 
+func flattenAWSGroupRevertToSpot(revertToSpot *aws.RevertToSpot) []interface{} {
+	result := make(map[string]interface{})
+	result["perform_at"] = spotinst.StringValue(revertToSpot.PerformAt)
+	result["time_windows"] = revertToSpot.TimeWindows
+	return []interface{}{result}
+}
+
 func flattenAWSGroupNetworkInterfaces(ifaces []*aws.NetworkInterface) []interface{} {
 	result := make([]interface{}, 0, len(ifaces))
 	for _, iface := range ifaces {
@@ -2528,6 +2584,14 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.Strategy.SetPersistence(persistence)
+		}
+	}
+
+	if v, ok := d.GetOk("revert_to_spot"); ok {
+		if revertToSpot, err := expandAWSGroupRevertToSpot(v, nullify); err != nil {
+			return nil, err
+		} else {
+			group.Strategy.SetRevertToSpot(revertToSpot)
 		}
 	}
 
@@ -3085,6 +3149,33 @@ func expandAWSGroupPersistence(data interface{}, nullify bool) (*aws.Persistence
 
 	log.Printf("[DEBUG] Group persistence configuration: %s", stringutil.Stringify(persistence))
 	return persistence, nil
+}
+
+func expandAWSGroupRevertToSpot(data interface{}, nullify bool) (*aws.RevertToSpot, error) {
+	list := data.(*schema.Set).List()
+	m := list[0].(map[string]interface{})
+	revertToSpot := &aws.RevertToSpot{}
+
+	if v, ok := m["perform_at"].(string); ok {
+		revertToSpot.SetPerformAt(spotinst.String(v))
+	} else if nullify {
+		revertToSpot.SetPerformAt(nil)
+	}
+
+	if v, ok := m["time_windows"].([]interface{}); ok && len(v) > 0 {
+		ids := make([]string, 0, len(v))
+		for _, id := range v {
+			if v, ok := id.(string); ok && len(v) > 0 {
+				ids = append(ids, v)
+			}
+		}
+		revertToSpot.SetTimeWindows(ids)
+	} else if nullify {
+		revertToSpot.SetTimeWindows(nil)
+	}
+
+	log.Printf("[DEBUG] Group revert to spot configuration: %s", stringutil.Stringify(revertToSpot))
+	return revertToSpot, nil
 }
 
 // expandAWSGroupAvailabilityZones expands the Availability Zone block.

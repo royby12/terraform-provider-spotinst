@@ -118,6 +118,7 @@ type AutoScale struct {
 	Headroom    *AutoScaleHeadroom     `json:"headroom,omitempty"`
 	Down        *AutoScaleDown         `json:"down,omitempty"`
 	Constraints []*AutoScaleConstraint `json:"constraints,omitempty"`
+	Labels      []*AutoScaleLabel      `json:"labels,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -140,6 +141,14 @@ type AutoScaleDown struct {
 }
 
 type AutoScaleConstraint struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+
+	forceSendFields []string
+	nullFields      []string
+}
+
+type AutoScaleLabel struct {
 	Key   *string `json:"key,omitempty"`
 	Value *string `json:"value,omitempty"`
 
@@ -313,16 +322,17 @@ type Dimension struct {
 }
 
 type Strategy struct {
-	Risk                     *float64     `json:"risk,omitempty"`
-	OnDemandCount            *int         `json:"onDemandCount,omitempty"`
-	DrainingTimeout          *int         `json:"drainingTimeout,omitempty"`
-	AvailabilityVsCost       *string      `json:"availabilityVsCost,omitempty"`
-	LifetimePeriod           *string      `json:"lifetimePeriod,omitempty"`
-	UtilizeReservedInstances *bool        `json:"utilizeReservedInstances,omitempty"`
-	FallbackToOnDemand       *bool        `json:"fallbackToOd,omitempty"`
-	SpinUpTime               *int         `json:"spinUpTime,omitempty"`
-	Signals                  []*Signal    `json:"signals,omitempty"`
-	Persistence              *Persistence `json:"persistence,omitempty"`
+	Risk                     *float64      `json:"risk,omitempty"`
+	OnDemandCount            *int          `json:"onDemandCount,omitempty"`
+	DrainingTimeout          *int          `json:"drainingTimeout,omitempty"`
+	AvailabilityVsCost       *string       `json:"availabilityVsCost,omitempty"`
+	LifetimePeriod           *string       `json:"lifetimePeriod,omitempty"`
+	UtilizeReservedInstances *bool         `json:"utilizeReservedInstances,omitempty"`
+	FallbackToOnDemand       *bool         `json:"fallbackToOd,omitempty"`
+	SpinUpTime               *int          `json:"spinUpTime,omitempty"`
+	Signals                  []*Signal     `json:"signals,omitempty"`
+	Persistence              *Persistence  `json:"persistence,omitempty"`
+	RevertToSpot             *RevertToSpot `json:"revertToSpot,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -333,6 +343,14 @@ type Persistence struct {
 	ShouldPersistBlockDevices *bool   `json:"shouldPersistBlockDevices,omitempty"`
 	ShouldPersistRootDevice   *bool   `json:"shouldPersistRootDevice,omitempty"`
 	BlockDevicesMode          *string `json:"blockDevicesMode,omitempty"`
+
+	forceSendFields []string
+	nullFields      []string
+}
+
+type RevertToSpot struct {
+	PerformAt   *string  `json:"performAt,omitempty"`
+	TimeWindows []string `json:"timeWindows,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -1146,6 +1164,13 @@ func (o *AutoScale) SetConstraints(v []*AutoScaleConstraint) *AutoScale {
 	return o
 }
 
+func (o *AutoScale) SetLabels(v []*AutoScaleLabel) *AutoScale {
+	if o.Labels = v; o.Labels == nil {
+		o.nullFields = append(o.nullFields, "Labels")
+	}
+	return o
+}
+
 // endregion
 
 // region AutoScaleHeadroom
@@ -1212,6 +1237,30 @@ func (o *AutoScaleConstraint) SetKey(v *string) *AutoScaleConstraint {
 }
 
 func (o *AutoScaleConstraint) SetValue(v *string) *AutoScaleConstraint {
+	if o.Value = v; o.Value == nil {
+		o.nullFields = append(o.nullFields, "Value")
+	}
+	return o
+}
+
+// endregion
+
+// region AutoScaleLabel
+
+func (o *AutoScaleLabel) MarshalJSON() ([]byte, error) {
+	type noMethod AutoScaleLabel
+	raw := noMethod(*o)
+	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
+}
+
+func (o *AutoScaleLabel) SetKey(v *string) *AutoScaleLabel {
+	if o.Key = v; o.Key == nil {
+		o.nullFields = append(o.nullFields, "Key")
+	}
+	return o
+}
+
+func (o *AutoScaleLabel) SetValue(v *string) *AutoScaleLabel {
 	if o.Value = v; o.Value == nil {
 		o.nullFields = append(o.nullFields, "Value")
 	}
@@ -1814,6 +1863,13 @@ func (o *Strategy) SetPersistence(v *Persistence) *Strategy {
 	return o
 }
 
+func (o *Strategy) SetRevertToSpot(v *RevertToSpot) *Strategy {
+	if o.RevertToSpot = v; o.RevertToSpot == nil {
+		o.nullFields = append(o.nullFields, "RevertToSpot")
+	}
+	return o
+}
+
 // endregion
 
 // region Persistence
@@ -1848,6 +1904,30 @@ func (o *Persistence) SetShouldPersistRootDevice(v *bool) *Persistence {
 func (o *Persistence) SetBlockDevicesMode(v *string) *Persistence {
 	if o.BlockDevicesMode = v; o.BlockDevicesMode == nil {
 		o.nullFields = append(o.nullFields, "BlockDevicesMode")
+	}
+	return o
+}
+
+// endregion
+
+// region RevertToSpot
+
+func (o *RevertToSpot) MarshalJSON() ([]byte, error) {
+	type noMethod RevertToSpot
+	raw := noMethod(*o)
+	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
+}
+
+func (o *RevertToSpot) SetPerformAt(v *string) *RevertToSpot {
+	if o.PerformAt = v; o.PerformAt == nil {
+		o.nullFields = append(o.nullFields, "PerformAt")
+	}
+	return o
+}
+
+func (o *RevertToSpot) SetTimeWindows(v []string) *RevertToSpot {
+	if o.TimeWindows = v; o.TimeWindows == nil {
+		o.nullFields = append(o.nullFields, "TimeWindows")
 	}
 	return o
 }
@@ -2581,3 +2661,112 @@ func (o *OpsWorksIntegration) SetStackType(v *string) *OpsWorksIntegration {
 }
 
 // endregion
+
+// region Scale Request
+
+type ScaleUpSpotItem struct {
+	SpotInstanceRequestID *string `json:"spotInstanceRequestId,omitempty"`
+	AvailabilityZone      *string `json:"availabilityZone,omitempty"`
+	InstanceType          *string `json:"instanceType,omitempty"`
+}
+
+type ScaleUpOnDemandItem struct {
+	InstanceID       *string `json:"instanceId,omitempty"`
+	AvailabilityZone *string `json:"availabilityZone,omitempty"`
+	InstanceType     *string `json:"instanceType,omitempty"`
+}
+
+type ScaleDownSpotItem struct {
+	SpotInstanceRequestID *string `json:"spotInstanceRequestId,omitempty"`
+}
+
+type ScaleDownOnDemandItem struct {
+	InstanceID *string `json:"instanceId,omitempty"`
+}
+
+type ScaleItem struct {
+	NewSpotRequests    []*ScaleUpSpotItem       `json:"newSpotRequests,omitempty"`
+	NewInstances       []*ScaleUpOnDemandItem   `json:"newInstances,omitempty"`
+	VictimSpotRequests []*ScaleDownSpotItem     `json:"victimSpotRequests,omitempty"`
+	VictimInstances    []*ScaleDownOnDemandItem `json:"victimInstances,omitempty"`
+}
+
+type ScaleGroupInput struct {
+	GroupID    *string `json:"groupId,omitempty"`
+	ScaleType  *string `json:"type,omitempty"`
+	Adjustment *int    `json:"adjustment,omitempty"`
+}
+
+type ScaleGroupOutput struct {
+	Items []*ScaleItem `json:"items"`
+}
+
+func scaleUpResponseFromJSON(in []byte) (*ScaleGroupOutput, error) {
+	var rw client.Response
+	if err := json.Unmarshal(in, &rw); err != nil {
+		return nil, err
+	}
+
+	var retVal ScaleGroupOutput
+	retVal.Items = make([]*ScaleItem, len(rw.Response.Items))
+	for i, rb := range rw.Response.Items {
+		b, err := scaleUpItemFromJSON(rb)
+		if err != nil {
+			return nil, err
+		}
+		retVal.Items[i] = b
+	}
+
+	return &retVal, nil
+}
+
+func scaleUpItemFromJSON(in []byte) (*ScaleItem, error) {
+	var rw *ScaleItem
+	if err := json.Unmarshal(in, &rw); err != nil {
+		return nil, err
+	}
+	return rw, nil
+}
+
+func scaleFromHttpResponse(resp *http.Response) (*ScaleGroupOutput, error) {
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	return scaleUpResponseFromJSON(body)
+}
+
+func (s *ServiceOp) Scale(ctx context.Context, input *ScaleGroupInput) (*ScaleGroupOutput, error) {
+	path, err := uritemplates.Expand("/aws/ec2/group/{groupId}/scale/{type}", uritemplates.Values{
+		"groupId": spotinst.StringValue(input.GroupID),
+		"type":    spotinst.StringValue(input.ScaleType),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// We do not need the ID anymore so let's drop it.
+	input.GroupID = nil
+
+	r := client.NewRequest(http.MethodPut, path)
+
+	if input.Adjustment != nil {
+		r.Params.Set("adjustment", strconv.Itoa(*input.Adjustment))
+	}
+	r.Obj = input
+
+	resp, err := client.RequireOK(s.Client.Do(ctx, r))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	output, err := scaleFromHttpResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return output, err
+}
+
+//endregion
