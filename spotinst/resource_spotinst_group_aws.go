@@ -2986,23 +2986,23 @@ func expandAWSGroupScalingPolicies(data interface{}, nullify bool) ([]*aws.Scali
 			}
 
 			if v, ok := m["min_target_capacity"].(int); ok && v > 0 {
-				action.SetMinTargetCapacity(spotinst.Int(v))
+				action.SetMinTargetCapacity(spotinst.String(strconv.Itoa(v)))
 			}
 
 			if v, ok := m["max_target_capacity"].(int); ok && v > 0 {
-				action.SetMaxTargetCapacity(spotinst.Int(v))
+				action.SetMaxTargetCapacity(spotinst.String(strconv.Itoa(v)))
 			}
 
 			if v, ok := m["minimum"].(int); ok && v > 0 {
-				action.SetMinimum(spotinst.Int(v))
+				action.SetMinimum(spotinst.String(strconv.Itoa(v)))
 			}
 
 			if v, ok := m["maximum"].(int); ok && v > 0 {
-				action.SetMaximum(spotinst.Int(v))
+				action.SetMaximum(spotinst.String(strconv.Itoa(v)))
 			}
 
 			if v, ok := m["target"].(int); ok && v > 0 {
-				action.SetTarget(spotinst.Int(v))
+				action.SetTarget(spotinst.String(strconv.Itoa(v)))
 			}
 
 			policy.SetAction(action)
