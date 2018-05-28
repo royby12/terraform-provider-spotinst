@@ -187,6 +187,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Optional: true,
 						},
 
+						"start_time": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+
 						"scale_target_capacity": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -825,6 +830,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 
 						"autoscale_cooldown": &schema.Schema{
 							Type:     schema.TypeInt,
+							Optional: true,
+						},
+
+						"autoscale_is_auto_config": &schema.Schema{
+							Type:     schema.TypeBool,
 							Optional: true,
 						},
 
@@ -2390,6 +2400,7 @@ func flattenAWSGroupScheduledTasks(tasks []*aws.Task) []interface{} {
 		m["is_enabled"] = spotinst.BoolValue(t.IsEnabled)
 		m["task_type"] = spotinst.StringValue(t.Type)
 		m["cron_expression"] = spotinst.StringValue(t.CronExpression)
+		m["start_time"] = spotinst.StringValue(t.StartTime)
 		m["frequency"] = spotinst.StringValue(t.Frequency)
 		m["scale_target_capacity"] = spotinst.IntValue(t.ScaleTargetCapacity)
 		m["scale_min_capacity"] = spotinst.IntValue(t.ScaleMinCapacity)
@@ -3072,6 +3083,10 @@ func expandAWSGroupScheduledTasks(data interface{}, nullify bool) ([]*aws.Task, 
 
 		if v, ok := m["cron_expression"].(string); ok && v != "" {
 			task.SetCronExpression(spotinst.String(v))
+		}
+
+		if v, ok := m["start_time"].(string); ok && v != "" {
+			task.SetStartTime(spotinst.String(v))
 		}
 
 		if v, ok := m["batch_size_percentage"].(int); ok && v > 0 {
@@ -3761,6 +3776,13 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			i.SetAutoScale(&aws.AutoScale{})
 		}
 		i.AutoScale.SetCooldown(spotinst.Int(v))
+	}
+
+	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScale{})
+		}
+		i.AutoScale.SetIsAutoConfig(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
