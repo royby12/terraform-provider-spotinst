@@ -358,6 +358,12 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
+			"preferred_availability_zones": &schema.Schema{
+				Type:     schema.TypeList,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+			},
+
 			"hot_ebs_volume": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -1773,6 +1779,22 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("preferred_availability_zones") {
+		var result []string = nil
+		if value, ok := d.GetOk(string("preferred_availability_zones")); ok {
+			if preferredAZs, err := expandAWSGroupPreferredAvailabilityZones(value); err != nil {
+				return err
+			} else {
+				result = preferredAZs
+			}
+		}
+		if group.Compute == nil {
+			group.SetCompute(&aws.Compute{})
+		}
+		group.Compute.SetPreferredAvailabilityZones(result)
+		update = true
+	}
+
 	if d.HasChange("hot_ebs_volume") {
 		if v, ok := d.GetOk("hot_ebs_volume"); ok {
 			if ebsVolumePool, err := expandAWSGroupEBSVolumePool(v, nullify); err != nil {
@@ -2674,6 +2696,14 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 		}
 	}
 
+	if value, ok := d.GetOk(string("preferred_availability_zones")); ok {
+		if preferredAZs, err := expandAWSGroupPreferredAvailabilityZones(value); err != nil {
+			return nil, err
+		} else {
+			group.Compute.SetPreferredAvailabilityZones(preferredAZs)
+		}
+	}
+
 	if v, ok := d.GetOk("hot_ebs_volume"); ok {
 		if ebsVolumePool, err := expandAWSGroupEBSVolumePool(v, nullify); err != nil {
 			return nil, err
@@ -3243,6 +3273,18 @@ func expandAWSGroupAvailabilityZonesSlice(data interface{}, nullify bool) ([]*aw
 	}
 
 	return zones, nil
+}
+
+func expandAWSGroupPreferredAvailabilityZones(data interface{}) ([]string, error) {
+	list := data.([]interface{})
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if preferredAZ, ok := v.(string); ok && preferredAZ != "" {
+			result = append(result, preferredAZ)
+		}
+	}
+	return result, nil
 }
 
 // expandAWSGroupEBSVolumePool expands the EBS Volume Pool block.
