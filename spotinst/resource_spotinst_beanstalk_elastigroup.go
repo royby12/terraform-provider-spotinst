@@ -88,15 +88,15 @@ func resourceSpotinstAWSBeanstalkGroupCreate(d *schema.ResourceData, meta interf
 	newGroup.Compute.SetProduct(spotinst.String(d.Get("product").(string)))
 	newGroup.SetName(spotinst.String(d.Get("name").(string)))
 
-	if v, ok := d.GetOkExists("minimum"); ok {
+	if v, ok := d.GetOk("minimum"); ok {
 		newGroup.Capacity.SetMinimum(spotinst.Int(v.(int)))
 	}
 
-	if v, ok := d.GetOkExists("maximum"); ok {
+	if v, ok := d.GetOk("maximum"); ok {
 		newGroup.Capacity.SetMaximum(spotinst.Int(v.(int)))
 	}
 
-	if v, ok := d.GetOkExists("target"); ok {
+	if v, ok := d.GetOk("target"); ok {
 		newGroup.Capacity.SetTarget(spotinst.Int(v.(int)))
 	}
 
@@ -228,15 +228,15 @@ func resourceSpotinstAWSBeanstalkGroupUpdate(d *schema.ResourceData, meta interf
 			group.SetCapacity(newCapacity)
 		}
 
-		if v, ok := d.GetOkExists("minimum"); ok {
+		if v, ok := d.GetOk("minimum"); ok {
 			group.Capacity.SetMinimum(spotinst.Int(v.(int)))
 		}
 
-		if v, ok := d.GetOkExists("maximum"); ok {
+		if v, ok := d.GetOk("maximum"); ok {
 			group.Capacity.SetMaximum(spotinst.Int(v.(int)))
 		}
 
-		if v, ok := d.GetOkExists("target"); ok {
+		if v, ok := d.GetOk("target"); ok {
 			group.Capacity.SetTarget(spotinst.Int(v.(int)))
 		}
 

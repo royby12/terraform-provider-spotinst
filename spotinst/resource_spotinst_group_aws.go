@@ -1503,7 +1503,7 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 	if d.HasChange("capacity") {
 		if v, ok := d.GetOk("capacity"); ok {
-			_, exists := d.GetOkExists("target_capacity")
+			_, exists := d.GetOk("target_capacity")
 			if capacity, err := expandAWSGroupCapacity(v, nullify, !exists, true); err != nil {
 				return err
 			} else {
@@ -1748,25 +1748,9 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if d.HasChange("availability_zone") {
-		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+		if _, exists := d.GetOk("subnet_ids"); !exists {
 			if v, ok := d.GetOk("availability_zone"); ok {
 				if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-					return err
-				} else {
-					if group.Compute == nil {
-						group.SetCompute(&aws.Compute{})
-					}
-					group.Compute.SetAvailabilityZones(zones)
-					update = true
-				}
-			}
-		}
-	}
-
-	if d.HasChange("availability_zones") {
-		if _, exists := d.GetOkExists("subnet_ids"); !exists {
-			if v, ok := d.GetOk("availability_zones"); ok {
-				if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
 					return err
 				} else {
 					if group.Compute == nil {
@@ -1793,6 +1777,22 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 		group.Compute.SetPreferredAvailabilityZones(result)
 		update = true
+	}
+
+	if d.HasChange("availability_zones") {
+		if _, exists := d.GetOk("subnet_ids"); !exists {
+			if v, ok := d.GetOk("availability_zones"); ok {
+				if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+					return err
+				} else {
+					if group.Compute == nil {
+						group.SetCompute(&aws.Compute{})
+					}
+					group.Compute.SetAvailabilityZones(zones)
+					update = true
+				}
+			}
+		}
 	}
 
 	if d.HasChange("hot_ebs_volume") {
@@ -2235,7 +2235,7 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		var shouldResumeStateful bool
 		var input *aws.UpdateGroupInput
 
-		if _, exist := d.GetOkExists("should_resume_stateful"); exist {
+		if _, exist := d.GetOk("should_resume_stateful"); exist {
 			log.Print("[DEBUG] Resuming paused stateful instances on group if any exist")
 			shouldResumeStateful = d.Get("should_resume_stateful").(bool)
 		}
@@ -2576,7 +2576,7 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	}
 
 	if v, ok := d.GetOk("capacity"); ok {
-		_, exists := d.GetOkExists("target_capacity")
+		_, exists := d.GetOk("target_capacity")
 		if capacity, err := expandAWSGroupCapacity(v, nullify, !exists, false); err != nil {
 			return nil, err
 		} else {
@@ -2584,7 +2584,7 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 		}
 	}
 
-	if _, exists := d.GetOkExists("target_capacity"); exists {
+	if _, exists := d.GetOk("target_capacity"); exists {
 		group.Capacity.SetTarget(spotinst.Int(d.Get("target_capacity").(int)))
 	}
 
@@ -2677,18 +2677,8 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	}
 
 	if v, ok := d.GetOk("availability_zone"); ok {
-		if _, exists := d.GetOkExists("subnet_ids"); !exists {
+		if _, exists := d.GetOk("subnet_ids"); !exists {
 			if zones, err := expandAWSGroupAvailabilityZones(v, nullify); err != nil {
-				return nil, err
-			} else {
-				group.Compute.SetAvailabilityZones(zones)
-			}
-		}
-	}
-
-	if v, ok := d.GetOk("availability_zones"); ok {
-		if _, exists := d.GetOkExists("subnet_ids"); !exists {
-			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
 				return nil, err
 			} else {
 				group.Compute.SetAvailabilityZones(zones)
@@ -2701,6 +2691,16 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.Compute.SetPreferredAvailabilityZones(preferredAZs)
+		}
+	}
+
+	if v, ok := d.GetOk("availability_zones"); ok {
+		if _, exists := d.GetOk("subnet_ids"); !exists {
+			if zones, err := expandAWSGroupAvailabilityZonesSlice(v, nullify); err != nil {
+				return nil, err
+			} else {
+				group.Compute.SetAvailabilityZones(zones)
+			}
 		}
 	}
 
@@ -2770,7 +2770,7 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 		}
 	}
 
-	if v, ok := d.GetOkExists("instance_type_weights"); ok && v != "" {
+	if v, ok := d.GetOk("instance_type_weights"); ok && v != "" {
 		if weights, err := expandAWSGroupInstanceTypeWeights(v, nullify); err != nil {
 			return nil, err
 		} else {
@@ -3250,6 +3250,18 @@ func expandAWSGroupAvailabilityZones(data interface{}, nullify bool) ([]*aws.Ava
 	return zones, nil
 }
 
+func expandAWSGroupPreferredAvailabilityZones(data interface{}) ([]string, error) {
+	list := data.([]interface{})
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if preferredAZ, ok := v.(string); ok && preferredAZ != "" {
+			result = append(result, preferredAZ)
+		}
+	}
+	return result, nil
+}
+
 // expandAWSGroupAvailabilityZonesSlice expands the Availability Zone block when provided as a slice.
 func expandAWSGroupAvailabilityZonesSlice(data interface{}, nullify bool) ([]*aws.AvailabilityZone, error) {
 	list := data.([]interface{})
@@ -3273,18 +3285,6 @@ func expandAWSGroupAvailabilityZonesSlice(data interface{}, nullify bool) ([]*aw
 	}
 
 	return zones, nil
-}
-
-func expandAWSGroupPreferredAvailabilityZones(data interface{}) ([]string, error) {
-	list := data.([]interface{})
-	result := make([]string, 0, len(list))
-
-	for _, v := range list {
-		if preferredAZ, ok := v.(string); ok && preferredAZ != "" {
-			result = append(result, preferredAZ)
-		}
-	}
-	return result, nil
 }
 
 // expandAWSGroupEBSVolumePool expands the EBS Volume Pool block.
