@@ -54,6 +54,34 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				Optional: true,
 			},
 
+			"stateful_deallocation": &schema.Schema{
+				Type:     schema.TypeList,
+				MaxItems: 1,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"should_delete_images": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+
+						"should_delete_network_interfaces": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+
+						"should_delete_volumes": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"should_delete_snapshots": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+					},
+				},
+			},
+
 			"private_ips": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -2280,6 +2308,37 @@ func resourceSpotinstAWSGroupDelete(d *schema.ResourceData, meta interface{}) er
 	client := meta.(*Client)
 	log.Printf("[INFO] Deleting group: %s", d.Id())
 	input := &aws.DeleteGroupInput{GroupID: spotinst.String(d.Id())}
+
+	if statefulDeallocation, exist := d.GetOk("stateful_deallocation"); exist {
+		list := statefulDeallocation.([]interface{})
+		if list != nil && list[0] != nil {
+			m := list[0].(map[string]interface{})
+
+			var result = &aws.StatefulDeallocation{}
+			if shouldDeleteImage, ok := m["should_delete_images"].(bool); ok && shouldDeleteImage {
+				result.ShouldDeleteImages = spotinst.Bool(shouldDeleteImage)
+			}
+
+			if shouldDeleteNetworkInterfaces, ok := m["should_delete_network_interfaces"].(bool); ok && shouldDeleteNetworkInterfaces {
+				result.ShouldDeleteNetworkInterfaces = spotinst.Bool(shouldDeleteNetworkInterfaces)
+			}
+
+			if shouldDeleteSnapshots, ok := m["should_delete_snapshots"].(bool); ok && shouldDeleteSnapshots {
+				result.ShouldDeleteSnapshots = spotinst.Bool(shouldDeleteSnapshots)
+			}
+
+			if shouldDeleteVolumes, ok := m["should_delete_volumes"].(bool); ok && shouldDeleteVolumes {
+				result.ShouldDeleteVolumes = spotinst.Bool(shouldDeleteVolumes)
+			}
+
+			log.Printf("[DEBUG] Group Delete Configuration: %s", stringutil.Stringify(result))
+
+			input.StatefulDeallocation = result
+
+		}
+
+	}
+
 	if _, err := client.elastigroup.CloudProviderAWS().Delete(context.Background(), input); err != nil {
 		return fmt.Errorf("failed to delete group: %s", err)
 	}
