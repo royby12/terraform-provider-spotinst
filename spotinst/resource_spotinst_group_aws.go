@@ -2333,9 +2333,9 @@ func resourceSpotinstAWSGroupDelete(d *schema.ResourceData, meta interface{}) er
 
 			input.StatefulDeallocation = result
 		}
-
-		log.Printf("[DEBUG] Group Delete Configuration: %s", stringutil.Stringify(input))
 	}
+
+	log.Printf("[DEBUG] Group Delete Configuration: %s", stringutil.Stringify(input))
 
 	if _, err := client.elastigroup.CloudProviderAWS().Delete(context.Background(), input); err != nil {
 		return fmt.Errorf("failed to delete group: %s", err)
