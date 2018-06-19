@@ -2312,7 +2312,7 @@ func resourceSpotinstAWSGroupDelete(d *schema.ResourceData, meta interface{}) er
 
 	if statefulDeallocation, exist := d.GetOkExists("stateful_deallocation"); exist {
 		list := statefulDeallocation.([]interface{})
-		if list != nil && list[0] != nil {
+		if list != nil && len(list) > 0 && list[0] != nil {
 			m := list[0].(map[string]interface{})
 
 			var result = &aws.StatefulDeallocation{}
