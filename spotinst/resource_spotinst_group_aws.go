@@ -2309,9 +2309,9 @@ func resourceSpotinstAWSGroupDelete(d *schema.ResourceData, meta interface{}) er
 	log.Printf("[INFO] Deleting group: %s", d.Id())
 	input := &aws.DeleteGroupInput{GroupID: spotinst.String(d.Id())}
 
-	if statefulDeallocation, exist := d.GetOk("stateful_deallocation"); exist {
+	if statefulDeallocation, exist := d.GetOk("stateful_deallocation"); exist && statefulDeallocation != nil {
 		list := statefulDeallocation.([]interface{})
-		if list != nil && list[0] != nil {
+		if list != nil && len(list) > 0 && list[0] != nil {
 			m := list[0].(map[string]interface{})
 
 			var result = &aws.StatefulDeallocation{}
@@ -2331,13 +2331,11 @@ func resourceSpotinstAWSGroupDelete(d *schema.ResourceData, meta interface{}) er
 				result.ShouldDeleteVolumes = spotinst.Bool(shouldDeleteVolumes)
 			}
 
-			log.Printf("[DEBUG] Group Delete Configuration: %s", stringutil.Stringify(result))
-
 			input.StatefulDeallocation = result
-
 		}
-
 	}
+
+	log.Printf("[DEBUG] Group Delete Configuration: %s", stringutil.Stringify(result))
 
 	if _, err := client.elastigroup.CloudProviderAWS().Delete(context.Background(), input); err != nil {
 		return fmt.Errorf("failed to delete group: %s", err)
