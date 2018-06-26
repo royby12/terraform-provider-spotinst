@@ -755,6 +755,20 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				},
 			},
 
+			"gitlab_integration": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"gitlab_is_enabled": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+					},
+				},
+			},
+
 			"elastic_beanstalk_integration": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -1489,6 +1503,15 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 			}
 		} else {
 			d.Set("codedeploy_integration", []*aws.CodeDeployIntegration{})
+		}
+
+		// Set Gitlab integration.
+		if g.Integration.Gitlab != nil {
+			if err := d.Set("gitlab_integration", flattenAWSGroupGitlabIntegration(g.Integration.Gitlab)); err != nil {
+				return fmt.Errorf("failed to set Gitlab configuration: %#v", err)
+			}
+		} else {
+			d.Set("gitlab_integration", []*aws.GitlabIntegration{})
 		}
 	}
 
@@ -2259,6 +2282,26 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("gitlab_integration") {
+		if v, ok := d.GetOk("gitlab_integration"); ok {
+			if integration, err := expandAWSGroupGitlabIntegration(v, nullify); err != nil {
+				return err
+			} else {
+				if group.Integration == nil {
+					group.SetIntegration(&aws.Integration{})
+				}
+				group.Integration.SetGitlab(integration)
+				update = true
+			}
+		} else {
+			if group.Integration == nil {
+				group.SetIntegration(&aws.Integration{})
+			}
+			group.Integration.SetGitlab(nil)
+			update = true
+		}
+	}
+
 	if update {
 		var shouldResumeStateful bool
 		var input *aws.UpdateGroupInput
@@ -2608,6 +2651,12 @@ func flattenAWSGroupCodeDeployIntegration(integration *aws.CodeDeployIntegration
 	return []interface{}{result}
 }
 
+func flattenAWSGroupGitlabIntegration(integration *aws.GitlabIntegration) []interface{} {
+	result := make(map[string]interface{})
+	result["gitlab_is_enabled"] = spotinst.BoolValue(integration.IsEnabled)
+	return []interface{}{result}
+}
+
 //endregion
 
 //region Build method
@@ -2926,6 +2975,14 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.Integration.SetCodeDeploy(integration)
+		}
+	}
+
+	if v, ok := d.GetOk("gitlab_integration"); ok {
+		if integration, err := expandAWSGroupGitlabIntegration(v, nullify); err != nil {
+			return nil, err
+		} else {
+			group.Integration.SetGitlab(integration)
 		}
 	}
 
@@ -4105,6 +4162,20 @@ func expandAWSGroupCodeDeployIntegration(data interface{}, nullify bool) (*aws.C
 	}
 
 	log.Printf("[DEBUG] Group CodeDeploy integration configuration: %s", stringutil.Stringify(i))
+	return i, nil
+}
+
+// expandAWSGroupGitlabIntegration expands the Gitlab Integration block.
+func expandAWSGroupGitlabIntegration(data interface{}, nullify bool) (*aws.GitlabIntegration, error) {
+	list := data.(*schema.Set).List()
+	m := list[0].(map[string]interface{})
+	i := &aws.GitlabIntegration{}
+
+	if v, ok := m["gitlab_is_enabled"].(bool); ok {
+		i.SetIsEnabled(spotinst.Bool(v))
+	}
+
+	log.Printf("[DEBUG] Group Gitlab integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
 }
 
