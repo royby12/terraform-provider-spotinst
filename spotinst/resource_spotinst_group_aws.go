@@ -1071,14 +1071,23 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 			},
 
 			"gitlab_integration": &schema.Schema{
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"gitlab_is_enabled": &schema.Schema{
-							Type:     schema.TypeBool,
+						"runner": &schema.Schema{
+							Type:     schema.TypeList,
 							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"is_enabled": &schema.Schema{
+										Type:     schema.TypeBool,
+										Optional: true,
+									},
+								},
+							},
 						},
 					},
 				},
@@ -2284,7 +2293,7 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 
 	if d.HasChange("gitlab_integration") {
 		if v, ok := d.GetOk("gitlab_integration"); ok {
-			if integration, err := expandAWSGroupGitlabIntegration(v, nullify); err != nil {
+			if integration, err := expandAWSGroupGitlabIntegration(v); err != nil {
 				return err
 			} else {
 				if group.Integration == nil {
@@ -2653,7 +2662,11 @@ func flattenAWSGroupCodeDeployIntegration(integration *aws.CodeDeployIntegration
 
 func flattenAWSGroupGitlabIntegration(integration *aws.GitlabIntegration) []interface{} {
 	result := make(map[string]interface{})
-	result["gitlab_is_enabled"] = spotinst.BoolValue(integration.IsEnabled)
+	if integration.Runner != nil && integration.Runner.IsEnabled != nil {
+		runner := make(map[string]interface{})
+		runner["is_enabled"] = spotinst.BoolValue(integration.Runner.IsEnabled)
+		result["runner"] = []interface{}{runner}
+	}
 	return []interface{}{result}
 }
 
@@ -2979,7 +2992,7 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 	}
 
 	if v, ok := d.GetOk("gitlab_integration"); ok {
-		if integration, err := expandAWSGroupGitlabIntegration(v, nullify); err != nil {
+		if integration, err := expandAWSGroupGitlabIntegration(v); err != nil {
 			return nil, err
 		} else {
 			group.Integration.SetGitlab(integration)
@@ -4166,17 +4179,43 @@ func expandAWSGroupCodeDeployIntegration(data interface{}, nullify bool) (*aws.C
 }
 
 // expandAWSGroupGitlabIntegration expands the Gitlab Integration block.
-func expandAWSGroupGitlabIntegration(data interface{}, nullify bool) (*aws.GitlabIntegration, error) {
-	list := data.(*schema.Set).List()
-	m := list[0].(map[string]interface{})
-	i := &aws.GitlabIntegration{}
+func expandAWSGroupGitlabIntegration(data interface{}) (*aws.GitlabIntegration, error) {
+	integration := &aws.GitlabIntegration{}
+	list := data.([]interface{})
+	if list != nil && list[0] != nil {
+		m := list[0].(map[string]interface{})
 
-	if v, ok := m["gitlab_is_enabled"].(bool); ok {
-		i.SetIsEnabled(spotinst.Bool(v))
+		var runnerResult *aws.GitlabRunner = nil
+		if v, ok := m["runner"]; ok {
+			runner, err := expandAWSGroupGitlabRunner(v)
+			if err != nil {
+				return nil, err
+			}
+			if runner != nil {
+				runnerResult = runner
+			}
+		}
+
+		integration.SetRunner(runnerResult)
+	}
+	return integration, nil
+}
+
+func expandAWSGroupGitlabRunner(data interface{}) (*aws.GitlabRunner, error) {
+	if list := data.([]interface{}); list != nil && len(list) > 0 && list[0] != nil {
+		runner := &aws.GitlabRunner{}
+		m := list[0].(map[string]interface{})
+
+		var isEnabled = spotinst.Bool(false)
+		if v, ok := m["is_enabled"].(bool); ok {
+			isEnabled = spotinst.Bool(v)
+		}
+
+		runner.SetIsEnabled(isEnabled)
+		return runner, nil
 	}
 
-	log.Printf("[DEBUG] Group Gitlab integration configuration: %s", stringutil.Stringify(i))
-	return i, nil
+	return nil, nil
 }
 
 func expandAWSGroupCodeDeployIntegrationDeploymentGroups(data interface{}, nullify bool) ([]*aws.DeploymentGroup, error) {
