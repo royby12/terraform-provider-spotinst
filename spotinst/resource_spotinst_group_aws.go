@@ -761,7 +761,7 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"gitlab_is_enabled": &schema.Schema{
+						"runner_is_enabled": &schema.Schema{
 							Type:     schema.TypeBool,
 							Optional: true,
 						},
@@ -2653,7 +2653,11 @@ func flattenAWSGroupCodeDeployIntegration(integration *aws.CodeDeployIntegration
 
 func flattenAWSGroupGitlabIntegration(integration *aws.GitlabIntegration) []interface{} {
 	result := make(map[string]interface{})
-	result["gitlab_is_enabled"] = spotinst.BoolValue(integration.IsEnabled)
+
+	if integration.Runner != nil && integration.Runner.IsEnabled != nil {
+		result["runner_is_enabled"] = spotinst.BoolValue(integration.Runner.IsEnabled)
+	}
+
 	return []interface{}{result}
 }
 
@@ -4170,9 +4174,11 @@ func expandAWSGroupGitlabIntegration(data interface{}, nullify bool) (*aws.Gitla
 	list := data.(*schema.Set).List()
 	m := list[0].(map[string]interface{})
 	i := &aws.GitlabIntegration{}
+	runner := &aws.GitlabRunner{}
 
-	if v, ok := m["gitlab_is_enabled"].(bool); ok {
-		i.SetIsEnabled(spotinst.Bool(v))
+	if v, ok := m["runner_is_enabled"].(bool); ok {
+		runner.SetIsEnabled(spotinst.Bool(v))
+		i.SetRunner(runner)
 	}
 
 	log.Printf("[DEBUG] Group Gitlab integration configuration: %s", stringutil.Stringify(i))
