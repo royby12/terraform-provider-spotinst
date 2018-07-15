@@ -627,6 +627,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Computed: true,
 						},
 
+						"kms_key_id": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+
 						"iops": &schema.Schema{
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -2588,6 +2593,7 @@ func flattenAWSGroupEBSBlockDevices(devices []*aws.BlockDeviceMapping) []interfa
 			m["device_name"] = spotinst.StringValue(dev.DeviceName)
 			m["delete_on_termination"] = spotinst.BoolValue(dev.EBS.DeleteOnTermination)
 			m["encrypted"] = spotinst.BoolValue(dev.EBS.Encrypted)
+			m["kms_key_id"] = spotinst.StringValue(dev.EBS.KmsKeyId)
 			m["iops"] = spotinst.IntValue(dev.EBS.IOPS)
 			m["snapshot_id"] = spotinst.StringValue(dev.EBS.SnapshotID)
 			m["volume_type"] = spotinst.StringValue(dev.EBS.VolumeType)
@@ -3584,6 +3590,10 @@ func expandAWSGroupEBSBlockDevices(data interface{}, nullify bool) ([]*aws.Block
 
 		if v, ok := m["encrypted"].(bool); ok && v != false {
 			device.EBS.SetEncrypted(spotinst.Bool(v))
+		}
+
+		if v, ok := m["kms_key_id"].(string); ok && v != "" {
+			device.EBS.SetKmsKeyId(spotinst.String(v))
 		}
 
 		if v, ok := m["snapshot_id"].(string); ok && v != "" {
