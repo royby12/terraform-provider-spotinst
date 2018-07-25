@@ -818,6 +818,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Optional: true,
 						},
 
+						"autoscale_scale_down_non_service_tasks": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+
 						"autoscale_headroom": &schema.Schema{
 							Type:     schema.TypeSet,
 							Optional: true,
@@ -854,6 +859,25 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 									},
 								},
 							},
+						},
+
+						"autoscale_attributes": &schema.Schema{
+							Type:     schema.TypeSet,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": &schema.Schema{
+										Type:      schema.TypeString,
+										Required:  true,
+									},
+
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+								},
+							},
+							Set: attributeHashKV,
 						},
 					},
 				},
@@ -936,6 +960,25 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 									},
 								},
 							},
+						},
+
+						"autoscale_labels": &schema.Schema{
+							Type:     schema.TypeSet,
+							Optional: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": &schema.Schema{
+										Type:      schema.TypeString,
+										Required:  true,
+									},
+
+									"value": &schema.Schema{
+										Type:     schema.TypeString,
+										Required: true,
+									},
+								},
+							},
+							Set: labelHashKV,
 						},
 					},
 				},
@@ -1027,7 +1070,7 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 									},
 								},
 							},
-							Set: hashKV,
+							Set: constraintHashKV,
 						},
 					},
 				},
@@ -3878,17 +3921,24 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleECS == nil {
+			i.SetAutoScaleECS(&aws.AutoScaleECS{})
 		}
-		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScaleECS.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleECS == nil {
+			i.SetAutoScaleECS(&aws.AutoScaleECS{})
 		}
-		i.AutoScale.SetCooldown(spotinst.Int(v))
+		i.AutoScaleECS.SetCooldown(spotinst.Int(v))
+	}
+
+	if v, ok := m["autoscale_scale_down_non_service_tasks"].(bool); ok {
+		if i.AutoScaleECS == nil {
+			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		}
+		i.AutoScaleECS.SetShouldScaleDownNonServiceTasks(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -3897,10 +3947,10 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleECS == nil {
+				i.SetAutoScaleECS(&aws.AutoScaleECS{})
 			}
-			i.AutoScale.SetHeadroom(headroom)
+			i.AutoScaleECS.SetHeadroom(headroom)
 		}
 	}
 
@@ -3910,15 +3960,60 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleECS == nil {
+				i.SetAutoScaleECS(&aws.AutoScaleECS{})
 			}
-			i.AutoScale.SetDown(down)
+			i.AutoScaleECS.SetDown(down)
+		}
+	}
+
+	if v, ok := m["autoscale_attributes"]; ok {
+		labels, err := expandECSAutoScaleAttributes(v)
+		if err != nil {
+			return nil, err
+		}
+		if labels != nil {
+			if i.AutoScaleECS == nil {
+				i.SetAutoScaleECS(&aws.AutoScaleECS{})
+			}
+			i.AutoScaleECS.SetAttributes(labels)
 		}
 	}
 
 	log.Printf("[DEBUG] Group ECS integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
+}
+
+func expandECSAutoScaleAttributes(data interface{}) ([]*aws.AutoScaleAttributes, error) {
+	list := data.(*schema.Set).List()
+	out := make([]*aws.AutoScaleAttributes, 0, len(list))
+	for _, v := range list {
+		attr, ok := v.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if _, ok := attr["key"]; !ok {
+			return nil, errors.New("invalid ECS attribute: key missing")
+		}
+
+		if _, ok := attr["value"]; !ok {
+			return nil, errors.New("invalid ECS attribute: value missing")
+		}
+		c := &aws.AutoScaleAttributes{
+			Key:   spotinst.String(attr["key"].(string)),
+			Value: spotinst.String(attr["value"].(string)),
+		}
+		out = append(out, c)
+	}
+	return out, nil
+}
+
+func attributeHashKV(v interface{}) int {
+	var buf bytes.Buffer
+	m := v.(map[string]interface{})
+	buf.WriteString(fmt.Sprintf("%s-", m["key"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["value"].(string)))
+	return hashcode.String(buf.String())
 }
 
 // expandAWSGroupKubernetesIntegration expands the Kubernetes Integration block.
@@ -3944,24 +4039,24 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleKubernetes == nil {
+			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScaleKubernetes.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleKubernetes == nil {
+			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScale.SetCooldown(spotinst.Int(v))
+		i.AutoScaleKubernetes.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleKubernetes == nil {
+			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScale.SetIsAutoConfig(spotinst.Bool(v))
+		i.AutoScaleKubernetes.SetIsAutoConfig(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -3970,10 +4065,10 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleKubernetes == nil {
+				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
 			}
-			i.AutoScale.SetHeadroom(headroom)
+			i.AutoScaleKubernetes.SetHeadroom(headroom)
 		}
 	}
 
@@ -3983,15 +4078,60 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleKubernetes == nil {
+				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
 			}
-			i.AutoScale.SetDown(down)
+			i.AutoScaleKubernetes.SetDown(down)
+		}
+	}
+
+	if v, ok := m["autoscale_labels"]; ok {
+		labels, err := expandKubernetesAutoScaleLabels(v)
+		if err != nil {
+			return nil, err
+		}
+		if labels != nil {
+			if i.AutoScaleKubernetes == nil {
+				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+			}
+			i.AutoScaleKubernetes.SetLabels(labels)
 		}
 	}
 
 	log.Printf("[DEBUG] Group Kubernetes integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
+}
+
+func expandKubernetesAutoScaleLabels(data interface{}) ([]*aws.AutoScaleLabel, error) {
+	list := data.(*schema.Set).List()
+	out := make([]*aws.AutoScaleLabel, 0, len(list))
+	for _, v := range list {
+		attr, ok := v.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		if _, ok := attr["key"]; !ok {
+			return nil, errors.New("invalid Kubernetes label: key missing")
+		}
+
+		if _, ok := attr["value"]; !ok {
+			return nil, errors.New("invalid Kubernetes label: value missing")
+		}
+		c := &aws.AutoScaleLabel{
+			Key:   spotinst.String(attr["key"].(string)),
+			Value: spotinst.String(attr["value"].(string)),
+		}
+		out = append(out, c)
+	}
+	return out, nil
+}
+
+func labelHashKV(v interface{}) int {
+	var buf bytes.Buffer
+	m := v.(map[string]interface{})
+	buf.WriteString(fmt.Sprintf("%s-", m["key"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["value"].(string)))
+	return hashcode.String(buf.String())
 }
 
 // expandAWSGroupNomadIntegration expands the Nomad Integration block.
@@ -4015,17 +4155,17 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleNomad == nil {
+			i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
 		}
-		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScaleNomad.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScale == nil {
-			i.SetAutoScale(&aws.AutoScale{})
+		if i.AutoScaleNomad == nil {
+			i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
 		}
-		i.AutoScale.SetCooldown(spotinst.Int(v))
+		i.AutoScaleNomad.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -4034,10 +4174,10 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleNomad == nil {
+				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
 			}
-			i.AutoScale.SetHeadroom(headroom)
+			i.AutoScaleNomad.SetHeadroom(headroom)
 		}
 	}
 
@@ -4047,28 +4187,36 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleNomad == nil {
+				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
 			}
-			i.AutoScale.SetDown(down)
+			i.AutoScaleNomad.SetDown(down)
 		}
 	}
 
 	if v, ok := m["autoscale_constraints"]; ok {
-		consts, err := expandAWSGroupAutoScaleConstraints(v, nullify)
+		consts, err := expandNomadAutoScaleConstraints(v, nullify)
 		if err != nil {
 			return nil, err
 		}
 		if consts != nil {
-			if i.AutoScale == nil {
-				i.SetAutoScale(&aws.AutoScale{})
+			if i.AutoScaleNomad == nil {
+				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
 			}
-			i.AutoScale.SetConstraints(consts)
+			i.AutoScaleNomad.SetConstraints(consts)
 		}
 	}
 
 	log.Printf("[DEBUG] Group Nomad integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
+}
+
+func constraintHashKV(v interface{}) int {
+	var buf bytes.Buffer
+	m := v.(map[string]interface{})
+	buf.WriteString(fmt.Sprintf("%s-", m["key"].(string)))
+	buf.WriteString(fmt.Sprintf("%s-", m["value"].(string)))
+	return hashcode.String(buf.String())
 }
 
 func expandAWSGroupAutoScaleHeadroom(data interface{}, nullify bool) (*aws.AutoScaleHeadroom, error) {
@@ -4109,7 +4257,7 @@ func expandAWSGroupAutoScaleDown(data interface{}, nullify bool) (*aws.AutoScale
 	return nil, nil
 }
 
-func expandAWSGroupAutoScaleConstraints(data interface{}, nullify bool) ([]*aws.AutoScaleConstraint, error) {
+func expandNomadAutoScaleConstraints(data interface{}, nullify bool) ([]*aws.AutoScaleConstraint, error) {
 	list := data.(*schema.Set).List()
 	out := make([]*aws.AutoScaleConstraint, 0, len(list))
 	for _, v := range list {
@@ -4118,11 +4266,11 @@ func expandAWSGroupAutoScaleConstraints(data interface{}, nullify bool) ([]*aws.
 			continue
 		}
 		if _, ok := attr["key"]; !ok {
-			return nil, errors.New("invalid constraint attributes: key missing")
+			return nil, errors.New("invalid Nomad constraint: key missing")
 		}
 
 		if _, ok := attr["value"]; !ok {
-			return nil, errors.New("invalid constraint attributes: value missing")
+			return nil, errors.New("invalid Nomad constraint: value missing")
 		}
 		c := &aws.AutoScaleConstraint{
 			Key:   spotinst.String(fmt.Sprintf("${%s}", attr["key"].(string))),
