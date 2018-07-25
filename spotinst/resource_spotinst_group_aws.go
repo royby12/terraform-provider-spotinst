@@ -867,8 +867,8 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": &schema.Schema{
-										Type:      schema.TypeString,
-										Required:  true,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 
 									"value": &schema.Schema{
@@ -968,8 +968,8 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"key": &schema.Schema{
-										Type:      schema.TypeString,
-										Required:  true,
+										Type:     schema.TypeString,
+										Required: true,
 									},
 
 									"value": &schema.Schema{
