@@ -1169,7 +1169,7 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 											Schema: map[string]*schema.Schema{
 												"use_public_ip": {
 													Type:     schema.TypeBool,
-													Required: true,
+													Optional: true,
 												},
 
 												"name": {
