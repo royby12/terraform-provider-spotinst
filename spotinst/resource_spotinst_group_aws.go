@@ -4472,7 +4472,6 @@ func expandAWSGroupRoute53Integration(data interface{}) (*aws.Route53Integration
 
 // expandAWSGroupRoute53IntegrationDomains expands the Domains block.
 func expandAWSGroupRoute53IntegrationDomains(data interface{}) ([]*aws.Domain, error) {
-	domain := &aws.Domain{}
 	list := data.(*schema.Set).List()
 	domains := make([]*aws.Domain, 0, len(list))
 
@@ -4494,10 +4493,13 @@ func expandAWSGroupRoute53IntegrationDomains(data interface{}) ([]*aws.Domain, e
 				return nil, err
 			}
 
-			domain.HostedZoneID = spotinst.String(attr["hosted_zone_id"].(string))
+			domain := &aws.Domain{
+				HostedZoneID: spotinst.String(attr["hosted_zone_id"].(string)),
+			}
+
 			domain.SetRecordSets(recordSets)
+			domains = append(domains, domain)
 		}
-		domains = append(domains, domain)
 	}
 	return domains, nil
 }
