@@ -1247,7 +1247,6 @@ func (o *AutoScaleECS) SetShouldScaleDownNonServiceTasks(v *bool) *AutoScaleECS 
 
 // endregion
 
-// todo: implement Route53 functions
 // region Route53
 
 func (o *Route53Integration) MarshalJSON() ([]byte, error) {
