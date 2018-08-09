@@ -4462,7 +4462,6 @@ func expandAWSGroupRoute53Integration(data interface{}) (*aws.Route53Integration
 	if list != nil && list[0] != nil {
 		m := list[0].(map[string]interface{})
 
-		fmt.Println("before domains check")
 		if v, ok := m["domains"]; ok {
 			domains, err := expandAWSGroupRoute53IntegrationDomains(v)
 
