@@ -285,6 +285,12 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Required: true,
 							Elem:     &schema.Schema{Type: schema.TypeString},
 						},
+
+						"preferred_spot": &schema.Schema{
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
 					},
 				},
 			},
@@ -1118,6 +1124,46 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				},
 			},
 
+			"route53_integration": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"domains": {
+							Type:     schema.TypeSet,
+							Required: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"hosted_zone_id": {
+										Type:     schema.TypeString,
+										Required: true,
+									},
+
+									"record_sets": {
+										Type:     schema.TypeSet,
+										Required: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"use_public_ip": {
+													Type:     schema.TypeBool,
+													Required: true,
+												},
+
+												"name": {
+													Type:     schema.TypeString,
+													Required: true,
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
 			"gitlab_integration": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -1560,6 +1606,15 @@ func resourceSpotinstAWSGroupRead(d *schema.ResourceData, meta interface{}) erro
 			}
 		} else {
 			d.Set("codedeploy_integration", []*aws.CodeDeployIntegration{})
+		}
+
+		// Set Route53 integration.
+		if g.Integration.Route53 != nil {
+			if err := d.Set("route53_integration", flattenAWSGroupRoute53Integration(g.Integration.Route53)); err != nil {
+				return fmt.Errorf("failed to set Route53 configuration: %#v", err)
+			}
+		} else {
+			d.Set("route53_integration", []*aws.Route53Integration{})
 		}
 
 		// Set Gitlab integration.
@@ -2339,6 +2394,26 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("route53_integration") {
+		if v, ok := d.GetOk("route53_integration"); ok {
+			if integration, err := expandAWSGroupRoute53Integration(v); err != nil {
+				return err
+			} else {
+				if group.Integration == nil {
+					group.SetIntegration(&aws.Integration{})
+				}
+				group.Integration.SetRoute53(integration)
+				update = true
+			}
+		} else {
+			if group.Integration == nil {
+				group.SetIntegration(&aws.Integration{})
+			}
+			group.Integration.SetRoute53(nil)
+			update = true
+		}
+	}
+
 	if d.HasChange("gitlab_integration") {
 		if v, ok := d.GetOk("gitlab_integration"); ok {
 			if integration, err := expandAWSGroupGitlabIntegration(v); err != nil {
@@ -2709,6 +2784,30 @@ func flattenAWSGroupCodeDeployIntegration(integration *aws.CodeDeployIntegration
 	return []interface{}{result}
 }
 
+func flattenAWSGroupRoute53Integration(integration *aws.Route53Integration) []interface{} {
+	result := make(map[string]interface{})
+
+	domains := make([]interface{}, len(integration.Domains))
+	for i, d := range integration.Domains {
+		m := make(map[string]interface{})
+
+		recordSets := make([]interface{}, len(d.RecordSets))
+		for j, rs := range d.RecordSets {
+			r := make(map[string]interface{})
+
+			r["use_public_ip"] = spotinst.BoolValue(rs.UsePublicIP)
+			r["name"] = spotinst.StringValue(rs.Name)
+
+			recordSets[j] = r
+		}
+
+		m["hosted_zone_id"] = spotinst.StringValue(d.HostedZoneID)
+		domains[i] = m
+	}
+
+	return []interface{}{result}
+}
+
 func flattenAWSGroupGitlabIntegration(integration *aws.GitlabIntegration) []interface{} {
 	result := make(map[string]interface{})
 	if integration.Runner != nil && integration.Runner.IsEnabled != nil {
@@ -3037,6 +3136,14 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.Integration.SetCodeDeploy(integration)
+		}
+	}
+
+	if v, ok := d.GetOk("route53_integration"); ok {
+		if integration, err := expandAWSGroupRoute53Integration(v); err != nil {
+			return nil, err
+		} else {
+			group.Integration.SetRoute53(integration)
 		}
 	}
 
@@ -3531,6 +3638,18 @@ func expandAWSGroupInstanceTypes(data interface{}, nullify bool) (*aws.InstanceT
 			it[i] = j.(string)
 		}
 		types.SetSpot(it)
+	}
+
+	if v, ok := m["preferred_spot"].([]interface{}); ok {
+		var prefSpots []string
+		for _, j := range v {
+			if spot, ok := j.(string); ok && spot != "" {
+				prefSpots = append(prefSpots, spot)
+			}
+		}
+		types.SetPreferredSpot(prefSpots)
+	} else if nullify {
+		types.SetPreferredSpot(nil)
 	}
 
 	log.Printf("[DEBUG] Group instance types configuration: %s", stringutil.Stringify(types))
@@ -4332,6 +4451,92 @@ func expandAWSGroupCodeDeployIntegration(data interface{}, nullify bool) (*aws.C
 
 	log.Printf("[DEBUG] Group CodeDeploy integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
+}
+
+// expandAWSGroupRoute53Integration expands the Route53 Integration block.
+func expandAWSGroupRoute53Integration(data interface{}) (*aws.Route53Integration, error) {
+	i := &aws.Route53Integration{}
+	list := data.([]interface{})
+
+	if list != nil && list[0] != nil {
+		m := list[0].(map[string]interface{})
+
+		fmt.Println("before domains check")
+		if v, ok := m["domains"]; ok {
+			domains, err := expandAWSGroupRoute53IntegrationDomains(v)
+
+			if err != nil {
+				return nil, err
+			}
+			i.SetDomains(domains)
+		}
+	}
+	log.Printf("[DEBUG] Group Route53 integration configuration: %s", stringutil.Stringify(i))
+	return i, nil
+}
+
+// expandAWSGroupRoute53IntegrationDomains expands the Domains block.
+func expandAWSGroupRoute53IntegrationDomains(data interface{}) ([]*aws.Domain, error) {
+	list := data.(*schema.Set).List()
+	domains := make([]*aws.Domain, 0, len(list))
+
+	for _, v := range list {
+		attr, ok := v.(map[string]interface{})
+
+		if !ok {
+			continue
+		}
+
+		if _, ok := attr["hosted_zone_id"]; !ok {
+			return nil, errors.New("invalid domain attributes: hosted_zone_id missing")
+		}
+
+		if r, ok := attr["record_sets"]; ok {
+			recordSets, err := expandAWSGroupRoute53IntegrationDomainsRecordSets(r)
+
+			if err != nil {
+				return nil, err
+			}
+
+			domain := &aws.Domain{
+				HostedZoneID: spotinst.String(attr["hosted_zone_id"].(string)),
+			}
+
+			domain.SetRecordSets(recordSets)
+			domains = append(domains, domain)
+		}
+	}
+	return domains, nil
+}
+
+// expandAWSGroupRoute53IntegrationDomainsRecordSets expands the Record Sets block.
+func expandAWSGroupRoute53IntegrationDomainsRecordSets(data interface{}) ([]*aws.RecordSet, error) {
+	list := data.(*schema.Set).List()
+	recordSets := make([]*aws.RecordSet, 0, len(list))
+
+	for _, v := range list {
+		attr, ok := v.(map[string]interface{})
+
+		if !ok {
+			continue
+		}
+
+		if _, ok := attr["use_public_ip"]; !ok {
+			return nil, errors.New("invalid record set attributes: use_public_ip missing")
+		}
+
+		if _, ok := attr["name"]; !ok {
+			return nil, errors.New("invalid record set attributes: name missing")
+		}
+
+		recordSet := &aws.RecordSet{
+			UsePublicIP: spotinst.Bool(attr["use_public_ip"].(bool)),
+			Name:        spotinst.String(attr["name"].(string)),
+		}
+
+		recordSets = append(recordSets, recordSet)
+	}
+	return recordSets, nil
 }
 
 // expandAWSGroupGitlabIntegration expands the Gitlab Integration block.
