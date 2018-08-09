@@ -3638,12 +3638,17 @@ func expandAWSGroupInstanceTypes(data interface{}, nullify bool) (*aws.InstanceT
 		}
 		types.SetSpot(it)
 	}
+
 	if v, ok := m["preferred_spot"].([]interface{}); ok {
-		it := make([]string, len(v))
-		for i, j := range v {
-			it[i] = j.(string)
+		var prefSpots []string
+		for _, j := range v {
+			if spot, ok := j.(string); ok && spot != "" {
+				prefSpots = append(prefSpots, spot)
+			}
 		}
-		types.SetPreferredSpot(it)
+		types.SetPreferredSpot(prefSpots)
+	} else if nullify {
+		types.SetPreferredSpot(nil)
 	}
 
 	log.Printf("[DEBUG] Group instance types configuration: %s", stringutil.Stringify(types))
