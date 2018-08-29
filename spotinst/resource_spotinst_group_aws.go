@@ -1059,6 +1059,73 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 				},
 			},
 
+			"docker_swarm_integration": &schema.Schema{
+				Type:     schema.TypeSet,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"master_host": &schema.Schema{
+							Type:     schema.TypeString,
+							Required: true,
+						},
+
+						"master_port": &schema.Schema{
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+
+						"autoscale_is_enabled": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+
+						"autoscale_cooldown": &schema.Schema{
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+
+						"autoscale_headroom": &schema.Schema{
+							Type:     schema.TypeSet,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"cpu_per_unit": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+
+									"memory_per_unit": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+
+									"num_of_units": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
+
+						"autoscale_down": &schema.Schema{
+							Type:     schema.TypeSet,
+							Optional: true,
+							MaxItems: 1,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"evaluation_periods": &schema.Schema{
+										Type:     schema.TypeInt,
+										Optional: true,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+
 			"mesosphere_integration": &schema.Schema{
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -2334,6 +2401,26 @@ func resourceSpotinstAWSGroupUpdate(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 
+	if d.HasChange("docker_swarm_integration") {
+		if v, ok := d.GetOk("docker_swarm_integration"); ok {
+			if integration, err := expandAWSGroupDockerSwarmIntegration(v, nullify); err != nil {
+				return err
+			} else {
+				if group.Integration == nil {
+					group.SetIntegration(&aws.Integration{})
+				}
+				group.Integration.SetDockerSwarm(integration)
+				update = true
+			}
+		} else {
+			if group.Integration == nil {
+				group.SetIntegration(&aws.Integration{})
+			}
+			group.Integration.SetDockerSwarm(nil)
+			update = true
+		}
+	}
+
 	if d.HasChange("mesosphere_integration") {
 		if v, ok := d.GetOk("mesosphere_integration"); ok {
 			if integration, err := expandAWSGroupMesosphereIntegration(v, nullify); err != nil {
@@ -3112,6 +3199,14 @@ func buildAWSGroupOpts(d *schema.ResourceData, meta interface{}) (*aws.Group, er
 			return nil, err
 		} else {
 			group.Integration.SetNomad(integration)
+		}
+	}
+
+	if v, ok := d.GetOk("docker_swarm_integration"); ok {
+		if integration, err := expandAWSGroupDockerSwarmIntegration(v, nullify); err != nil {
+			return nil, err
+		} else {
+			group.Integration.SetDockerSwarm(integration)
 		}
 	}
 
@@ -4252,6 +4347,7 @@ func labelHashKV(v interface{}) int {
 	return hashcode.String(buf.String())
 }
 
+// expandAWSGroupNomadIntegration expands the Nomad Integration block.
 func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadIntegration, error) {
 	list := data.(*schema.Set).List()
 	m := list[0].(map[string]interface{})
@@ -4397,6 +4493,64 @@ func expandNomadAutoScaleConstraints(data interface{}, nullify bool) ([]*aws.Aut
 		out = append(out, c)
 	}
 	return out, nil
+}
+
+// expandAWSGroupDockerSwarmIntegration expands the Docker Swarm Integration block.
+func expandAWSGroupDockerSwarmIntegration(data interface{}, nullify bool) (*aws.DockerSwarmIntegration, error) {
+	list := data.(*schema.Set).List()
+	m := list[0].(map[string]interface{})
+	i := &aws.DockerSwarmIntegration{}
+
+	if v, ok := m["master_host"].(string); ok && v != "" {
+		i.SetMasterHost(spotinst.String(v))
+	}
+
+	if v, ok := m["master_port"].(int); ok && v > 0 {
+		i.SetMasterPort(spotinst.Int(v))
+	}
+
+	if v, ok := m["autoscale_is_enabled"].(bool); ok {
+		if i.AutoScaleDockerSwarm == nil {
+			i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+		}
+		i.AutoScaleDockerSwarm.SetIsEnabled(spotinst.Bool(v))
+	}
+
+	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
+		if i.AutoScaleDockerSwarm == nil {
+			i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+		}
+		i.AutoScaleDockerSwarm.SetCooldown(spotinst.Int(v))
+	}
+
+	if v, ok := m["autoscale_headroom"]; ok {
+		headroom, err := expandAWSGroupAutoScaleHeadroom(v, nullify)
+		if err != nil {
+			return nil, err
+		}
+		if headroom != nil {
+			if i.AutoScaleDockerSwarm == nil {
+				i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+			}
+			i.AutoScaleDockerSwarm.SetHeadroom(headroom)
+		}
+	}
+
+	if v, ok := m["autoscale_down"]; ok {
+		down, err := expandAWSGroupAutoScaleDown(v, nullify)
+		if err != nil {
+			return nil, err
+		}
+		if down != nil {
+			if i.AutoScaleDockerSwarm == nil {
+				i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+			}
+			i.AutoScaleDockerSwarm.SetDown(down)
+		}
+	}
+
+	log.Printf("[DEBUG] Group Docker Swarm integration configuration: %s", stringutil.Stringify(i))
+	return i, nil
 }
 
 // expandAWSGroupMesosphereIntegration expands the Mesosphere Integration block.
