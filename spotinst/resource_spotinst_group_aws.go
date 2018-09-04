@@ -801,6 +801,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 							Optional: true,
 						},
 
+						"autoscale_is_auto_config": &schema.Schema{
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+
 						"autoscale_scale_down_non_service_tasks": &schema.Schema{
 							Type:     schema.TypeBool,
 							Optional: true,
@@ -4146,6 +4151,13 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			i.SetAutoScaleECS(&aws.AutoScaleECS{})
 		}
 		i.AutoScaleECS.SetCooldown(spotinst.Int(v))
+	}
+
+	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
+		if i.AutoScaleECS == nil {
+			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		}
+		i.AutoScaleECS.SetIsAutoConfig(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_scale_down_non_service_tasks"].(bool); ok {
