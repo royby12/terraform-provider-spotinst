@@ -4153,11 +4153,11 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 	}
 
 	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
-			if i.AutoScaleECS == nil {
-				i.SetAutoScaleECS(&aws.AutoScaleECS{})
-			}
-			i.AutoScaleECS.SetIsAutoConfig(spotinst.Bool(v))
+		if i.AutoScaleECS == nil {
+			i.SetAutoScaleECS(&aws.AutoScaleECS{})
 		}
+		i.AutoScaleECS.SetIsAutoConfig(spotinst.Bool(v))
+	}
 
 	if v, ok := m["autoscale_scale_down_non_service_tasks"].(bool); ok {
 		if i.AutoScaleECS == nil {
