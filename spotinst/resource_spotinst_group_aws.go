@@ -532,14 +532,30 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 						},
 
 						"user_data": &schema.Schema{
-							Type:      schema.TypeString,
-							Optional:  true,
+							Type:     schema.TypeString,
+							Optional: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum
+								if (old == "da39a3ee5e6b4b0d3255bfef95601890afd80709" && new == "") ||
+									(old == "" && new == "da39a3ee5e6b4b0d3255bfef95601890afd80709") {
+									return true
+								}
+								return false
+							},
 							StateFunc: hexStateFunc,
 						},
 
 						"shutdown_script": &schema.Schema{
-							Type:      schema.TypeString,
-							Optional:  true,
+							Type:     schema.TypeString,
+							Optional: true,
+							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+								// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum
+								if (old == "da39a3ee5e6b4b0d3255bfef95601890afd80709" && new == "") ||
+									(old == "" && new == "da39a3ee5e6b4b0d3255bfef95601890afd80709") {
+									return true
+								}
+								return false
+							},
 							StateFunc: hexStateFunc,
 						},
 
@@ -761,6 +777,11 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 						"secret_key": &schema.Schema{
 							Type:     schema.TypeString,
 							Required: true,
+						},
+
+						"version": &schema.Schema{
+							Type:     schema.TypeString,
+							Optional: true,
 						},
 					},
 				},
@@ -2832,6 +2853,7 @@ func flattenAWSGroupRancherIntegration(integration *aws.RancherIntegration) []in
 	result["master_host"] = spotinst.StringValue(integration.MasterHost)
 	result["access_key"] = spotinst.StringValue(integration.AccessKey)
 	result["secret_key"] = spotinst.StringValue(integration.SecretKey)
+	result["version"] = spotinst.StringValue(integration.Version)
 	return []interface{}{result}
 }
 
@@ -4111,6 +4133,10 @@ func expandAWSGroupRancherIntegration(data interface{}, nullify bool) (*aws.Ranc
 		i.SetSecretKey(spotinst.String(v))
 	}
 
+	if v, ok := m["version"].(string); ok && v != "" {
+		i.SetVersion(spotinst.String(v))
+	}
+
 	log.Printf("[DEBUG] Group Rancher integration configuration: %s", stringutil.Stringify(i))
 	return i, nil
 }
@@ -4122,7 +4148,7 @@ func expandAWSGroupElasticBeanstalkIntegration(data interface{}, nullify bool) (
 	i := &aws.ElasticBeanstalkIntegration{}
 
 	if v, ok := m["environment_id"].(string); ok && v != "" {
-		i.SetEnvironmentId(spotinst.String(v))
+		i.SetEnvironmentID(spotinst.String(v))
 	}
 
 	log.Printf("[DEBUG] Group Elastic Beanstalk integration configuration:  %s", stringutil.Stringify(i))

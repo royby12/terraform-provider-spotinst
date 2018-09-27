@@ -226,6 +226,7 @@ type RancherIntegration struct {
 	MasterHost *string `json:"masterHost,omitempty"`
 	AccessKey  *string `json:"accessKey,omitempty"`
 	SecretKey  *string `json:"secretKey,omitempty"`
+	Version    *string `json:"version,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -1208,6 +1209,13 @@ func (o *RancherIntegration) SetSecretKey(v *string) *RancherIntegration {
 	return o
 }
 
+func (o *RancherIntegration) SetVersion(v *string) *RancherIntegration {
+	if o.Version = v; o.Version == nil {
+		o.nullFields = append(o.nullFields, "Version")
+	}
+	return o
+}
+
 // endregion
 
 // region ElasticBeanstalkIntegration
@@ -1218,7 +1226,7 @@ func (o *ElasticBeanstalkIntegration) MarshalJSON() ([]byte, error) {
 	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
 }
 
-func (o *ElasticBeanstalkIntegration) SetEnvironmentId(v *string) *ElasticBeanstalkIntegration {
+func (o *ElasticBeanstalkIntegration) SetEnvironmentID(v *string) *ElasticBeanstalkIntegration {
 	if o.EnvironmentID = v; o.EnvironmentID == nil {
 		o.nullFields = append(o.nullFields, "EnvironmentID")
 	}
