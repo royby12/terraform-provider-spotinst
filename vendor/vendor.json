@@ -1,6 +1,6 @@
 {
 	"comment": "",
-	"ignore": "appengine test github.com/hashicorp/nomad/ github.com/hashicorp/terraform/backend",
+	"ignore": "test",
 	"package": [
 		{
 			"checksumSHA1": "FIL83loX9V9APvGQIjJpbxq53F0=",
@@ -648,6 +648,12 @@
 			"revisionTime": "2016-09-27T10:08:44Z"
 		},
 		{
+			"checksumSHA1": "mo+c1CVlMUbvjU9s/eni4U2WiwY=",
+			"path": "github.com/spotinst/spotinst-sdk-go",
+			"revision": "afdebc7c7c75616a0375f8ffdf1f7b25735bc8ec",
+			"revisionTime": "2018-10-01T18:40:49Z"
+		},
+		{
 			"checksumSHA1": "qMmQeinXDiAgXLKP1bBiuXkmXEs=",
 			"path": "github.com/spotinst/spotinst-sdk-go/service/elastigroup",
 			"revision": "a28834105dcc5c7a90b040d81ca3e14285139eb8",
@@ -696,10 +702,10 @@
 			"revisionTime": "2018-08-06T16:58:32Z"
 		},
 		{
-			"checksumSHA1": "nhohd/jp/2X/inJF9Urom8QVfcg=",
+			"checksumSHA1": "TUWDFQzY81BqF93B0OiBtJJgRZ4=",
 			"path": "github.com/spotinst/spotinst-sdk-go/spotinst",
-			"revision": "a28834105dcc5c7a90b040d81ca3e14285139eb8",
-			"revisionTime": "2018-08-06T16:58:32Z"
+			"revision": "afdebc7c7c75616a0375f8ffdf1f7b25735bc8ec",
+			"revisionTime": "2018-10-01T18:40:49Z"
 		},
 		{
 			"checksumSHA1": "LJ3DuPkj7aCWtmJZKJtLmxf9UiM=",

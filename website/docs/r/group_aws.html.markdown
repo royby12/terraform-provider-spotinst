@@ -36,6 +36,7 @@ resource "spotinst_group_aws" "sidekiq" {
       "m3.xlarge",
       "m3.2xlarge",
     ]
+    preferred_spot = [“m3.xlarge”]
   }
 
   availability_zones = [
@@ -136,6 +137,8 @@ The following arguments are supported:
 
     * `ondemand` - (Required) The base instance type.
     * `spot` - (Required) One or more instance types.
+    * `preferred_spot` - (Optional) Prioritize a subset of spot instance types. Must be a subset of the selected spot instance types. 
+
 
 * `instance_type_weights` - (Optional) List of weights per instance type for weighted groups. Each object in the list should have the following attributes:
 
