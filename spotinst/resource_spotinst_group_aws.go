@@ -3787,7 +3787,15 @@ func expandAWSGroupNetworkInterfaces(data interface{}, nullify bool) ([]*aws.Net
 		iface := &aws.NetworkInterface{}
 
 		if v, ok := m["network_interface_id"].(string); ok && v != "" {
+			if v, ok := m["associate_public_ip_address"].(bool); ok && v {
+				return nil, errors.New("invalid Network interface: associate_public_ip_address must be undefined when using network_interface_id")
+			}
 			iface.SetId(spotinst.String(v))
+		} else {
+			// AssociatePublicIp cannot be set at all when NetworkInterfaceId is specified
+			if v, ok := m["associate_public_ip_address"].(bool); ok {
+				iface.SetAssociatePublicIPAddress(spotinst.Bool(v))
+			}
 		}
 
 		if v, ok := m["description"].(string); ok && v != "" {
@@ -3800,10 +3808,6 @@ func expandAWSGroupNetworkInterfaces(data interface{}, nullify bool) ([]*aws.Net
 
 		if v, ok := m["secondary_private_ip_address_count"].(int); ok && v > 0 {
 			iface.SetSecondaryPrivateIPAddressCount(spotinst.Int(v))
-		}
-
-		if v, ok := m["associate_public_ip_address"].(bool); ok {
-			iface.SetAssociatePublicIPAddress(spotinst.Bool(v))
 		}
 
 		if v, ok := m["delete_on_termination"].(bool); ok {

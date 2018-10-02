@@ -696,10 +696,10 @@
 			"revisionTime": "2018-07-23T23:51:09Z"
 		},
 		{
-			"checksumSHA1": "nhohd/jp/2X/inJF9Urom8QVfcg=",
+			"checksumSHA1": "TUWDFQzY81BqF93B0OiBtJJgRZ4=",
 			"path": "github.com/spotinst/spotinst-sdk-go/spotinst",
-			"revision": "7fb78d7357d37b3d88e24301cb6004f78d55ea12",
-			"revisionTime": "2018-07-23T23:51:09Z"
+			"revision": "afdebc7c7c75616a0375f8ffdf1f7b25735bc8ec",
+			"revisionTime": "2018-10-01T18:40:49Z"
 		},
 		{
 			"checksumSHA1": "LJ3DuPkj7aCWtmJZKJtLmxf9UiM=",
