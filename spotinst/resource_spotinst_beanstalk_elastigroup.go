@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/client"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/util/stringutil"
+	"time"
 )
 
 // NOTE:
@@ -71,6 +73,11 @@ func resourceSpotinstAWSBeanstalkElastigroup() *schema.Resource {
 				Required: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+
+			"maintenance": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -103,6 +110,14 @@ func resourceSpotinstAWSBeanstalkGroupCreate(d *schema.ResourceData, meta interf
 	if v, ok := d.GetOk("spot_instance_types"); ok {
 		types := expandElastigroupInstanceTypesList(v.([]interface{}))
 		newGroup.Compute.InstanceTypes.SetSpot(types)
+	}
+
+	if v, ok := d.GetOk("maintenance"); ok {
+		if v != "START" && v != "END" && v != "STATUS" {
+			return fmt.Errorf("failed to update maintenance status, must be START, END, or STATUS")
+		} else {
+			toggleMaintenanceMode(d, meta, v.(string))
+		}
 	}
 
 	log.Printf("[DEBUG] Group create configuration: %s", stringutil.Stringify(newGroup))
@@ -196,6 +211,14 @@ func resourceSpotinstAWSBeanstalkGroupUpdate(d *schema.ResourceData, meta interf
 	update := false
 	disallowedFieldUpdate := false
 	disallowedField := ""
+
+	if v, ok := d.GetOk("maintenance"); ok {
+		if v != "START" && v != "END" && v != "STATUS" {
+			return fmt.Errorf("failed to update maintenance status, must be START, END, or STATUS")
+		} else {
+			toggleMaintenanceMode(d, meta, v.(string))
+		}
+	}
 
 	if d.HasChange("region") {
 		disallowedField = "region"
@@ -312,3 +335,57 @@ func buildEmptyElastigroupInstanceTypes(group *aws.Group) {
 }
 
 //endregion
+
+// region beanstalk maintenance functions
+
+func toggleMaintenanceMode(resourceData *schema.ResourceData, meta interface{}, op string) error {
+	id := resourceData.Id()
+	input := &aws.BeanstalkMaintenanceInput{GroupID: spotinst.String(id)}
+
+	err := resource.Retry(time.Minute, func() *resource.RetryError {
+		if status, err := meta.(*Client).elastigroup.CloudProviderAWS().GetBeanstalkMaintenanceStatus(context.Background(), input); err == nil {
+			if op == "START" {
+				if *status == "AWAIT_USER_UPDATE" {
+					err = fmt.Errorf("===> Unable to start maintenance, already in maintenance mode")
+					return resource.NonRetryableError(err)
+				} else if *status == "ACTIVE" {
+					_, err := meta.(*Client).elastigroup.CloudProviderAWS().StartBeanstalkMaintenance(context.Background(), input)
+					if err != nil {
+						return resource.NonRetryableError(err)
+					}
+					log.Printf("===> Sending request to begin Beanstalk Maintenance Mode <===")
+				} else {
+					err = fmt.Errorf("===> Unable to start maintenance, group status is: %s <===", *status)
+					return resource.RetryableError(err)
+				}
+				return nil
+			} else if op == "END" {
+				if *status == "ACTIVE" {
+					err = fmt.Errorf("===> Unable to end maintenance, your beanstalk elastigroup is already active")
+					return resource.NonRetryableError(err)
+				} else if *status == "AWAIT_USER_UPDATE" {
+					_, err := meta.(*Client).elastigroup.CloudProviderAWS().FinishBeanstalkMaintenance(context.Background(), input)
+					if err != nil {
+						return resource.NonRetryableError(err)
+					}
+					log.Printf("===> Sending request to end Beanstalk Maintenance Mode <===")
+				} else {
+					err = fmt.Errorf("===> Unable to end Mmaintenance state, group status is: %s <===", *status)
+					return resource.RetryableError(err)
+				}
+				return nil
+			} else if op == "STATUS" {
+				log.Printf("===> Beanstalk Maintenance Status: %s <===", *status)
+				return nil
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("BEANSTALK:MaintenanceMode failed to resolve Maintenance Mode %s", err)
+	}
+	return nil
+}
+
+// endregion
