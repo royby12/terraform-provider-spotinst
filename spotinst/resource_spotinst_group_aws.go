@@ -41,7 +41,7 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 
 			"target_capacity": &schema.Schema{
