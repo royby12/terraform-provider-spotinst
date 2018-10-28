@@ -90,6 +90,10 @@ func resourceSpotinstAWSBeanstalkGroupCreate(d *schema.ResourceData, meta interf
 	client := meta.(*Client)
 	newGroup, err := importBeanstalkGroup(d, meta)
 
+	if newGroup == nil {
+		return fmt.Errorf("[ERROR] Failed to import group. Does the Beanstalk environment exist?")
+	}
+
 	buildEmptyElastigroupCapacity(newGroup)
 	buildEmptyElastigroupInstanceTypes(newGroup)
 	newGroup.Compute.SetProduct(spotinst.String(d.Get("product").(string)))
