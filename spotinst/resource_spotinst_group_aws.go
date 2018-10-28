@@ -41,7 +41,7 @@ func resourceSpotinstAWSGroup() *schema.Resource {
 
 			"description": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 
 			"target_capacity": &schema.Schema{
@@ -3341,13 +3341,13 @@ func expandAWSGroupStrategy(data interface{}, nullify bool) (*aws.Strategy, erro
 		strategy.SetDrainingTimeout(spotinst.Int(v))
 	}
 
-	if v, ok := m["utilize_reserved_instances"].(bool); ok && v {
+	if v, ok := m["utilize_reserved_instances"].(bool); ok {
 		strategy.SetUtilizeReservedInstances(spotinst.Bool(v))
 	} else if nullify {
 		strategy.SetUtilizeReservedInstances(nil)
 	}
 
-	if v, ok := m["fallback_to_ondemand"].(bool); ok && v {
+	if v, ok := m["fallback_to_ondemand"].(bool); ok {
 		strategy.SetFallbackToOnDemand(spotinst.Bool(v))
 	} else if nullify {
 		strategy.SetFallbackToOnDemand(nil)
