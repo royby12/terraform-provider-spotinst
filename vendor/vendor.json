@@ -654,10 +654,10 @@
 			"revisionTime": "2018-07-23T23:51:09Z"
 		},
 		{
-			"checksumSHA1": "o717bcOODP/2uE2t46bKyYEp06U=",
+			"checksumSHA1": "2Kv4I4t6282opTszp6CKs7/0Up4=",
 			"path": "github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws",
-			"revision": "7fb78d7357d37b3d88e24301cb6004f78d55ea12",
-			"revisionTime": "2018-07-23T23:51:09Z"
+			"revision": "5987af1ca5c77539f178b91a1541f8acd783755b",
+			"revisionTime": "2019-01-07T23:18:48Z"
 		},
 		{
 			"checksumSHA1": "3zPuD/4VD76JnjSTjPwVHdXntz4=",
@@ -684,10 +684,10 @@
 			"revisionTime": "2018-07-23T23:51:09Z"
 		},
 		{
-			"checksumSHA1": "v5JKhwjFFFgxc6dKmMjWU0iAGAI=",
+			"checksumSHA1": "TLbn/NudtQa0Mkx6Vp3uRhxVN0E=",
 			"path": "github.com/spotinst/spotinst-sdk-go/service/multai",
-			"revision": "7fb78d7357d37b3d88e24301cb6004f78d55ea12",
-			"revisionTime": "2018-07-23T23:51:09Z"
+			"revision": "5987af1ca5c77539f178b91a1541f8acd783755b",
+			"revisionTime": "2019-01-07T23:18:48Z"
 		},
 		{
 			"checksumSHA1": "/EaPIiGHapTeeaqwRiZ3lTjb7+o=",

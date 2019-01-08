@@ -24,6 +24,11 @@ func resourceSpotinstMultaiBalancer() *schema.Resource {
 				Required: true,
 			},
 
+			"scheme": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+
 			"dns_cname_aliases": &schema.Schema{
 				Type:     schema.TypeList,
 				Optional: true,
@@ -95,6 +100,7 @@ func resourceSpotinstMultaiBalancerRead(d *schema.ResourceData, meta interface{}
 
 	b := resp.Balancer
 	d.Set("name", b.Name)
+	d.Set("scheme", b.Scheme)
 	d.Set("dns_cname_aliases", b.DNSCNAMEAliases)
 	d.Set("tags", flattenTags(b.Tags))
 	d.Set("connection_timeouts", flattenBalancerTimeouts(b.Timeouts))
@@ -115,6 +121,13 @@ func resourceSpotinstMultaiBalancerUpdate(d *schema.ResourceData, meta interface
 				balancer.Timeouts = timeouts
 				update = true
 			}
+		}
+	}
+
+	if d.HasChange("scheme") {
+		if v, ok := d.GetOk("scheme"); ok {
+			balancer.Scheme = spotinst.String(v.(string))
+			update = true
 		}
 	}
 
@@ -177,6 +190,9 @@ func buildBalancerOpts(d *schema.ResourceData, meta interface{}) (*multai.LoadBa
 		} else {
 			balancer.Timeouts = timeouts
 		}
+	}
+	if v, ok := d.GetOk("scheme"); ok {
+		balancer.Scheme = spotinst.String(v.(string))
 	}
 	if v, ok := d.GetOk("dns_cname_aliases"); ok {
 		if aliases, err := expandBalancerDnsAliases(v); err != nil {
