@@ -4173,31 +4173,31 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScaleECS == nil {
-			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleECS{})
 		}
-		i.AutoScaleECS.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScaleECS == nil {
-			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleECS{})
 		}
-		i.AutoScaleECS.SetCooldown(spotinst.Int(v))
+		i.AutoScale.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
-		if i.AutoScaleECS == nil {
-			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleECS{})
 		}
-		i.AutoScaleECS.SetIsAutoConfig(spotinst.Bool(v))
+		i.AutoScale.SetIsAutoConfig(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_scale_down_non_service_tasks"].(bool); ok {
-		if i.AutoScaleECS == nil {
-			i.SetAutoScaleECS(&aws.AutoScaleECS{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleECS{})
 		}
-		i.AutoScaleECS.SetShouldScaleDownNonServiceTasks(spotinst.Bool(v))
+		i.AutoScale.SetShouldScaleDownNonServiceTasks(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -4206,10 +4206,10 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScaleECS == nil {
-				i.SetAutoScaleECS(&aws.AutoScaleECS{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleECS{})
 			}
-			i.AutoScaleECS.SetHeadroom(headroom)
+			i.AutoScale.SetHeadroom(headroom)
 		}
 	}
 
@@ -4219,10 +4219,10 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScaleECS == nil {
-				i.SetAutoScaleECS(&aws.AutoScaleECS{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleECS{})
 			}
-			i.AutoScaleECS.SetDown(down)
+			i.AutoScale.SetDown(down)
 		}
 	}
 
@@ -4232,10 +4232,10 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}, nullify bool
 			return nil, err
 		}
 		if labels != nil {
-			if i.AutoScaleECS == nil {
-				i.SetAutoScaleECS(&aws.AutoScaleECS{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleECS{})
 			}
-			i.AutoScaleECS.SetAttributes(labels)
+			i.AutoScale.SetAttributes(labels)
 		}
 	}
 
@@ -4298,24 +4298,24 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScaleKubernetes == nil {
-			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScaleKubernetes.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScaleKubernetes == nil {
-			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScaleKubernetes.SetCooldown(spotinst.Int(v))
+		i.AutoScale.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_is_auto_config"].(bool); ok {
-		if i.AutoScaleKubernetes == nil {
-			i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleKubernetes{})
 		}
-		i.AutoScaleKubernetes.SetIsAutoConfig(spotinst.Bool(v))
+		i.AutoScale.SetIsAutoConfig(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -4324,10 +4324,10 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScaleKubernetes == nil {
-				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleKubernetes{})
 			}
-			i.AutoScaleKubernetes.SetHeadroom(headroom)
+			i.AutoScale.SetHeadroom(headroom)
 		}
 	}
 
@@ -4337,10 +4337,10 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScaleKubernetes == nil {
-				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleKubernetes{})
 			}
-			i.AutoScaleKubernetes.SetDown(down)
+			i.AutoScale.SetDown(down)
 		}
 	}
 
@@ -4350,10 +4350,10 @@ func expandAWSGroupKubernetesIntegration(data interface{}, nullify bool) (*aws.K
 			return nil, err
 		}
 		if labels != nil {
-			if i.AutoScaleKubernetes == nil {
-				i.SetAutoScaleKubernetes(&aws.AutoScaleKubernetes{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleKubernetes{})
 			}
-			i.AutoScaleKubernetes.SetLabels(labels)
+			i.AutoScale.SetLabels(labels)
 		}
 	}
 
@@ -4414,17 +4414,17 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScaleNomad == nil {
-			i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleNomad{})
 		}
-		i.AutoScaleNomad.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScaleNomad == nil {
-			i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleNomad{})
 		}
-		i.AutoScaleNomad.SetCooldown(spotinst.Int(v))
+		i.AutoScale.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -4433,10 +4433,10 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScaleNomad == nil {
-				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleNomad{})
 			}
-			i.AutoScaleNomad.SetHeadroom(headroom)
+			i.AutoScale.SetHeadroom(headroom)
 		}
 	}
 
@@ -4446,10 +4446,10 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScaleNomad == nil {
-				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleNomad{})
 			}
-			i.AutoScaleNomad.SetDown(down)
+			i.AutoScale.SetDown(down)
 		}
 	}
 
@@ -4459,10 +4459,10 @@ func expandAWSGroupNomadIntegration(data interface{}, nullify bool) (*aws.NomadI
 			return nil, err
 		}
 		if consts != nil {
-			if i.AutoScaleNomad == nil {
-				i.SetAutoScaleNomad(&aws.AutoScaleNomad{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleNomad{})
 			}
-			i.AutoScaleNomad.SetConstraints(consts)
+			i.AutoScale.SetConstraints(consts)
 		}
 	}
 
@@ -4556,17 +4556,17 @@ func expandAWSGroupDockerSwarmIntegration(data interface{}, nullify bool) (*aws.
 	}
 
 	if v, ok := m["autoscale_is_enabled"].(bool); ok {
-		if i.AutoScaleDockerSwarm == nil {
-			i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleDockerSwarm{})
 		}
-		i.AutoScaleDockerSwarm.SetIsEnabled(spotinst.Bool(v))
+		i.AutoScale.SetIsEnabled(spotinst.Bool(v))
 	}
 
 	if v, ok := m["autoscale_cooldown"].(int); ok && v > 0 {
-		if i.AutoScaleDockerSwarm == nil {
-			i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+		if i.AutoScale == nil {
+			i.SetAutoScale(&aws.AutoScaleDockerSwarm{})
 		}
-		i.AutoScaleDockerSwarm.SetCooldown(spotinst.Int(v))
+		i.AutoScale.SetCooldown(spotinst.Int(v))
 	}
 
 	if v, ok := m["autoscale_headroom"]; ok {
@@ -4575,10 +4575,10 @@ func expandAWSGroupDockerSwarmIntegration(data interface{}, nullify bool) (*aws.
 			return nil, err
 		}
 		if headroom != nil {
-			if i.AutoScaleDockerSwarm == nil {
-				i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleDockerSwarm{})
 			}
-			i.AutoScaleDockerSwarm.SetHeadroom(headroom)
+			i.AutoScale.SetHeadroom(headroom)
 		}
 	}
 
@@ -4588,10 +4588,10 @@ func expandAWSGroupDockerSwarmIntegration(data interface{}, nullify bool) (*aws.
 			return nil, err
 		}
 		if down != nil {
-			if i.AutoScaleDockerSwarm == nil {
-				i.SetAutoScaleDockerSwarm(&aws.AutoScaleDockerSwarm{})
+			if i.AutoScale == nil {
+				i.SetAutoScale(&aws.AutoScaleDockerSwarm{})
 			}
-			i.AutoScaleDockerSwarm.SetDown(down)
+			i.AutoScale.SetDown(down)
 		}
 	}
 
