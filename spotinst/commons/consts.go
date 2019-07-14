@@ -28,6 +28,7 @@ const (
 	OceanAWSLaunchSpec ResourceAffinity = "Ocean_AWS_Launch_Spec"
 
 	OceanGKE                    ResourceAffinity = "Ocean_GKE"
+	OceanGKEImport              ResourceAffinity = "Ocean_GKE_Import"
 	OceanGKEInstanceTypes       ResourceAffinity = "Ocean_GKE_Instance_Types"
 	OceanGKEAutoScaling         ResourceAffinity = "Ocean_GKE_Auto_Scaling"
 	OceanGKELaunchConfiguration ResourceAffinity = "Ocean_GKE_Launch_Configuration"

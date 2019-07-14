@@ -11,23 +11,16 @@ const (
 
 	MetadataKey   MetadataField = "key"
 	MetadataValue MetadataField = "value"
+
+	TaintKey    MetadataField = "key"
+	TaintValue  MetadataField = "value"
+	TaintEffect MetadataField = "effect"
 )
 
 const (
-	Labels             commons.FieldName = "labels"
-	Metadata           commons.FieldName = "metadata"
-	Tags               commons.FieldName = "tags"
-	SourceImage        commons.FieldName = "source_image"
-	RootVolumeSizeInGB commons.FieldName = "root_volume_size_in_gb"
-
-	BackendServices commons.FieldName = "backend_services"
-	Name            commons.FieldName = "name"
-	LocationType    commons.FieldName = "location_type"
-	Scheme          commons.FieldName = "scheme"
-	NamedPorts      commons.FieldName = "named_ports"
-
-	Ports          commons.FieldName = "ports"
-	ServiceName    commons.FieldName = "service_name"
-	ServiceAccount commons.FieldName = "service_account"
-	IPForwarding   commons.FieldName = "ip_forwarding"
+	OceanId     commons.FieldName = "ocean_id"
+	SourceImage commons.FieldName = "source_image"
+	Metadata    commons.FieldName = "metadata"
+	Labels      commons.FieldName = "labels"
+	Taints      commons.FieldName = "taints"
 )
