@@ -147,7 +147,7 @@ func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata, update s
 	return template
 }
 
-// region Beanstalk Elastigroup: Baseline
+// region Ocean GKE Import: Baseline
 func TestAccSpotinstOceanGKEImport_Baseline(t *testing.T) {
 	spotClusterName := "terraform-acc-tests-ocean-gke-import-baseline"
 	resourceName := createOceanGKEImportResourceName(spotClusterName)
@@ -208,7 +208,7 @@ resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
 
 // endregion
 
-// region Beanstalk Elastigroup: Baseline
+// region Ocean GKE Import: BackendServices
 func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 	spotClusterName := "terraform-acc-tests-ocean-gke-import-be-services"
 	resourceName := createOceanGKEImportResourceName(spotClusterName)
@@ -247,12 +247,12 @@ func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "whitelist.0", "n1-standard-1"),
 					resource.TestCheckResourceAttr(resourceName, "whitelist.1", "n1-standard-2"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.location_type", "global"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.service_name", "terraform-acc-test-backend-service-updated"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.named_ports.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.named_ports.2938172633.name", "https"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.named_ports.2938172633.ports.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "backend_services.3852692160.named_ports.2938172633.ports.0", "81"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.location_type", "global"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.service_name", "terraform-acc-test-backend-service"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.named_ports.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.named_ports.2171153412.name", "https"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.named_ports.2171153412.ports.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.named_ports.2171153412.ports.0", "443"),
 				),
 			},
 		},
@@ -295,12 +295,12 @@ resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
 
   backend_services = [
     {
-      service_name = "terraform-acc-test-backend-service-updated"
+      service_name = "terraform-acc-test-backend-service"
       location_type = "global"
 
       named_ports = {
         name = "https"
-        ports = [81]
+        ports = [443]
       }
     }]
 }
