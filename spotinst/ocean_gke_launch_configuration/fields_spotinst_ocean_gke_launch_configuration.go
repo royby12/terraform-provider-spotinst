@@ -158,7 +158,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Labels] = commons.NewGenericField(
-		commons.ElastigroupGCPLaunchConfiguration,
+		commons.OceanGKELaunchConfiguration,
 		Labels,
 		&schema.Schema{
 			Type:     schema.TypeSet,
@@ -223,7 +223,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Taints] = commons.NewGenericField(
-		commons.ElastigroupGCPLaunchConfiguration,
+		commons.OceanGKELaunchConfiguration,
 		Taints,
 		&schema.Schema{
 			Type:     schema.TypeSet,
