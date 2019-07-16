@@ -20,3 +20,25 @@ const (
 	Ports           commons.FieldName = "ports"
 	ServiceName     commons.FieldName = "service_name"
 )
+
+type LabelField string
+type MetadataField string
+
+const (
+	LabelKey   LabelField = "key"
+	LabelValue LabelField = "value"
+
+	MetadataKey   MetadataField = "key"
+	MetadataValue MetadataField = "value"
+
+	TaintKey    MetadataField = "key"
+	TaintValue  MetadataField = "value"
+	TaintEffect MetadataField = "effect"
+)
+
+const (
+	SourceImage commons.FieldName = "source_image"
+	Metadata    commons.FieldName = "metadata"
+	Labels      commons.FieldName = "labels"
+	Taints      commons.FieldName = "taints"
+)

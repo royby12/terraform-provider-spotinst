@@ -1,4 +1,4 @@
-package ocean_gke_launch_configuration
+package ocean_gke_launch_spec
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[OceanId] = commons.NewGenericField(
-		commons.OceanGKELaunchConfiguration,
+		commons.OceanGKELaunchSpec,
 		OceanId,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -55,7 +55,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[SourceImage] = commons.NewGenericField(
-		commons.OceanGKELaunchConfiguration,
+		commons.OceanGKELaunchSpec,
 		SourceImage,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -93,7 +93,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Metadata] = commons.NewGenericField(
-		commons.OceanGKELaunchConfiguration,
+		commons.OceanGKELaunchSpec,
 		Metadata,
 		&schema.Schema{
 			Type:     schema.TypeSet,
@@ -158,7 +158,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Labels] = commons.NewGenericField(
-		commons.OceanGKELaunchConfiguration,
+		commons.OceanGKELaunchSpec,
 		Labels,
 		&schema.Schema{
 			Type:     schema.TypeSet,
@@ -223,7 +223,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Taints] = commons.NewGenericField(
-		commons.OceanGKELaunchConfiguration,
+		commons.OceanGKELaunchSpec,
 		Taints,
 		&schema.Schema{
 			Type:     schema.TypeSet,

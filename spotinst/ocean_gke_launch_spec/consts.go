@@ -1,4 +1,4 @@
-package ocean_gke_launch_configuration
+package ocean_gke_launch_spec
 
 import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 
