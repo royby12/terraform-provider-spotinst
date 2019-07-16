@@ -23,8 +23,8 @@ resource "spotinst_ocean_gke_launch_spec" "example" {
   }]
   
   labels = [{
-   key   = "testKey"
-   value = "testVal"
+   key   = "labelKey"
+   value = "labelVal"
   }]
   
   taints = [{
