@@ -77,7 +77,7 @@ func createGKELaunchSpec(launchSpec *gcp.LaunchSpec, spotinstClient *Client) (*s
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Read
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-const ErrCodeGKELaunchSpecNotFound = "LAUNCH_SPEC_DOESNT_EXIST"
+const ErrCodeGKELaunchSpecNotFound = "CANT_GET_OCEAN_LAUNCH_SPEC"
 
 func resourceSpotinstOceanGKELaunchSpecRead(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
