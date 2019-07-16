@@ -146,7 +146,7 @@ func createOceanGKELaunchSpecImportTerraform(launchSpecMeta *OceanGKELaunchSpecI
 
 // region Ocean GKE Import: Baseline
 func TestAccSpotinstOceanGKELaunchSpecImport_Baseline(t *testing.T) {
-	oceanID := "o-978b0eef"
+	oceanID := "o-c290e75c"
 	resourceName := createOceanGKELaunchSpecImportResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
