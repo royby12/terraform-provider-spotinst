@@ -26,7 +26,7 @@ resource "spotinst_ocean_gke" "example" {
   min_size         = 0
   desired_capacity = 500
  
-  // --- LAUNCH CONFIGURATION --------------
+  // --- LAUNCH SPECIFICATION --------------
   source_image           = "https://www.googleapis.com/compute/v1/projects/my-project/global/examples/example-image-1"
   service_account        = "example-account@my-account.iam.gserviceaccount.com"
   root_volume_size_in_gb = 100
@@ -104,8 +104,8 @@ Usage:
   desired_capacity = 500
 ```
 
-<a id="launch-configuration"></a>
-## Launch Configuration
+<a id="launch-specification"></a>
+## Launch Specification
 Note: label, metadata, and tag keys are required, and depend on your GKE cluster. Please modify the values to match your configuration. You may also add additional key/value pairs. This resource is intended to be
 used as part of a Module.
 
