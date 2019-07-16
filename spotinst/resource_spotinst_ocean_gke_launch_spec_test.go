@@ -344,7 +344,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
    }
  ]
 }
-8
+
 `
 
 //endregion
