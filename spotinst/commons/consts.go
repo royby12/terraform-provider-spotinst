@@ -42,7 +42,7 @@ const (
 	OceanECSLaunchSpecification ResourceAffinity = "Ocean_ECS_Launch_Specification"
 	OceanECSStrategy            ResourceAffinity = "Ocean_ECS_Strategy"
 
-	OceanECSLaunchSpec          ResourceAffinity = "Ocean_ECS_Launch_Spec"
+	OceanECSLaunchSpec ResourceAffinity = "Ocean_ECS_Launch_Spec"
 
 	ElastigroupAWS                    ResourceAffinity = "Elastigroup_AWS"
 	ElastigroupAWSInstanceType        ResourceAffinity = "Elastigroup_AWS_Instance_Type"
