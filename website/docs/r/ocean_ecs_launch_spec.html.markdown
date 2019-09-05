@@ -40,5 +40,5 @@ The following arguments are supported:
 * `security_group_ids` - (Optional) One or more security group ids.
 
 * `attributes` - (Optional) Optionally adds labels to instances launched in an Ocean cluster.
-    * `key` - (Required) The tag key.
-    * `value` - (Required) The tag value.
+    * `key` - (Required) The label key.
+    * `value` - (Required) The label value.

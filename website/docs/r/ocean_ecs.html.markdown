@@ -111,11 +111,11 @@ whitelist = ["t1.micro", "m1.small"]
   ebs_optimized               = true
 ```
 
-* `autoscaler` - (Optional) Describes the Ocean Kubernetes autoscaler.
-* `is_enabled` - (Optional, Default: `true`) Enable the Ocean Kubernetes autoscaler.
+* `autoscaler` - (Optional) Describes the Ocean ECS autoscaler.
+* `is_enabled` - (Optional, Default: `true`) Enable the Ocean ECS autoscaler.
 * `is_auto_config` - (Optional, Default: `true`) Automatically configure and optimize headroom resources.
 * `cooldown` - (Optional, Default: `null`) Cooldown period between scaling actions.
-* `headroom` - (Optional) Spare resource capacity management enabling fast assignment of Pods without waiting for new resources to launch.
+* `headroom` - (Optional) Spare resource capacity management enabling fast assignment of tasks without waiting for new resources to launch.
 * `cpu_per_unit` - (Optional) Optionally configure the number of CPUs to allocate the headroom. CPUs are denoted in millicores, where 1000 millicores = 1 vCPU.
 * `memory_per_unit` - (Optional) Optionally configure the amount of memory (MB) to allocate the headroom.
 * `num_of_units` - (Optional) The number of units to retain as headroom, where each unit has the defined headroom CPU and memory.
@@ -162,9 +162,9 @@ tags = [{
 <a id="update-policy"></a>
 ## Update Policy
 
-* `update_policy` - (Optional)
+* `update_policy` - (Optional) While used, you can control whether the group should perform a deployment after an update to the configuration.
     * `should_roll` - (Required) Enables the roll.
-    * `roll_config` - (Required) While used, you can control whether the group should perform a deployment after an update to the configuration.
+    * `roll_config` - (Required) 
         * `batch_size_percentage` - (Required) Sets the percentage of the instances to deploy in each batch.
 
 ```hcl
