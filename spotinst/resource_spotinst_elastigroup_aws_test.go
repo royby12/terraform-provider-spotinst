@@ -3275,11 +3275,6 @@ func TestAccSpotinstElastigroupAWS_IntegrationBeanstalk(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.0.action", "REPLACE_SERVER"),
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.0.should_drain_instances", "true"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.0.perform_at", "timeWindow"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.0.time_window", "Mon:23:50-Tue:00:20"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.0.update_level", "minorAndPatch"),
 				),
 			},
 			{
@@ -3300,10 +3295,6 @@ func TestAccSpotinstElastigroupAWS_IntegrationBeanstalk(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.0.action", "REPLACE_SERVER"),
 					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.deployment_preferences.0.strategy.0.should_drain_instances", "false"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.0.perform_at", "never"),
-					resource.TestCheckResourceAttr(resourceName, "integration_beanstalk.0.managed_actions.0.platform_update.0.update_level", "minorAndPatch"),
 				),
 			},
 			{
@@ -3335,13 +3326,6 @@ const testIntegrationBeanstalkGroupConfig_Create = `
       should_drain_instances = true
     }
   }
-  managed_actions={
-    platform_update = {
-      perform_at    = "timeWindow"
-      time_window  = "Mon:23:50-Tue:00:20"
-      update_level = "minorAndPatch"
-    }
-  }
  }
  // ------------------------------------------
 `
@@ -3357,12 +3341,6 @@ const testIntegrationBeanstalkGroupConfig_Update = `
     strategy             = {
       action                 = "REPLACE_SERVER"
       should_drain_instances = false
-    }
-  }
-  managed_actions={
-    platform_update = {
-      perform_at    = "never"
-      update_level = "minorAndPatch"
     }
   }
  }
