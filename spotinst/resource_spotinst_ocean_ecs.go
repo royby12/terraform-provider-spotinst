@@ -58,7 +58,7 @@ func resourceSpotinstClusterECSCreate(resourceData *schema.ResourceData, meta in
 		return err
 	}
 
-	clusterId, err := createECSCluster(cluster, meta.(*Client))
+	clusterId, err := createECSCluster(resourceData, cluster, meta.(*Client))
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func resourceSpotinstClusterECSCreate(resourceData *schema.ResourceData, meta in
 	return resourceSpotinstClusterECSRead(resourceData, meta)
 }
 
-func createECSCluster(cluster *aws.ECSCluster, spotinstClient *Client) (*string, error) {
+func createECSCluster(resourceData *schema.ResourceData, cluster *aws.ECSCluster, spotinstClient *Client) (*string, error) {
 	if json, err := commons.ToJson(cluster); err != nil {
 		return nil, err
 	} else {
@@ -77,7 +77,9 @@ func createECSCluster(cluster *aws.ECSCluster, spotinstClient *Client) (*string,
 	}
 
 	input := &aws.CreateECSClusterInput{Cluster: cluster}
-
+	if v, ok := resourceData.Get(string(ocean_ecs_launch_specification.IamInstanceProfile)).(string); ok && v != "" {
+		time.Sleep((5 * time.Second))
+	}
 	var resp *aws.CreateECSClusterOutput = nil
 	err := resource.Retry(time.Minute, func() *resource.RetryError {
 
