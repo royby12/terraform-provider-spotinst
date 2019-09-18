@@ -1,8 +1,10 @@
 ## 1.13.6 (Unreleased)
 
 ENHANCEMENTS:
-* ocean_aws_launch_spec: added `SecurityGroups`
+* resourceSpotinstOceanAWSLaunchSpec: added `security_groups`
 
+NOTES:
+*A delay was added during group creation when IAM instance profile linked with the group in order to decrease the retry process of the group creation.
 
 ## 1.13.5 (Unreleased)
 
