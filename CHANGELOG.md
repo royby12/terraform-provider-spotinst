@@ -1,7 +1,7 @@
-## 1.13.6 (unrealaesed)
+## 1.13.6 (Unreleased)
 
 ENHANCEMENTS:
-* resourceSpotinstOceanAWSLaunchSpec: added `scheduled_task`
+* ocean_aws_launch_spec: added `SecurityGroups`
 
 
 ## 1.13.5 (Unreleased)
