@@ -54,6 +54,7 @@ const (
 	ElastigroupAWSBlockDevices        ResourceAffinity = "Elastigroup_AWS_Block_Device"
 	ElastigroupAWSScalingPolicies     ResourceAffinity = "Elastigroup_AWS_Scaling_Policies"
 	ElastigroupAWSIntegrations        ResourceAffinity = "Elastigroup_AWS_Integrations"
+	MangedInstanceAws                 ResourceAffinity = "Managed_instance_aws"
 
 	ElastigroupGCP                    ResourceAffinity = "Elastigroup_GCP"
 	ElastigroupGCPDisk                ResourceAffinity = "Elastigroup_GCP_Disk"

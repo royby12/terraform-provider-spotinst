@@ -29,7 +29,7 @@ func resourceSpotinstElastigroupAws() *schema.Resource {
 	setupElastigroupResource()
 
 	return &schema.Resource{
-		Create: resourceSpotinstElastigroupAwsCreate,
+		//Create: resourceSpotinstElastigroupAwsCreate,
 		Read:   resourceSpotinstElastigroupAwsRead,
 		Update: resourceSpotinstElastigroupAwsUpdate,
 		Delete: resourceSpotinstElastigroupAwsDelete,
@@ -166,78 +166,78 @@ func resourceSpotinstElastigroupAwsRead(resourceData *schema.ResourceData, meta 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Create
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstElastigroupAwsCreate(resourceData *schema.ResourceData, meta interface{}) error {
-	log.Printf(string(commons.ResourceOnCreate),
-		commons.ElastigroupResource.GetName())
-
-	elastigroup, err := commons.ElastigroupResource.OnCreate(resourceData, meta)
-	if err != nil {
-		return err
-	}
-
-	groupId, err := createGroup(resourceData, elastigroup, meta.(*Client))
-	if err != nil {
-		return err
-	}
-
-	resourceData.SetId(spotinst.StringValue(groupId))
-
-	if capacity, ok := resourceData.GetOkExists(string(elastigroup_aws.WaitForCapacity)); ok {
-		if *elastigroup.Capacity.Target < capacity.(int) {
-
-			return fmt.Errorf("[ERROR] Your target healthy capacity must be less than or equal to your desired capcity")
-		}
-		if timeout, ok := resourceData.GetOkExists(string(elastigroup_aws.WaitForCapacityTimeout)); ok {
-			err := awaitReady(groupId, timeout.(int), capacity.(int), meta.(*Client))
-			if err != nil {
-				return fmt.Errorf("[ERROR] Timed out when creating group: %s", err)
-			}
-		}
-	}
-
-	log.Printf("===> Elastigroup created successfully: %s <===", resourceData.Id())
-
-	return resourceSpotinstElastigroupAwsRead(resourceData, meta)
-}
-
-func createGroup(resourceData *schema.ResourceData, group *aws.Group, spotinstClient *Client) (*string, error) {
-	if json, err := commons.ToJson(group); err != nil {
-		return nil, err
-	} else {
-		log.Printf("===> Group create configuration: %s", json)
-	}
-
-	if v, ok := resourceData.Get(string(elastigroup_aws_launch_configuration.IamInstanceProfile)).(string); ok && v != "" {
-		time.Sleep(5 * time.Second)
-	}
-	input := &aws.CreateGroupInput{Group: group}
-
-	var resp *aws.CreateGroupOutput = nil
-	err := resource.Retry(time.Minute, func() *resource.RetryError {
-		r, err := spotinstClient.elastigroup.CloudProviderAWS().Create(context.Background(), input)
-		if err != nil {
-			// Checks whether we should retry the group creation.
-			if errs, ok := err.(client.Errors); ok && len(errs) > 0 {
-				for _, err := range errs {
-					if err.Code == "InvalidParameterValue" &&
-						strings.Contains(err.Message, "Invalid IAM Instance Profile") {
-						return resource.RetryableError(err)
-					}
-				}
-			}
-
-			// Some other error, report it.
-			return resource.NonRetryableError(err)
-		}
-		resp = r
-		return nil
-	})
-
-	if err != nil {
-		return nil, fmt.Errorf("[ERROR] failed to create group: %s", err)
-	}
-	return resp.Group.ID, nil
-}
+//func resourceSpotinstElastigroupAwsCreate(resourceData *schema.ResourceData, meta interface{}) error {
+//	log.Printf(string(commons.ResourceOnCreate),
+//		commons.ElastigroupResource.GetName())
+//
+//	elastigroup, err := commons.ElastigroupResource.OnCreate(resourceData, meta)
+//	if err != nil {
+//		return err
+//	}
+//
+//	groupId, err := createGroup(resourceData, elastigroup, meta.(*Client))
+//	if err != nil {
+//		return err
+//	}
+//
+//	resourceData.SetId(spotinst.StringValue(groupId))
+//
+//	if capacity, ok := resourceData.GetOkExists(string(elastigroup_aws.WaitForCapacity)); ok {
+//		if *elastigroup.Capacity.Target < capacity.(int) {
+//
+//			return fmt.Errorf("[ERROR] Your target healthy capacity must be less than or equal to your desired capcity")
+//		}
+//		if timeout, ok := resourceData.GetOkExists(string(elastigroup_aws.WaitForCapacityTimeout)); ok {
+//			err := awaitReady(groupId, timeout.(int), capacity.(int), meta.(*Client))
+//			if err != nil {
+//				return fmt.Errorf("[ERROR] Timed out when creating group: %s", err)
+//			}
+//		}
+//	}
+//
+//	log.Printf("===> Elastigroup created successfully: %s <===", resourceData.Id())
+//
+//	return resourceSpotinstElastigroupAwsRead(resourceData, meta)
+//}
+//
+//func createGroup(resourceData *schema.ResourceData, group *aws.Group, spotinstClient *Client) (*string, error) {
+//	if json, err := commons.ToJson(group); err != nil {
+//		return nil, err
+//	} else {
+//		log.Printf("===> Group create configuration: %s", json)
+//	}
+//
+//	if v, ok := resourceData.Get(string(elastigroup_aws_launch_configuration.IamInstanceProfile)).(string); ok && v != "" {
+//		time.Sleep(5 * time.Second)
+//	}
+//	input := &aws.CreateGroupInput{Group: group}
+//
+//	var resp *aws.CreateGroupOutput = nil
+//	err := resource.Retry(time.Minute, func() *resource.RetryError {
+//		r, err := spotinstClient.elastigroup.CloudProviderAWS().Create(context.Background(), input)
+//		if err != nil {
+//			// Checks whether we should retry the group creation.
+//			if errs, ok := err.(client.Errors); ok && len(errs) > 0 {
+//				for _, err := range errs {
+//					if err.Code == "InvalidParameterValue" &&
+//						strings.Contains(err.Message, "Invalid IAM Instance Profile") {
+//						return resource.RetryableError(err)
+//					}
+//				}
+//			}
+//
+//			// Some other error, report it.
+//			return resource.NonRetryableError(err)
+//		}
+//		resp = r
+//		return nil
+//	})
+//
+//	if err != nil {
+//		return nil, fmt.Errorf("[ERROR] failed to create group: %s", err)
+//	}
+//	return resp.Group.ID, nil
+//}
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Update

@@ -31,12 +31,13 @@ type Config struct {
 }
 
 type Client struct {
-	elastigroup  elastigroup.Service
-	healthCheck  healthcheck.Service
-	subscription subscription.Service
-	multai       multai.Service
-	mrscaler     mrscaler.Service
-	ocean        ocean.Service
+	mangedInstance elastigroup.Service
+	elastigroup    elastigroup.Service
+	healthCheck    healthcheck.Service
+	subscription   subscription.Service
+	multai         multai.Service
+	mrscaler       mrscaler.Service
+	ocean          ocean.Service
 }
 
 // Validate returns an error in case of invalid configuration.
