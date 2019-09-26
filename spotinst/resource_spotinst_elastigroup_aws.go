@@ -175,7 +175,7 @@ func resourceSpotinstElastigroupAwsCreate(resourceData *schema.ResourceData, met
 		return err
 	}
 
-	groupId, err := createGroup(elastigroup, meta.(*Client))
+	groupId, err := createGroup(resourceData, elastigroup, meta.(*Client))
 	if err != nil {
 		return err
 	}
@@ -200,13 +200,17 @@ func resourceSpotinstElastigroupAwsCreate(resourceData *schema.ResourceData, met
 	return resourceSpotinstElastigroupAwsRead(resourceData, meta)
 }
 
-func createGroup(group *aws.Group, spotinstClient *Client) (*string, error) {
+func createGroup(resourceData *schema.ResourceData, group *aws.Group, spotinstClient *Client) (*string, error) {
 	if json, err := commons.ToJson(group); err != nil {
 		return nil, err
 	} else {
 		log.Printf("===> Group create configuration: %s", json)
 	}
 
+	if v, ok := resourceData.Get(string(elastigroup_aws_launch_configuration.IamInstanceProfile)).(string); ok && v != "" {
+		// Wait for IAM instance profile to be ready.
+		time.Sleep(10 * time.Second)
+	}
 	input := &aws.CreateGroupInput{Group: group}
 
 	var resp *aws.CreateGroupOutput = nil

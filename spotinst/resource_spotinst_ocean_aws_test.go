@@ -355,7 +355,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "tags.1116605596.key", "fakeKey"),
 					resource.TestCheckResourceAttr(resourceName, "tags.1116605596.value", "fakeValue"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.arn", "arn:aws:elasticloadbalancing:us-west-2:842422002533:loadbalancer/app/AntonK/8db573b63a46bfb2"),
+					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.arn", "arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/testTargetGroup/1234567890123456"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.type", "TARGET_GROUP"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.1.name", "AntonK"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.1.type", "CLASSIC"),
@@ -385,7 +385,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "tags.3418058476.key", "fakeKeyUpdated"),
 					resource.TestCheckResourceAttr(resourceName, "tags.3418058476.value", "fakeValueUpdated"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.arn", "arn:aws:elasticloadbalancing:us-west-2:842422002533:loadbalancer/app/AntonK/1234567890"),
+					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.arn", "arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/testTargetGroup/1234567890123456"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.0.type", "TARGET_GROUP"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.1.name", "AntonK"),
 					resource.TestCheckResourceAttr(resourceName, "load_balancers.1.type", "CLASSIC"),
@@ -428,7 +428,7 @@ const testLaunchConfigAWSConfig_Create = `
 
   load_balancers = [
     {
-      arn  = "arn:aws:elasticloadbalancing:us-west-2:842422002533:loadbalancer/app/AntonK/8db573b63a46bfb2"
+	  arn  = "arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/testTargetGroup/1234567890123456"
       type = "TARGET_GROUP"
     },
     {
@@ -458,7 +458,7 @@ const testLaunchConfigAWSConfig_Update = `
 
   load_balancers = [
     {
-      arn  = "arn:aws:elasticloadbalancing:us-west-2:842422002533:loadbalancer/app/AntonK/1234567890"
+	  arn  = "arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/testTargetGroup/1234567890123456"
       type = "TARGET_GROUP"
     },
     {
