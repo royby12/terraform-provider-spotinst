@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws"
+	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/client"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
@@ -28,25 +28,22 @@ func resourceSpotinstMangedInstanceAws() *schema.Resource {
 	setupMangedInstanceResource()
 
 	return &schema.Resource{
-		Create: resourceSpotinstMangedInstanceAwsCreate,
-		Read:   resourceSpotinstMangedInstanceAwsRead,
-		//Update: resourceSpotinstMangedInstanceAwsUpdate,
-		Delete: resourceSpotinstMangedInstanceAwsDelete,
+		Create: resourceSpotinstManagedInstanceAwsCreate,
+		Read:   resourceSpotinstManagedInstanceAwsRead,
+		//Update: resourceSpotinstManagedInstanceAwsUpdate,
+		//Delete: resourceSpotinstManagedInstanceAwsDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 
-		Schema: commons.MangedInstanceResource.GetSchemaMap(),
+		Schema: commons.ManagedInstanceResource.GetSchemaMap(),
 	}
 }
 
 func setupMangedInstanceResource() {
 	fieldsMap := make(map[commons.FieldName]*commons.GenericField)
 
-	//	manged_Instance_aws.Setup(fieldsMap)
-
-	///maybe need to add  	elastigroup_aws.Setup(fieldsMap)  and more
 	elastigroup_aws.Setup(fieldsMap)
 	elastigroup_aws_block_devices.Setup(fieldsMap)
 	elastigroup_aws_instance_types.Setup(fieldsMap)
@@ -57,28 +54,27 @@ func setupMangedInstanceResource() {
 	elastigroup_aws_scheduled_task.Setup(fieldsMap)
 	elastigroup_aws_stateful.Setup(fieldsMap)
 	elastigroup_aws_strategy.Setup(fieldsMap)
-	////
 
-	commons.MangedInstanceResource = commons.NewMangedInstanceResource(fieldsMap)
+	commons.ManagedInstanceResource = commons.NewManagedInstanceResource(fieldsMap)
 }
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Delete
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstMangedInstanceAwsDelete(resourceData *schema.ResourceData, meta interface{}) error {
-	id := resourceData.Id()
-	log.Printf(string(commons.ResourceOnDelete),
-		commons.MangedInstanceResource.GetName(), id)
-
-	if err := deleteGroup(resourceData, meta); err != nil {
-		return err
-	}
-
-	log.Printf("===> Elastigroup deleted successfully: %s <===", resourceData.Id())
-	resourceData.SetId("")
-	return nil
-}
-
+//func resourceSpotinstMangedInstanceAwsDelete(resourceData *schema.ResourceData, meta interface{}) error {
+//	id := resourceData.Id()
+//	log.Printf(string(commons.ResourceOnDelete),
+//		commons.MangedInstanceResource.GetName(), id)
+//
+//	if err := deleteGroup(resourceData, meta); err != nil {
+//		return err
+//	}
+//
+//	log.Printf("===> Elastigroup deleted successfully: %s <===", resourceData.Id())
+//	resourceData.SetId("")
+//	return nil
+//}
+//
 //func deleteGroup(resourceData *schema.ResourceData, meta interface{}) error {
 //	groupId := resourceData.Id()
 //	input := &aws.DeleteGroupInput{
@@ -129,13 +125,13 @@ func resourceSpotinstMangedInstanceAwsDelete(resourceData *schema.ResourceData, 
 // ErrCodeGroupNotFound for service response error code "GROUP_DOESNT_EXIST".
 //const ErrCodeGroupNotFound = "GROUP_DOESNT_EXIST"
 
-func resourceSpotinstMangedInstanceAwsRead(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAwsRead(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
 	log.Printf(string(commons.ResourceOnRead),
-		commons.MangedInstanceResource.GetName(), id)
+		commons.ManagedInstanceResource.GetName(), id)
 
 	input := &aws.ReadGroupInput{GroupID: spotinst.String(id)}
-	resp, err := meta.(*Client).elastigroup.CloudProviderAWS().Read(context.Background(), input)
+	resp, err := meta.(*Client).managedInstance.CloudProviderAWS().Read(context.Background(), input)
 	if err != nil {
 		// If the group was not found, return nil so that we can show
 		// that the group does not exist
@@ -169,16 +165,16 @@ func resourceSpotinstMangedInstanceAwsRead(resourceData *schema.ResourceData, me
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Create
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstMangedInstanceAwsCreate(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAwsCreate(resourceData *schema.ResourceData, meta interface{}) error {
 	log.Printf(string(commons.ResourceOnCreate),
-		commons.MangedInstanceResource.GetName())
+		commons.ManagedInstanceResource.GetName())
 
-	mangedInstance, err := commons.MangedInstanceResource.OnCreate(resourceData, meta)
+	mangedInstance, err := commons.ManagedInstanceResource.OnCreate(resourceData, meta)
 	if err != nil {
 		return err
 	}
 
-	groupId, err := createGroup(resourceData, mangedInstance, meta.(*Client))
+	groupId, err := createGroup(resourceData, managedInstance, meta.(*Client))
 	if err != nil {
 		return err
 	}

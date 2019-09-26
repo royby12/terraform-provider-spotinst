@@ -11,17 +11,17 @@ import (
 //            Variables
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 const (
-	MangedInstanceAwsResourceName ResourceName = "spotinst_managed_instance_aws"
+	ManagedInstanceAwsResourceName ResourceName = "spotinst_managed_instance_aws"
 )
 
-var MangedInstanceResource *MangedInstanceTerraformResource
+var ManagedInstanceResource *ManagedInstanceTerraformResource
 
-type MangedInstanceTerraformResource struct {
+type ManagedInstanceTerraformResource struct {
 	GenericResource // embedding
 
 }
 
-type MangedInstanceAWSBeanstalkWrapper struct {
+type MangedInstanceAWSWrapper struct {
 	elastigroup *aws.Group
 
 	// Load balancer states
@@ -34,16 +34,16 @@ type MangedInstanceAWSBeanstalkWrapper struct {
 	StatusEbsBlockDeviceUpdated       bool
 }
 
-func NewMangedInstanceResource(fieldsMap map[FieldName]*GenericField) *MangedInstanceTerraformResource {
-	return &MangedInstanceTerraformResource{
+func NewManagedInstanceResource(fieldsMap map[FieldName]*GenericField) *ManagedInstanceTerraformResource {
+	return &ManagedInstanceTerraformResource{
 		GenericResource: GenericResource{
-			resourceName: MangedInstanceAwsResourceName,
+			resourceName: ManagedInstanceAwsResourceName,
 			fields:       NewGenericFields(fieldsMap),
 		},
 	}
 }
 
-func (res *MangedInstanceTerraformResource) OnRead(
+func (res *ManagedInstanceTerraformResource) OnRead(
 	elastigroup *aws.Group, /// need to change it to the managed instance on the sdk
 	resourceData *schema.ResourceData,
 	meta interface{}) error {
@@ -52,8 +52,8 @@ func (res *MangedInstanceTerraformResource) OnRead(
 		return fmt.Errorf("resource fields are nil or empty, cannot read")
 	}
 
-	egWrapper := NewMangedInstanceWrapper()
-	egWrapper.SetMangedInstance(elastigroup)
+	egWrapper := NewManagedInstanceWrapper()
+	egWrapper.SetManagedInstance(elastigroup)
 
 	for _, field := range res.fields.fieldsMap {
 		if field.onRead == nil {
@@ -66,7 +66,7 @@ func (res *MangedInstanceTerraformResource) OnRead(
 	}
 	return nil
 }
-func (res *MangedInstanceTerraformResource) OnCreate(
+func (res *ManagedInstanceTerraformResource) OnCreate(
 	resourceData *schema.ResourceData,
 	meta interface{}) (*aws.Group, error) {
 
@@ -74,7 +74,7 @@ func (res *MangedInstanceTerraformResource) OnCreate(
 		return nil, fmt.Errorf("resource fields are nil or empty, cannot create")
 	}
 
-	egWrapper := NewMangedInstanceWrapper()
+	egWrapper := NewManagedInstanceWrapper()
 
 	for _, field := range res.fields.fieldsMap {
 		if field.onCreate == nil {
@@ -85,10 +85,10 @@ func (res *MangedInstanceTerraformResource) OnCreate(
 			return nil, err
 		}
 	}
-	return egWrapper.GetMangedInstance(), nil
+	return egWrapper.GetManagedInstance(), nil
 }
 
-func (res *MangedInstanceTerraformResource) OnUpdate(
+func (res *ManagedInstanceTerraformResource) OnUpdate(
 	resourceData *schema.ResourceData,
 	meta interface{}) (bool, *aws.Group, error) {
 
@@ -96,7 +96,7 @@ func (res *MangedInstanceTerraformResource) OnUpdate(
 		return false, nil, fmt.Errorf("resource fields are nil or empty, cannot update")
 	}
 
-	egWrapper := NewMangedInstanceWrapper()
+	egWrapper := NewManagedInstanceWrapper()
 	hasChanged := false
 	for _, field := range res.fields.fieldsMap {
 		if field.onUpdate == nil {
@@ -111,11 +111,11 @@ func (res *MangedInstanceTerraformResource) OnUpdate(
 		}
 	}
 
-	return hasChanged, egWrapper.GetMangedInstance(), nil
+	return hasChanged, egWrapper.GetManagedInstance(), nil
 }
 
-func NewMangedInstanceWrapper() *MangedInstanceAWSBeanstalkWrapper { ////need to look into it
-	return &MangedInstanceAWSBeanstalkWrapper{
+func NewManagedInstanceWrapper() *MangedInstanceAWSWrapper { ////need to look into it
+	return &MangedInstanceAWSWrapper{
 		elastigroup: &aws.Group{
 			Scaling:     &aws.Scaling{},
 			Scheduling:  &aws.Scheduling{},
@@ -134,10 +134,10 @@ func NewMangedInstanceWrapper() *MangedInstanceAWSBeanstalkWrapper { ////need to
 	}
 }
 
-func (egWrapper *MangedInstanceAWSBeanstalkWrapper) GetMangedInstance() *aws.Group {
+func (egWrapper *MangedInstanceAWSWrapper) GetManagedInstance() *aws.Group {
 	return egWrapper.elastigroup
 }
 
-func (egWrapper *MangedInstanceAWSBeanstalkWrapper) SetMangedInstance(elastigroup *aws.Group) { ////i think i need to change it change it as the sdk
+func (egWrapper *MangedInstanceAWSWrapper) SetManagedInstance(elastigroup *aws.Group) { ////i think i need to change it change it as the sdk
 	egWrapper.elastigroup = elastigroup
 }

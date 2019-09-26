@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup"
 	"github.com/spotinst/spotinst-sdk-go/service/healthcheck"
+	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/service/mrscaler"
 	"github.com/spotinst/spotinst-sdk-go/service/multai"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean"
@@ -31,13 +32,13 @@ type Config struct {
 }
 
 type Client struct {
-	mangedInstance elastigroup.Service
-	elastigroup    elastigroup.Service
-	healthCheck    healthcheck.Service
-	subscription   subscription.Service
-	multai         multai.Service
-	mrscaler       mrscaler.Service
-	ocean          ocean.Service
+	managedinstance managedinstance.Service
+	elastigroup     elastigroup.Service
+	healthCheck     healthcheck.Service
+	subscription    subscription.Service
+	multai          multai.Service
+	mrscaler        mrscaler.Service
+	ocean           ocean.Service
 }
 
 // Validate returns an error in case of invalid configuration.

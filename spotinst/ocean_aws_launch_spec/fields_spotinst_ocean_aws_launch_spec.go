@@ -208,61 +208,61 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		},
 		nil,
 	)
-	fieldsMap[SecurityGroups] = commons.NewGenericField(
-		commons.OceanAWSLaunchSpec,
-		SecurityGroups,
-		&schema.Schema{
-			Type:     schema.TypeList,
-			Elem:     &schema.Schema{Type: schema.TypeString},
-			Optional: true,
-		},
-		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
-			launchSpec := LaunchSpecWrapper.GetLaunchSpec()
-			var result []string = nil
-
-			if launchSpec != nil && launchSpec.SecurityGroupIDs != nil {
-				securityGroupIds := launchSpec.SecurityGroupIDs
-
-				for _, securityGroupId := range securityGroupIds {
-					securityGroupIdStr := spotinst.StringValue(securityGroupId)
-					result = append(result, securityGroupIdStr)
-				}
-			}
-			resourceData.Set(string(SecurityGroups), result)
-			return nil
-		},
-		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
-			launchSpec := LaunchSpecWrapper.GetLaunchSpec()
-			var result []*string = nil
-
-			if value, ok := resourceData.GetOk(string(SecurityGroups)); ok {
-				if value != nil && len(value.([]interface{})) > 0 {
-					for _, v := range value.([]interface{}) {
-						result = append(result, spotinst.String(v.(string)))
-					}
-					launchSpec.SetSecurityGroupIDs(result)
-				}
-			}
-			return nil
-		},
-		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error { //
-			LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
-			launchSpec := LaunchSpecWrapper.GetLaunchSpec()
-			var securityGroupIds []*string = nil
-
-			if value, ok := resourceData.GetOk(string(SecurityGroups)); ok {
-				for _, v := range value.([]interface{}) {
-					securityGroupIds = append(securityGroupIds, spotinst.String(v.(string)))
-				}
-			}
-
-			launchSpec.SetSecurityGroupIDs(securityGroupIds)
-			return nil
-		},
-		nil,
-	)
+	//fieldsMap[SecurityGroups] = commons.NewGenericField(
+	//	commons.OceanAWSLaunchSpec,
+	//	SecurityGroups,
+	//	&schema.Schema{
+	//		Type:     schema.TypeList,
+	//		Elem:     &schema.Schema{Type: schema.TypeString},
+	//		Optional: true,
+	//	},
+	//	func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+	//		LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
+	//		launchSpec := LaunchSpecWrapper.GetLaunchSpec()
+	//		var result []string = nil
+	//
+	//		if launchSpec != nil && launchSpec.SecurityGroupIDs != nil {
+	//			securityGroupIds := launchSpec.SecurityGroupIDs
+	//
+	//			for _, securityGroupId := range securityGroupIds {
+	//				securityGroupIdStr := spotinst.StringValue(securityGroupId)
+	//				result = append(result, securityGroupIdStr)
+	//			}
+	//		}
+	//		resourceData.Set(string(SecurityGroups), result)
+	//		return nil
+	//	},
+	//	func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+	//		LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
+	//		launchSpec := LaunchSpecWrapper.GetLaunchSpec()
+	//		var result []*string = nil
+	//
+	//		if value, ok := resourceData.GetOk(string(SecurityGroups)); ok {
+	//			if value != nil && len(value.([]interface{})) > 0 {
+	//				for _, v := range value.([]interface{}) {
+	//					result = append(result, spotinst.String(v.(string)))
+	//				}
+	//				launchSpec.SetSecurityGroupIDs(result)
+	//			}
+	//		}
+	//		return nil
+	//	},
+	//	func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error { //
+	//		LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
+	//		launchSpec := LaunchSpecWrapper.GetLaunchSpec()
+	//		var securityGroupIds []*string = nil
+	//
+	//		if value, ok := resourceData.GetOk(string(SecurityGroups)); ok {
+	//			for _, v := range value.([]interface{}) {
+	//				securityGroupIds = append(securityGroupIds, spotinst.String(v.(string)))
+	//			}
+	//		}
+	//
+	//		launchSpec.SetSecurityGroupIDs(securityGroupIds)
+	//		return nil
+	//	},
+	//	nil,
+	//)
 
 	fieldsMap[Taints] = commons.NewGenericField(
 		commons.OceanAWSLaunchSpec,
