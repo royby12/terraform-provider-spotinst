@@ -54,7 +54,17 @@ const (
 	ElastigroupAWSBlockDevices        ResourceAffinity = "Elastigroup_AWS_Block_Device"
 	ElastigroupAWSScalingPolicies     ResourceAffinity = "Elastigroup_AWS_Scaling_Policies"
 	ElastigroupAWSIntegrations        ResourceAffinity = "Elastigroup_AWS_Integrations"
-	ManagedInstanceAws                ResourceAffinity = "Managed_instance_aws"
+
+	ManagedInstanceAws                    ResourceAffinity = "Managed_Instance_Aws"
+	ManagedInstanceAwsStrategy            ResourceAffinity = "Managed_Instance_Aws_Strategy"
+	ManagedInstanceAwsPersistence         ResourceAffinity = "Managed_Instance_Aws_Persistence"
+	ManagedInstanceAwsHealthCheck         ResourceAffinity = "Managed_Instance_Aws_HealthCheck"
+	ManagedInstanceAwsIntegrations        ResourceAffinity = "Managed_Instance_Aws_Integrations"
+	ManagedInstanceAwsCompute             ResourceAffinity = "Managed_Instance_Aws_Compute"
+	ManagedInstanceAwsLaunchSpecification ResourceAffinity = "Managed_Instance_Aws_Launch_Specification"
+	ManagedInstanceAwsNetworkInterfaces   ResourceAffinity = "Managed_Instance_Aws_Network_Interfaces"
+	ManagedInstanceAwsScheduling          ResourceAffinity = "Managed_Instance_Aws_Scheduling"
+	ManagedInstanceAwsComputeInstanceType ResourceAffinity = "Managed_Instance_Aws_Compute_Instance_Type"
 
 	ElastigroupGCP                    ResourceAffinity = "Elastigroup_GCP"
 	ElastigroupGCPDisk                ResourceAffinity = "Elastigroup_GCP_Disk"

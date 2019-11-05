@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup"
 	"github.com/spotinst/spotinst-sdk-go/service/healthcheck"
-	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
+	"github.com/spotinst/spotinst-sdk-go/service/managedinstance"
 	"github.com/spotinst/spotinst-sdk-go/service/mrscaler"
 	"github.com/spotinst/spotinst-sdk-go/service/multai"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean"
@@ -32,13 +32,13 @@ type Config struct {
 }
 
 type Client struct {
-	managedinstance managedinstance.Service
 	elastigroup     elastigroup.Service
 	healthCheck     healthcheck.Service
 	subscription    subscription.Service
 	multai          multai.Service
 	mrscaler        mrscaler.Service
 	ocean           ocean.Service
+	managedInstance managedinstance.Service
 }
 
 // Validate returns an error in case of invalid configuration.
@@ -83,12 +83,13 @@ func (c *Config) Client() (*Client, error) {
 
 	// Create a new client.
 	client := &Client{
-		elastigroup:  elastigroup.New(sess),
-		healthCheck:  healthcheck.New(sess),
-		subscription: subscription.New(sess),
-		multai:       multai.New(sess),
-		mrscaler:     mrscaler.New(sess),
-		ocean:        ocean.New(sess),
+		elastigroup:     elastigroup.New(sess),
+		healthCheck:     healthcheck.New(sess),
+		subscription:    subscription.New(sess),
+		multai:          multai.New(sess),
+		mrscaler:        mrscaler.New(sess),
+		ocean:           ocean.New(sess),
+		managedInstance: managedinstance.New(sess),
 	}
 	stdlog.Println("[INFO] Spotinst client configured")
 

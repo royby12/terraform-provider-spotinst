@@ -1,0 +1,183 @@
+package managed_instance_persistence
+
+import (
+	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/spotinst/spotinst-sdk-go/spotinst"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
+)
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//            Setup
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
+
+	fieldsMap[BlockDevicesMode] = commons.NewGenericField(
+		commons.ManagedInstanceAwsPersistence,
+		BlockDevicesMode,
+		&schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value *string = nil
+			if managedInstance.Persistence != nil && managedInstance.Persistence.BlockDevicesMode != nil {
+				value = managedInstance.Persistence.BlockDevicesMode
+			}
+			if err := resourceData.Set(string(BlockDevicesMode), spotinst.StringValue(value)); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(BlockDevicesMode), err)
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.Get(string(BlockDevicesMode)).(string); ok && v != "" {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetBlockDevicesMode(spotinst.String(v))
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.Get(string(BlockDevicesMode)).(string); ok && v != "" {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetBlockDevicesMode(spotinst.String(v))
+			}
+			return nil
+		},
+		nil,
+	)
+
+	fieldsMap[PersistPrivateIp] = commons.NewGenericField(
+		commons.ManagedInstanceAwsPersistence,
+		PersistPrivateIp,
+		&schema.Schema{
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value *bool = nil
+			if managedInstance.Persistence != nil && managedInstance.Persistence.PersistPrivateIp != nil {
+				value = managedInstance.Persistence.PersistPrivateIp
+			}
+			if err := resourceData.Set(string(PersistPrivateIp), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PersistPrivateIp), err)
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.GetOk(string(PersistPrivateIp)); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetPersistPrivateIP(spotinst.Bool(v.(bool)))
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.GetOk(string(PersistPrivateIp)); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetPersistPrivateIP(spotinst.Bool(v.(bool)))
+			}
+			return nil
+		},
+		nil,
+	)
+
+	fieldsMap[PersistRootDevice] = commons.NewGenericField(
+		commons.ManagedInstanceAwsPersistence,
+		PersistRootDevice,
+		&schema.Schema{
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value *bool = nil
+			if managedInstance.Persistence != nil && managedInstance.Persistence.PersistRootDevice != nil {
+				value = managedInstance.Persistence.PersistRootDevice
+			}
+			if err := resourceData.Set(string(PersistRootDevice), spotinst.BoolValue(value)); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PersistRootDevice), err)
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.GetOk(string(PersistRootDevice)); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetShouldPersistRootDevice(spotinst.Bool(v.(bool)))
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value *bool = nil
+			if v, ok := resourceData.Get(string(PersistRootDevice)).(bool); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				value = spotinst.Bool(v)
+				managedInstance.Persistence.SetShouldPersistRootDevice(value)
+			}
+			return nil
+		},
+		nil,
+	)
+
+	fieldsMap[PersistBlockDevices] = commons.NewGenericField(
+		commons.ManagedInstanceAwsPersistence,
+		PersistBlockDevices,
+		&schema.Schema{
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value *bool = nil
+			if managedInstance.Persistence != nil && managedInstance.Persistence.PersistBlockDevices != nil {
+				value = managedInstance.Persistence.PersistBlockDevices
+			}
+			if err := resourceData.Set(string(PersistBlockDevices), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PersistBlockDevices), err)
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.GetOk(string(PersistBlockDevices)); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetShouldPersistBlockDevices(spotinst.Bool(v.(bool)))
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if v, ok := resourceData.GetOk(string(PersistBlockDevices)); ok {
+				//initPersistenceIfNeeded(managedInstance)
+				managedInstance.Persistence.SetShouldPersistBlockDevices(spotinst.Bool(v.(bool)))
+			}
+			return nil
+		},
+		nil,
+	)
+}
+
+//func initPersistenceIfNeeded(managedInstance *aws.ManagedInstance) {
+//	if managedInstance.Persistence == nil {
+//		managedInstance.Persistence = new(aws.Persistence)
+//	}
+//}
