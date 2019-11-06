@@ -55,7 +55,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			var value []interface{} = nil
 			if managedInstance.Scheduling != nil && managedInstance.Scheduling.Tasks != nil {
 				tasks := managedInstance.Scheduling.Tasks
-				value = flattenAWSGroupScheduledTasks(tasks)
+				value = flattenAWSManagedInstanceScheduledTasks(tasks)
 			}
 			if value != nil {
 				if err := resourceData.Set(string(ScheduledTask), value); err != nil {
@@ -72,7 +72,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
 			if v, ok := resourceData.GetOk(string(ScheduledTask)); ok {
-				if tasks, err := expandAWSGroupScheduledTasks(v); err != nil {
+				if tasks, err := expandAWSManagedInstanceScheduledTasks(v); err != nil {
 					return err
 				} else {
 					managedInstance.Scheduling.SetTasks(tasks)
@@ -85,7 +85,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			managedInstance := miWrapper.GetManagedInstance()
 			var value []*aws.Task = nil
 			if v, ok := resourceData.GetOk(string(ScheduledTask)); ok {
-				if interfaces, err := expandAWSGroupScheduledTasks(v); err != nil {
+				if interfaces, err := expandAWSManagedInstanceScheduledTasks(v); err != nil {
 					return err
 				} else {
 					value = interfaces
@@ -101,8 +101,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Utils
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//todo sali change group to managedInstance
-func flattenAWSGroupScheduledTasks(tasks []*aws.Task) []interface{} {
+func flattenAWSManagedInstanceScheduledTasks(tasks []*aws.Task) []interface{} {
 	result := make([]interface{}, 0, len(tasks))
 	for _, t := range tasks {
 		m := make(map[string]interface{})
@@ -117,8 +116,7 @@ func flattenAWSGroupScheduledTasks(tasks []*aws.Task) []interface{} {
 	return result
 }
 
-//todo sali change group to managedInstance
-func expandAWSGroupScheduledTasks(data interface{}) ([]*aws.Task, error) {
+func expandAWSManagedInstanceScheduledTasks(data interface{}) ([]*aws.Task, error) {
 	list := data.(*schema.Set).List()
 	tasks := make([]*aws.Task, 0, len(list))
 	for _, item := range list {

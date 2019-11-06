@@ -35,7 +35,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
 			if v, ok := resourceData.Get(string(HealthCheckType)).(string); ok && v != "" {
-				managedInstance.HealthCheck.SetType(spotinst.String(v))
+				managedInstance.HealthCheck.SetHealthCheckType(spotinst.String(v))
 			}
 			return nil
 		},
@@ -46,7 +46,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if v, ok := resourceData.Get(string(HealthCheckType)).(string); ok && v != "" {
 				value = spotinst.String(v)
 			}
-			managedInstance.HealthCheck.SetType(value)
+			managedInstance.HealthCheck.SetHealthCheckType(value)
 			return nil
 		},
 		nil,

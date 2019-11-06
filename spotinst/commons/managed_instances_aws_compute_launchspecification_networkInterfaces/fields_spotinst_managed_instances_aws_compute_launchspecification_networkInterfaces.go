@@ -118,7 +118,6 @@ func expandAWSManagedInstanceNetworkInterfaces(data interface{}) ([]*aws.Network
 		m := item.(map[string]interface{})
 		networkInterface := &aws.NetworkInterface{}
 
-		//todo sali - check this if
 		if v, ok := m[string(NetworkInterfaceId)].(string); ok && v != "" {
 			if v, ok := m[string(AssociatePublicIpAddress)].(bool); ok && v {
 				return nil, errors.New("invalid Network interface: associate_public_ip_address must be undefined when using network_interface_id")

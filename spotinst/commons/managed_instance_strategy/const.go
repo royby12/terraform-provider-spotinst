@@ -8,7 +8,7 @@ const (
 	DrainingTimeout          commons.FieldName = "draining_timeout"
 	FallbackToOd             commons.FieldName = "fall_back_to_od"
 	UtilizeReservedInstances commons.FieldName = "utilize_reserved_instances"
-	OptimizationWindows      commons.FieldName = "optimization_windows" //todo sali
-	RevertToSpot             commons.FieldName = "revert_to_spot"       //todo sali
+	OptimizationWindows      commons.FieldName = "optimization_windows"
+	RevertToSpot             commons.FieldName = "revert_to_spot"
 	PerformAt                commons.FieldName = "perform_at"
 )

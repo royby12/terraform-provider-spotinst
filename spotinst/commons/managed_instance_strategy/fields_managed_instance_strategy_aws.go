@@ -6,7 +6,6 @@ import (
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"log"
 )
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -114,14 +113,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			log.Printf("### tamir in draining_timeout create")
 			if v, ok := resourceData.GetOkExists(string(DrainingTimeout)); ok {
-				log.Printf("### tamir 1 %v", v.(int))
-				log.Printf("### tamir 2 %v", spotinst.Int(v.(int)))
 				managedInstance.Strategy.SetDrainingTimeout(spotinst.Int(v.(int)))
-			} else {
-				v1, o1 := resourceData.GetOkExists(string(DrainingTimeout))
-				log.Printf("### tamir 3: %v, %v", v1, o1)
 			}
 			return nil
 		},
@@ -214,7 +207,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[RevertToSpot] = commons.NewGenericField(
-		commons.ElastigroupAWS,
+		commons.ManagedInstanceAwsStrategy,
 		RevertToSpot,
 		&schema.Schema{
 			Type:     schema.TypeList,
@@ -271,9 +264,66 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		},
 		nil,
 	)
-	//todo sali need to add optimizationWindows (array) and revertToSpot with perrformat!
+
+	fieldsMap[OptimizationWindows] = commons.NewGenericField(
+		commons.ManagedInstanceAwsStrategy,
+		OptimizationWindows,
+		&schema.Schema{
+			Type:     schema.TypeList,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+			Optional: true,
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			var value []string = nil
+			if managedInstance.Strategy != nil && managedInstance.Strategy.OptimizationWindows != nil {
+				value = managedInstance.Strategy.OptimizationWindows
+			}
+			if err := resourceData.Set(string(OptimizationWindows), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(OptimizationWindows), err)
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if value, ok := resourceData.GetOk(string(OptimizationWindows)); ok && value != nil {
+				if optimizationWindows, err := expandOptimizationWindows(value); err != nil {
+					return err
+				} else {
+					managedInstance.Strategy.SetOptimizationWindows(optimizationWindows)
+				}
+			}
+			return nil
+		},
+		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
+			managedInstance := miWrapper.GetManagedInstance()
+			if value, ok := resourceData.GetOk(string(OptimizationWindows)); ok && value != nil {
+				if optimizationWindows, err := expandOptimizationWindows(value); err != nil {
+					return err
+				} else {
+					managedInstance.Strategy.SetOptimizationWindows(optimizationWindows)
+				}
+			}
+			return nil
+		},
+		nil,
+	)
 }
 
+func expandOptimizationWindows(data interface{}) ([]string, error) {
+	list := data.([]interface{})
+	result := make([]string, 0, len(list))
+
+	for _, v := range list {
+		if optimizationWindows, ok := v.(string); ok && optimizationWindows != "" {
+			result = append(result, optimizationWindows)
+		}
+	}
+	return result, nil
+}
 func expandAWSGroupRevertToSpot(data interface{}) (*aws.RevertToSpot, error) {
 	revertToSpot := &aws.RevertToSpot{}
 	list := data.([]interface{})
@@ -286,6 +336,5 @@ func expandAWSGroupRevertToSpot(data interface{}) (*aws.RevertToSpot, error) {
 		}
 		revertToSpot.SetPerformAt(performAt)
 	}
-	//log.Printf("[DEBUG] Group revert to spot configuration: %s", stringutil.Stringify(revertToSpot))
 	return revertToSpot, nil
 }

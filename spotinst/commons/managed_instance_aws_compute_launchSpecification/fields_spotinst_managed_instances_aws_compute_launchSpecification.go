@@ -478,15 +478,14 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			//todo sali change to set cpu credits //to doooo
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			credSpec := &aws.CreditSpecification{}
 			if v, ok := resourceData.Get(string(CPUCredits)).(string); ok && v != "" {
-				credSpec.SetCPUCredits(spotinst.String(v))
-				managedInstance.Compute.LaunchSpecification.SetCreditSpecification(credSpec)
-			} else {
-				managedInstance.Compute.LaunchSpecification.SetCreditSpecification(nil)
+				if managedInstance.Compute.LaunchSpecification.CreditSpecification == nil {
+					managedInstance.Compute.LaunchSpecification.CreditSpecification = &aws.CreditSpecification{}
+				}
+				credits := spotinst.String(v)
+				managedInstance.Compute.LaunchSpecification.CreditSpecification.SetCPUCredits(credits)
 			}
 			return nil
 		},

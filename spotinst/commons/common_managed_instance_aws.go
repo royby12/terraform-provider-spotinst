@@ -112,17 +112,13 @@ func (res *ManagedInstanceTerraformResource) OnUpdate(
 
 func NewManagedInstanceWrapper() *MangedInstanceAWSWrapper {
 	return &MangedInstanceAWSWrapper{
-		mangedInstance: &aws.ManagedInstance{ //todo sali update
+		mangedInstance: &aws.ManagedInstance{
 			Strategy:    &aws.Strategy{},
-			Persistence: &aws.Persistence{},
 			HealthCheck: &aws.HealthCheck{},
 			Scheduling:  &aws.Scheduling{},
 			Integration: &aws.Integration{},
 			Compute: &aws.Compute{
-				//Product: &aws.Product{},
 				LaunchSpecification: &aws.LaunchSpecification{
-					//IAMInstanceProfile: &aws.IAMInstanceProfile{},
-					//CreditSpecification: &aws.CreditSpecification{},
 					InstanceTypes: &aws.InstanceTypes{},
 				},
 			},

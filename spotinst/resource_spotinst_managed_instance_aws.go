@@ -65,7 +65,6 @@ const ErrCodeManagedInstanceDoesntExist = "MANAGED_INSTANCE_DOESNT_EXIST"
 
 func resourceSpotinstManagedInstanceAwsRead(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
-	log.Printf("#################### read id  : %s",id)
 	log.Printf(string(commons.ResourceOnRead),
 		commons.ManagedInstanceResource.GetName(), id)
 
@@ -176,8 +175,6 @@ func resourceSpotinstManagedInstanceAwsUpdate(resourceData *schema.ResourceData,
 		return err
 	}
 
-	removeEmptyFields(managedInstance)
-
 	if shouldUpdate {
 		managedInstance.SetId(spotinst.String(id))
 		if err := updateAwsManagedInstance(managedInstance, resourceData, meta); err != nil {
@@ -187,12 +184,6 @@ func resourceSpotinstManagedInstanceAwsUpdate(resourceData *schema.ResourceData,
 
 	log.Printf("===> ManagedInstance updated successfully: %s <===", id)
 	return resourceSpotinstManagedInstanceAwsRead(resourceData, meta)
-}
-
-func removeEmptyFields(managedInstance *aws.ManagedInstance) {
-	if( == managedInstance.Persistence) {
-
-	}
 }
 
 func updateAwsManagedInstance(managedInstance *aws.ManagedInstance, resourceData *schema.ResourceData, meta interface{}) error {
@@ -218,14 +209,11 @@ func updateAwsManagedInstance(managedInstance *aws.ManagedInstance, resourceData
 //           Delete
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 func resourceSpotinstManagedInstanceAwsDelete(resourceData *schema.ResourceData, meta interface{}) error {
-	log.Printf("#################### got into the delete at the resourse")
 	id := resourceData.Id()
-	log.Printf("#################### resourceSpotinstManagedInstanceAwsDelete delete id : %s",id)
 	log.Printf(string(commons.ResourceOnDelete),
 		commons.ManagedInstanceResource.GetName(), id)
 
 	if err := deleteManagedInstance(resourceData, meta); err != nil {
-		log.Printf("#################### deleteManagedInstance retrned err ")
 		return err
 	}
 
@@ -235,15 +223,11 @@ func resourceSpotinstManagedInstanceAwsDelete(resourceData *schema.ResourceData,
 }
 
 func deleteManagedInstance(resourceData *schema.ResourceData, meta interface{}) error {
-	log.Printf("#################### got into the deleteManagedInstance func")
 	managedInstanceId := resourceData.Id()
-	log.Printf("#################### delete id : %s",managedInstanceId)
 	input := &aws.DeleteManagedInstanceInput{
 		ManagedInstanceID: spotinst.String(managedInstanceId),
 	}
-	log.Printf("#################### input : %s",input)
 	if json, err := commons.ToJson(input); err != nil {
-		log.Printf("#################### input : %s",json)
 		return err
 	} else {
 		log.Printf("===> ManagedInstance delete configuration: %s", json)

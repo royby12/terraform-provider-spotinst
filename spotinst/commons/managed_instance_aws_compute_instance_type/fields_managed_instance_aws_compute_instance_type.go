@@ -57,10 +57,10 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			var result []string
 			if managedInstance.Compute != nil && managedInstance.Compute.LaunchSpecification != nil &&
 				managedInstance.Compute.LaunchSpecification.InstanceTypes.Types != nil {
-				WhitelistInstances := managedInstance.Compute.LaunchSpecification.InstanceTypes.Types
+				listInstances := managedInstance.Compute.LaunchSpecification.InstanceTypes.Types
 
-				for _, WhitelistInstance := range WhitelistInstances { //sali todo need to change it
-					result = append(result, WhitelistInstance)
+				for _, listInstance := range listInstances {
+					result = append(result, listInstance)
 				}
 			}
 			if err := resourceData.Set(string(Types), result); err != nil {
