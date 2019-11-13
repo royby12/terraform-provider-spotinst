@@ -147,7 +147,7 @@ func createOceanGKELaunchSpecTerraform(lscm *GKELaunchSpecConfigMetadata, update
 
 // region OceanGKELaunchSpec: Baseline
 func TestAccSpotinstOceanGKELaunchSpec_Baseline(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -255,7 +255,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
 
 // region OceanGKELaunchSpec: Labels
 func TestAccSpotinstOceanGKELaunchSpec_Labels(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -351,7 +351,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
 
 // region OceanGKELaunchSpec: Taints
 func TestAccSpotinstOceanGKELaunchSpec_Taints(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -453,7 +453,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
 
 // region OceanGKELaunchSpec: AutoScale
 func TestAccSpotinstOceanGKELaunchSpec_AutoScale(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -468,15 +468,15 @@ func TestAccSpotinstOceanGKELaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headrooms.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.memory_per_unit", "256"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.memory_per_unit", "256"),
 				),
 			},
 			{
@@ -484,11 +484,11 @@ func TestAccSpotinstOceanGKELaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
 				),
 			},
 			{
@@ -496,7 +496,7 @@ func TestAccSpotinstOceanGKELaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "0"),
 				),
 			},
 		},
@@ -517,7 +517,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
    },
  ]
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
      gpu_per_unit = 1
@@ -553,7 +553,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
    }
  ]
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
      gpu_per_unit = 1

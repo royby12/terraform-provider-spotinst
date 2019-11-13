@@ -25,10 +25,10 @@ const (
 )
 
 const (
-	OceanId     commons.FieldName = "ocean_id"
-	SourceImage commons.FieldName = "source_image"
-	Metadata    commons.FieldName = "metadata"
-	Labels      commons.FieldName = "labels"
-	Taints      commons.FieldName = "taints"
-	Headrooms   commons.FieldName = "headrooms"
+	OceanId            commons.FieldName = "ocean_id"
+	SourceImage        commons.FieldName = "source_image"
+	Metadata           commons.FieldName = "metadata"
+	Labels             commons.FieldName = "labels"
+	Taints             commons.FieldName = "taints"
+	AutoscaleHeadrooms commons.FieldName = "autoscale_headrooms"
 )

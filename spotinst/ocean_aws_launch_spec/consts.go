@@ -37,5 +37,5 @@ const (
 	IamInstanceProfile commons.FieldName = "iam_instance_profile"
 	Labels             commons.FieldName = "labels"
 	Taints             commons.FieldName = "taints"
-	Headrooms          commons.FieldName = "headrooms"
+	AutoscaleHeadrooms commons.FieldName = "autoscale_headrooms"
 )

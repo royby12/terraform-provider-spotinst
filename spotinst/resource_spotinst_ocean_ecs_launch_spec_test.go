@@ -266,15 +266,13 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headrooms.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.memory_per_unit", "256"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3560550126..cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3560550126..num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3560550126..memory_per_unit", "256"),
 				),
 			},
 			{
@@ -283,11 +281,10 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.memory_per_unit", "512"),
 				),
 			},
 			{
@@ -296,7 +293,7 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "0"),
 				),
 			},
 		},
@@ -314,16 +311,14 @@ resource "` + string(commons.OceanECSLaunchSpecResourceName) + `" "%v" {
  security_group_ids = ["awseb-e-sznmxim22e-stack-AWSEBSecurityGroup-10FZKNGB09G1W"]
  iam_instance_profile = "ecsInstanceRole"
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
-     gpu_per_unit = 1
      memory_per_unit = 512
      num_of_units = 1
    },
    {
      cpu_per_unit = 1024
-     gpu_per_unit = 1
      memory_per_unit = 256
      num_of_units = 1
    }
@@ -344,10 +339,9 @@ resource "` + string(commons.OceanECSLaunchSpecResourceName) + `" "%v" {
  security_group_ids = ["awseb-e-sznmxim22e-stack-AWSEBSecurityGroup-10FZKNGB09G1W"]
  iam_instance_profile = "ecsInstanceRole"
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
-     gpu_per_unit = 1
      memory_per_unit = 512
      num_of_units = 1
    }

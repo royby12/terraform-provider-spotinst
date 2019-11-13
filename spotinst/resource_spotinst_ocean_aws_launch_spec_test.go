@@ -273,15 +273,15 @@ func TestAccSpotinstOceanAWSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanAWSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanAWSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headrooms.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.4058284811.memory_per_unit", "256"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.memory_per_unit", "256"),
 				),
 			},
 			{
@@ -291,11 +291,11 @@ func TestAccSpotinstOceanAWSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanAWSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanAWSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.gpu_per_unit", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.num_of_units", "1"),
-					resource.TestCheckResourceAttr(resourceName, "headromms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
 				),
 			},
 			{
@@ -305,7 +305,7 @@ func TestAccSpotinstOceanAWSLaunchSpec_AutoScale(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanAWSLaunchSpecExists(&launchSpec, resourceName),
 					testCheckOceanAWSLaunchSpecAttributes(&launchSpec, oceanID),
-					resource.TestCheckResourceAttr(resourceName, "headromms.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "0"),
 				),
 			},
 		},
@@ -322,7 +322,7 @@ resource "` + string(commons.OceanAWSLaunchSpecResourceName) + `" "%v" {
  user_data = "hello world updated"
  iam_instance_profile = "updated"
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
      gpu_per_unit = 1
@@ -351,7 +351,7 @@ resource "` + string(commons.OceanAWSLaunchSpecResourceName) + `" "%v" {
  user_data = "hello world updated"
  iam_instance_profile = "updated"
 
- headrooms = [
+ autoscale_headrooms = [
    {
      cpu_per_unit = 1024
      gpu_per_unit = 1

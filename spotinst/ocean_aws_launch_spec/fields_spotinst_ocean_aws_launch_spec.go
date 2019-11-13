@@ -381,9 +381,9 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		nil,
 	)
 
-	fieldsMap[Headrooms] = commons.NewGenericField(
+	fieldsMap[AutoscaleHeadrooms] = commons.NewGenericField(
 		commons.OceanAWSLaunchSpec,
-		Headrooms,
+		AutoscaleHeadrooms,
 		&schema.Schema{
 			Type:     schema.TypeSet,
 			Optional: true,
@@ -420,8 +420,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 				result = flattenHeadrooms(headrooms)
 			}
 			if result != nil {
-				if err := resourceData.Set(string(Headrooms), result); err != nil {
-					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Headrooms), err)
+				if err := resourceData.Set(string(AutoscaleHeadrooms), result); err != nil {
+					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(AutoscaleHeadrooms), err)
 				}
 			}
 			return nil
@@ -429,7 +429,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
 			launchSpec := LaunchSpecWrapper.GetLaunchSpec()
-			if value, ok := resourceData.GetOk(string(Headrooms)); ok {
+			if value, ok := resourceData.GetOk(string(AutoscaleHeadrooms)); ok {
 				if headrooms, err := expandHeadrooms(value); err != nil {
 					return err
 				} else {
@@ -442,7 +442,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			LaunchSpecWrapper := resourceObject.(*commons.LaunchSpecWrapper)
 			launchSpec := LaunchSpecWrapper.GetLaunchSpec()
 			var headroomList []*aws.AutoScaleHeadroom = nil
-			if value, ok := resourceData.GetOk(string(Headrooms)); ok {
+			if value, ok := resourceData.GetOk(string(AutoscaleHeadrooms)); ok {
 				if expandedList, err := expandHeadrooms(value); err != nil {
 					return err
 				} else {
