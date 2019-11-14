@@ -122,8 +122,10 @@ func createOceanECSLaunchSpecTerraform(lscm *ECSLaunchSpecConfigMetadata, format
 	 account = "fake"
 	}
 	`
+
+	format := formatToUse
+
 	if lscm.updateBaselineFields {
-		format := formatToUse
 		template += fmt.Sprintf(format,
 			lscm.name,
 			lscm.provider,
@@ -132,7 +134,6 @@ func createOceanECSLaunchSpecTerraform(lscm *ECSLaunchSpecConfigMetadata, format
 			lscm.fieldsToAppend,
 		)
 	} else {
-		format := formatToUse
 		template += fmt.Sprintf(format,
 			lscm.name,
 			lscm.provider,
@@ -148,7 +149,7 @@ func createOceanECSLaunchSpecTerraform(lscm *ECSLaunchSpecConfigMetadata, format
 
 // region OceanECSLaunchSpec: Baseline
 func TestAccSpotinstOceanECSLaunchSpec_Baseline(t *testing.T) {
-	oceanID := "o-92189543"
+	oceanID := "o-921d89f8"
 	launchSpecName := "test-acc-ocean-ecs-launch-spec"
 	resourceName := createOceanECSLaunchSpecResourceOceanName(launchSpecName)
 
@@ -248,7 +249,7 @@ resource "` + string(commons.OceanECSLaunchSpecResourceName) + `" "%v" {
 
 // region OceanECSLaunchSpec: AutoScale
 func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
-	oceanID := "o-92189543"
+	oceanID := "o-921d89f8"
 	launchSpecName := "test-acc-ocean-ecs-launch-spec"
 	resourceName := createOceanECSLaunchSpecResourceOceanName(launchSpecName)
 
@@ -265,7 +266,8 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 				}, testAutoScaleOceanECSLaunchSpecConfig_Create),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
-					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
+					testCheckOceanECSLaunchSpecAttributes(&launchSpec, launchSpecName),
+					resource.TestCheckResourceAttr(resourceName, "name", launchSpecName),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "2"),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.cpu_per_unit", "1024"),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.num_of_units", "1"),
@@ -280,7 +282,8 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 					updateBaselineFields: true}, testAutoScaleOceanECSLaunchSpecConfig_Update),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
-					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
+					testCheckOceanECSLaunchSpecAttributes(&launchSpec, launchSpecName),
+					resource.TestCheckResourceAttr(resourceName, "name", launchSpecName),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.cpu_per_unit", "1024"),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3869758828.num_of_units", "1"),
@@ -292,7 +295,8 @@ func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
 					updateBaselineFields: true}, testAutoScaleOceanECSLaunchSpecConfig_Delete),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanECSLaunchSpecExists(&launchSpec, resourceName),
-					testCheckOceanECSLaunchSpecAttributes(&launchSpec, oceanID),
+					testCheckOceanECSLaunchSpecAttributes(&launchSpec, launchSpecName),
+					resource.TestCheckResourceAttr(resourceName, "name", launchSpecName),
 					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "0"),
 				),
 			},
