@@ -199,7 +199,7 @@ func TestAccSpotinstManagedInstanceBaseline(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "description updated"),
 					resource.TestCheckResourceAttr(resourceName, "region", "us-west-2"),
 					resource.TestCheckResourceAttr(resourceName, "persist_private_ip", "true"),
-					resource.TestCheckResourceAttr(resourceName, "persist_block_devices", "false"),
+					resource.TestCheckResourceAttr(resourceName, "persist_block_devices", "true"),
 					resource.TestCheckResourceAttr(resourceName, "persist_root_device", "false"),
 					resource.TestCheckResourceAttr(resourceName, "block_devices_mode", "reattach"),
 					resource.TestCheckResourceAttr(resourceName, "instance_types.#", "2"),
@@ -247,7 +247,7 @@ resource "` + string(commons.ManagedInstanceAwsResourceName) + `" "%v" {
   region = "us-west-2"
   product = "Linux/UNIX"
   persist_private_ip = "true"
-  persist_block_devices = "false"
+  persist_block_devices = "true"
   persist_root_device = "false"
   block_devices_mode = "reattach"
   subnet_ids = ["subnet-03b7ed5b","subnet-7f3fbf06", "subnet-79da021e"]  
@@ -342,7 +342,6 @@ const managedInstanceStrategy_Update = `
 `
 
 // endregion
-//TODO SALI need to add tests on Persistence after get fixed
 // region managedInstance: persistence
 func TestAccSpotinstManagedInstancePersistence(t *testing.T) {
 	name := "test-acc-cluster-managed-instance-persistence"
@@ -363,6 +362,10 @@ func TestAccSpotinstManagedInstancePersistence(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckManagedInstanceAWSExists(&cluster, resourceName),
 					testCheckManagedInstanceAWSAttributes(&cluster, name),
+					resource.TestCheckResourceAttr(resourceName, "persist_private_ip", "true"),
+					resource.TestCheckResourceAttr(resourceName, "persist_block_devices", "true"),
+					resource.TestCheckResourceAttr(resourceName, "persist_root_device", "false"),
+					resource.TestCheckResourceAttr(resourceName, "block_devices_mode", "reattach"),
 				),
 			},
 			{
@@ -374,6 +377,10 @@ func TestAccSpotinstManagedInstancePersistence(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckManagedInstanceAWSExists(&cluster, resourceName),
 					testCheckManagedInstanceAWSAttributes(&cluster, name),
+					resource.TestCheckResourceAttr(resourceName, "persist_private_ip", "false"),
+					resource.TestCheckResourceAttr(resourceName, "persist_block_devices", "true"),
+					resource.TestCheckResourceAttr(resourceName, "persist_root_device", "true"),
+					resource.TestCheckResourceAttr(resourceName, "block_devices_mode", "onLaunch"),
 				),
 			},
 		},
@@ -381,17 +388,17 @@ func TestAccSpotinstManagedInstancePersistence(t *testing.T) {
 }
 
 const managedInstancePersistence_Create = `
-  persist_private_ip = "false"
-  persist_block_devices = "false"
+  persist_private_ip = "true"
+  persist_block_devices = "true"
   persist_root_device = "false"
   block_devices_mode = "reattach"
 `
 
 const managedInstancePersistence_Update = `
-  persist_private_ip = "true"
+  persist_private_ip = "false"
   persist_block_devices = "true"
   persist_root_device = "true"
-  block_devices_mode = "reattach"
+  block_devices_mode = "onLaunch"
 `
 
 // endregion
@@ -649,7 +656,11 @@ func TestAccSpotinstManagedInstanceScheduling(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testCheckManagedInstanceAWSExists(&cluster, resourceName),
 					testCheckManagedInstanceAWSAttributes(&cluster, name),
-					//todo sali need to add start_time
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2406866099.is_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2406866099.task_type", "resume"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2406866099.frequency", "hourly"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2406866099.start_time", "2019-11-20T23:59:59Z"),
 				),
 			},
 			{
@@ -687,12 +698,12 @@ const managedInstanceScheduling_Update = `
 
 const managedInstanceScheduling_Update2 = `
 
-  //scheduled_task = [{
-	////start_time = "2100-01-01T00:00:00Z"
-  //  cron_expression = "0 0 12 1/1 * ? *"    
-  //  task_type             = "recycle"
-  //  is_enabled            = "true"
-  //}]
+    scheduled_task = [{
+      task_type             = "resume"
+      start_time = "2019-11-20T23:59:59Z"
+       frequency             = "hourly"
+      is_enabled            = "true"
+    }]
 `
 const managedInstanceScheduling_EmptyFields = `
  // --- SCHEDULED TASK ------------------

@@ -10,7 +10,7 @@ require (
 	github.com/hashicorp/terraform v0.11.14-0.20190329073242-44702fa6c163
 	github.com/mattn/go-isatty v0.0.0-20170925054904-a5cdd64afdee // indirect
 	github.com/mitchellh/go-testing-interface v0.0.0-20171004221916-a61a99592b77 // indirect
-	github.com/spotinst/spotinst-sdk-go v0.0.0-20191113114953-8a1732696b3b
+	github.com/spotinst/spotinst-sdk-go v0.0.0-20191124124337-f956ebd7412a
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6 // indirect
