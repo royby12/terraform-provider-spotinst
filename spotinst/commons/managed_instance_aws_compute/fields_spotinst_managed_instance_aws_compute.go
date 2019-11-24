@@ -176,5 +176,6 @@ func expandSubnetIDs(data interface{}) ([]string, error) {
 			result = append(result, subnetID)
 		}
 	}
+
 	return result, nil
 }

@@ -22,9 +22,10 @@ type ManagedInstanceTerraformResource struct {
 
 type MangedInstanceAWSWrapper struct {
 	mangedInstance *aws.ManagedInstance
-	//todo sali - verify load balancers
+
 	// Load balancer states
 	StatusElbUpdated bool
+	StatusTgUpdated  bool
 	StatusMlbUpdated bool
 
 	// Block devices states

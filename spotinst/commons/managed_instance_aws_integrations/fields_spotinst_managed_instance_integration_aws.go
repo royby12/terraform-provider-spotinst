@@ -4,5 +4,5 @@ import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/comm
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	SetupRoute53(fieldsMap)
-	//todo sali add load balncer
+	SetupLoadBalancers(fieldsMap)
 }

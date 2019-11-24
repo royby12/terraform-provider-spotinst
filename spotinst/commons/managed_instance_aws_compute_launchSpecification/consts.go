@@ -10,7 +10,7 @@ const (
 )
 
 const (
-	EbsOptimized       commons.FieldName = "ebs_optimized"
+	EBSOptimized       commons.FieldName = "ebs_optimized"
 	EnableMonitoring   commons.FieldName = "enable_monitoring"
 	PlacementTenancy   commons.FieldName = "placement_tenancy"
 	IamInstanceProfile commons.FieldName = "iam_instance_profile"
@@ -22,3 +22,5 @@ const (
 	ShutdownScript     commons.FieldName = "shutdown_script"
 	CPUCredits         commons.FieldName = "cpu_credits"
 )
+
+//todo sali ask about ebs/ EBS

@@ -3,12 +3,12 @@ layout: "spotinst"
 page_title: "Spotinst: managed_instance_aws"
 sidebar_current: "docs-do-resource-managed_instance_aws"
 description: |-
-  Provides a Spotinst AWS group resource.
+  Provides a Spotinst AWS managed instance resource.
 ---
 
-# spotinst\_elastigroup\_aws
+# spotinst\_managed_instance\_aws
 
-Provides a Spotinst AWS managedInstance resource.
+Provides a Spotinst AWS ManagedInstance resource.
 
 ## Example Usage
 
@@ -20,19 +20,44 @@ resource "spotinst_managed_instance_aws" "default-managed-instance" {
   description = "created by Terraform"
   region      = "us-west-2"
 
-    //strategy
-  lifecycle      = "on_demand"
+  life_cycle      = "on_demand"
   orientation    = "balanced"
-  draining_timeout = ""
+  draining_timeout = "120"
   fallback_to_ondemand  = false
   utilize_reserved_instances = "true"
-  optimizationWindows
-  revertToSpot
+  optimization_windows = ["Mon:03:00-Wed:02:20"]
+  revert_to_spot = {
+    perform_at = "always"
+  }
 
+  persist_private_ip = "false"
+  persist_block_devices = "true"
+  persist_root_device = "true"
+  block_devices_mode = "reattach"  
+
+  health_check_type = "EC2"
+  auto_healing = "true"
+  grace_period = "180"
+  unhealthy_duration = "60"
+
+  subnet_ids = ["subnet-123"]
+  vpc_id = "vpc-123"
+  elastic_ip = "ip"
+  private_ip = "ip"
+  instance_types = [
+    "t1.micro",
+    "t3.medium",
+    "t3.large",
+    "t2.medium",
+    "t2.large",
+    "z1d.large"]
+  preferred_type = "t1.micro"
+  ebs_optimized = "true"
+  enable_monitoring = "true"
+  placement_tenancy = "default"
 
   product     = "Linux/UNIX"
-  subnet_ids = ["subnet-79da021e","subnet-7f3fbf06"] 
-  image_id              = "ami-a27d8fda"
+  image_id              = "ami-1234"
   iam_instance_profile  = "iam-profile"
   key_name              = "my-key.ssh"
   security_groups       = ["sg-123456"]
@@ -40,228 +65,182 @@ resource "spotinst_managed_instance_aws" "default-managed-instance" {
   enable_monitoring     = false
   ebs_optimized         = false
   placement_tenancy     = "default"
-
-  instance_types_ondemand       = "m3.2xlarge"
-  instance_types_spot           = ["m3.xlarge", "m3.2xlarge"]
-  instance_types_preferred_spot = ["m3.xlarge"]
-
-  
-  cpu_credits           = "unlimited"
-
-  wait_for_capacity         = 5
-  wait_for_capacity_timeout = 300
-  
+  iam_instance_profile = "managedInstanceRole"
+  security_group_ids = ["sg-234"]
+  image_id = "ami-1234"
+  key_pair = "labs-oregon"
 
   tags = [
-  {
-     key   = "Env"
-     value = "production"
-  }, 
-  {
-     key   = "Name"
-     value = "default-production"
-  },
-  {
-     key   = "Project"
-     value = "app_v2"
-  }
- ]
+    {
+      key   = "Env"
+      value = "production"
+    },
+    {
+      key   = "Name"
+      value = "default-production"
+    }
+  ]
+  user_data  = "managed instance hello world"
+  shutdown_script = "managed instance bye world"
+  cpu_credits = "standard"
 
- 
 ```
 
 ## Argument Reference
 
 The following arguments are supported:
 
-* `name` - (Required) The managedInstance name.
-* `description` - (Optional) The managedInstance description.
-* `product` - (Required) Operation system type. Valid values: `"Linux/UNIX"`, `"SUSE Linux"`, `"Windows"`. 
-For EC2 Classic instances:  `"Linux/UNIX (Amazon VPC)"`, `"SUSE Linux (Amazon VPC)"`, `"Windows (Amazon VPC)"`.    
+* `name` - (Required) The ManagedInstance name.
+* `description` - (Optional) The ManagedInstance description.
+* `region` - (Required) The AWS region your group will be created in.
+* `life_cycle` - (Optional) Set lifecycle, valid values: `“spot”`, `“on_demand”`.
+Default `"spot"`.
+* `orientation` - (Optional) Select a prediction strategy. Valid values: `"balanced"`, `"costOriented"`, `"availabilityOriented"`, `"cheapest"`.
+Default: `"availabilityOriented"`.    
+* `draining_timeout` - (Optional) The time in seconds to allow the instance be drained from incoming TCP connections and detached from ELB before terminating it, during a scale down operation.
+* `fallback_to_ondemand` - (Optional) In case of no spots available, Managed Instance will launch an On-demand instance instead.
+Default: `"true"`.
+* `utilize_reserved_instances` - (Optional) In case of any available Reserved Instances, Managed Instance will utilize them before purchasing Spot instances.
+Default: `"false"`. 
+* `optimization_windows` - (Optional) When performAt is 'timeWindow': must specify a list of 'timeWindows' with at least one time window Each string is in the format of - ddd:hh:mm-ddd:hh:mm ddd = day of week = Sun | Mon | Tue | Wed | Thu | Fri | Sat hh = hour 24 = 0 -23 mm = minute = 0 - 59.
+* `perform_at` - (Optional) Valid values: “always”, “never”, "timeWindow".
+Default `"never"`. 
+* `persist_private_ip` - (Optional) Should the instance maintain its private IP.  
+* `persist_block_devices` - (Optional) Should the instance maintain its Data volumes. 
+* `persist_root_device` - (Optional) Should the instance maintain its root device volumes.
+* `block_devices_mode` - (Optional) Determine the way we attach the data volumes to the data devices. Valid values: `"reattach"`, `"onLaunch"`.
+Default: `"onLaunch"`.
+* `health_check_type` - (Optional) The service to use for the health check. Valid values: `“EC2”`, `“ELB”`, `“TARGET_GROUP”`, `“MULTAI_TARGET_SET”`.
+Default: `“EC2”`. 
+* `auto_healing` - (Optional) Enable the auto healing which auto replaces the instance in case the health check fails, default: `“true”`. 
+* `grace_period` - (Optional) The amount of time, in seconds, after the instance has launched to starts and check its health, default `“120"`.
+* `unhealthy_duration` - (Optional) The amount of time, in seconds, an existing instance should remain active after becoming unhealthy. After the set time out the instance will be replaced, default `“120"`.
+* `subnet_ids` - (Required) A comma-separated list of subnet identifiers for your instance.
+* `vpcId` - (Required) VPC id for your instance.
+* `elastic_ip` - (Optional) Elastic IP Allocation Id to associate to the instance.
+* `private_ip` - (Optional) Private IP Allocation Id to associate to the instance. 
+* `product` - (Required) Operation system type. Valid values: `"Linux/UNIX"`, `"SUSE Linux"`, `"Windows"`, `"Red Hat Enterprise Linux"`, `"Linux/UNIX (Amazon VPC)"`, `"SUSE Linux (Amazon VPC)"`, `"Windows (Amazon VPC)"`,  `"Red Hat Enterprise Linux (Amazon VPC)"`.    
+* `instance_types` - (Required) Comma separated list of available instance types for instance.
+* `preferred_type` - (Required) Preferred instance types for the instance. We will automatically select optional similar instance types to ensure optimized cost efficiency
+* `ebs_optimized` - (Optional) Enable EBS optimization for supported instance which is not enabled by default. Note - additional charges will be applied.
+Default: false
+* `enable_monitoring` - (Optional) Describes whether instance Enhanced Monitoring is enabled.
+Default: false
+* `placement_tenancy` - (Optional) Valid values: "default", "dedicated"
+Default: default
+* `iam_instance_profile` - (Optional) Set IAM profile to instance. Set only one of ARN or Name.
+* `security_group_ids` - (Optional)  One or more security group IDs.
+* `image_id` - (Required) The ID of the image used to launch the instance.
+* `key_pair` - (Optional) Specify a Key Pair to attach to the instances.
+* `tags` - (Optional) Set tags for the instance. Items should be unique.
+     * `key` - Tag's key.
+     * `value` - Tag's name.
+* `user_data` - (Optional) The Base64-encoded MIME user data to make available to the instances.
+* `shutdown_script` - (Optional) The Base64-encoded shutdown script to execute prior to instance termination.
+* `cpu_credits` - (Optional) cpuCredits can have one of two values: “unlimited”, “standard”.
+Default: unlimited
+        
+<a id="network-interface"></a>
+## Network Interface - (Optional) List of network interfaces in an EC2 instance.
+* `device_index` - (Optional) The position of the network interface in the attachment order. A primary network interface has a device index of 0. If you specify a network interface when launching an instance, you must specify the device index.
+* `associate_public_ip_address` - (Optional) Indicates whether to assign a public IPv4 address to an instance you launch in a VPC. The public IP address can only be assigned to a network interface for eth0, and can only be assigned to a new network interface, not an existing one. You cannot specify more than one network interface in the request. If launching into a default subnet, the default value is true.
+* `associate_ipv6_address` - (Optional) Indicates whether to assign an IPv6 address. Amazon EC2 chooses the IPv6 addresses from the range of the subnet.
+   Default: false
 
-lifecycle
-* `orientation` - (Optional) Select a prediction strategy. Valid values: `"balanced"`, `"costOriented"`, `"equalAzDistribution"`, `"availabilityOriented"`, `"cheapest"`.    
-* `draining_timeout` - (Optional) The time in seconds, the instance is allowed to run while detached from the ELB. This is to allow the instance time to be drained from incoming TCP connections before terminating it, during a scale down operation.
-* `fallback_to_ondemand` - (Required) In a case of no Spot instances available, Elastigroup will launch on-demand instances instead.
-* `utilize_reserved_instances` - (Optional) In a case of any available reserved instances, Elastigroup will utilize them first before purchasing Spot instances.
-optimizationWindows
-revertToSpot
-
-
-
-* `availability_zones` - (Optional) List of Strings of availability zones. When this parameter is set, `subnet_ids` should be left unused.
-Note: `availability_zones` naming syntax follows the convention `availability-zone:subnet:placement-group-name`. For example, to set an AZ in `us-east-1` with subnet `subnet-123456` and placement group `ClusterI03`, you would set:
-`availability_zones = ["us-east-1a:subnet-123456:ClusterI03"]`
-
-* `subnet_ids` - (Optional) List of Strings of subnet identifiers.
-Note: When this parameter is set, `availability_zones` should be left unused.
-
-* `region` - (Optional) The AWS region your group will be created in.
-Note: This parameter is required if you specify subnets (through subnet_ids). This parameter is optional if you specify Availability Zones (through availability_zones).
-
-* `preferred_availability_zones` - The AZs to prioritize when launching Spot instances. If no markets are available in the Preferred AZs, Spot instances are launched in the non-preferred AZs. 
-Note: Must be a sublist of `availability_zones` and `orientation` value must not be `"equalAzDistribution"`.
-
-* `security_groups` - (Required) A list of associated security group IDS.
-* `image_id` - (Optional) The ID of the AMI used to launch the instance.
-* `iam_instance_profile` - (Optional) The ARN or name of an IAM instance profile to associate with launched instances.
-* `key_name` - (Optional) The key name that should be used for the instance.
-* `enable_monitoring` - (Optional) Indicates whether monitoring is enabled for the instance.
-* `user_data` - (Optional) The user data to provide when launching the instance.
-* `shutdown_script` - (Optional) The Base64-encoded shutdown script that executes prior to instance termination, for more information please see: [Shutdown Script](https://api.spotinst.com/integration-docs/elastigroup/concepts/compute-concepts/shutdown-scripts/)
-* `ebs_optimized` - (Optional) Enable high bandwidth connectivity between instances and AWS’s Elastic Block Store (EBS). For instance types that are EBS-optimized by default this parameter will be ignored.
-* `placement_tenancy` - (Optional) Enable dedicated tenancy. Note: There is a flat hourly fee for each region in which dedicated tenancy is used.
-
-* `instance_types_ondemand` - (Required) The type of instance determines your instance's CPU capacity, memory and storage (e.g., m1.small, c1.xlarge).
-* `instance_types_spot` - (Required) One or more instance types.
-* `instance_types_preferred_spot` - (Optional) Prioritize a subset of spot instance types. Must be a subset of the selected spot instance types.
-* `instance_types_weights` - (Optional) List of weights per instance type for weighted groups. Each object in the list should have the following attributes:
-    * `weight` - (Required) Weight per instance type (Integer).
-    * `instance_type` - (Required) Name of instance type (String).
-
-* `cpu_credits` - (Optional) Controls how T3 instances are launched. Valid values: `standard`, `unlimited`.
-* `wait_for_capacity` - (Optional) Minimum number of instances in a 'HEALTHY' status that is required before continuing. This is ignored when updating with blue/green deployment. Cannot exceed `desired_capacity`.
-* `wait_for_capacity_timeout` - (Optional) Time (seconds) to wait for instances to report a 'HEALTHY' status. Useful for plans with multiple dependencies that take some time to initialize. Leave undefined or set to `0` to indicate no wait. This is ignored when updating with blue/green deployment. 
-* `spot_percentage` - (Optional; Required if not using `ondemand_count`) The percentage of Spot instances that would spin up from the `desired_capacity` number.
-* `ondemand_count` - (Optional; Required if not using `spot_percentage`) Number of on demand instances to launch in the group. All other instances will be spot instances. When this parameter is set the `spot_percentage` parameter is being ignored.
-* `scaling_strategy` - (Optional) Set termination policy.
-    * `terminate_at_end_of_billing_hour` - (Optional) Specify whether to terminate instances at the end of each billing hour.
-    * `termination_policy` - (Optional) - Determines whether to terminate the newest instances when performing a scaling action. Valid values: `"default"`, `"newestInstance"`.
-
-* `health_check_type` - (Optional) The service that will perform health checks for the instance. Valid values: `"ELB"`, `"HCS"`, `"TARGET_GROUP"`, `"MLB"`, `"EC2"`, `"MULTAI_TARGET_SET"`, `"MLB_RUNTIME"`, `"K8S_NODE"`, `"NOMAD_NODE"`, `"ECS_CLUSTER_INSTANCE"`.
-* `health_check_grace_period` - (Optional) The amount of time, in seconds, after the instance has launched to starts and check its health.
-* `health_check_unhealthy_duration_before_replacement` - (Optional) The amount of time, in seconds, that we will wait before replacing an instance that is running and became unhealthy (this is only applicable for instances that were once healthy).
-
-* `tags` - (Optional) A key/value mapping of tags to assign to the resource.
-* `elastic_ips` - (Optional) A list of [AWS Elastic IP](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html) allocation IDs to associate to the group instances.
-    
-* `revert_to_spot` - (Optional) Hold settings for strategy correction – replacing On-Demand for Spot instances. Supported Values: `"never"`, `"always"`, `"timeWindow"`
-    * `perform_at` - (Required) In the event of a fallback to On-Demand instances, select the time period to revert back to Spot. Supported Arguments – always (default), timeWindow, never. For timeWindow or never to be valid the group must have availabilityOriented OR persistence defined.
-    * `time_windows` - (Optional) Specify a list of time windows for to execute revertToSpot strategy. Time window format: `ddd:hh:mm-ddd:hh:mm`. Example: `Mon:03:00-Wed:02:30`
-
-<a id="load-balancers"></a>
-## Load Balancers
-    
-* `elastic_load_balancers` - (Optional) List of Elastic Load Balancers names (ELB).
-* `target_group_arns` - (Optional) List of Target Group ARNs to register the instances to.
-* `multai_target_sets` - (Optional) Set of targets to register. 
-    * `target_set_id` - (Required) ID of Multai target set.
-    * `balancer_id` - (Required) ID of Multai Load Balancer.
-    
 Usage:
-
-```hcl
-  elastic_load_balancers = ["bal5", "bal2"]
-  target_group_arns = ["tg-arn"]
-  multai_target_sets = [{
-    target_set_id = "ts-123",
-    balancer_id   = "bal-123"
-  },
-  {
-    target_set_id = "ts-234",
-    balancer_id   = "bal-234"
-  }]
-```
-
-
+  
+```hcl 
+  network_interface = [
+    {
+      device_index = 0
+      associate_public_ip_address = "false"
+      associate_ipv6_address = "true"
+    },
+    {  
+      device_index = 0
+      associate_public_ip_address = "false"
+      associate_ipv6_address = "true"
+    }
+  ]  
+```       
+                            
 <a id="scheduled-task"></a>
 ## Scheduled Tasks
 
 Each `scheduled_task` supports the following:
 
-* `task_type`- (Required) The task type to run. Supported task types are: `"scale"`, `"backup_ami"`, `"roll"`, `"scaleUp"`, `"percentageScaleUp"`, `"scaleDown"`, `"percentageScaleDown"`, `"statefulUpdateCapacity"`.  //// todo sali need to udit
-* `cron_expression` - (Optional; Required if not using `frequency`) A valid cron expression. The cron is running in UTC time zone and is in [Unix cron format](https://en.wikipedia.org/wiki/Cron).
-* `start_time` - (Optional; Format: ISO 8601) Set a start time for one time tasks.
-* `frequency` - (Optional; Required if not using `cron_expression`) The recurrence frequency to run this task. Supported values are `"hourly"`, `"daily"`, `"weekly"` and `"continuous"`.
-* `is_enabled` - (Optional, Default: `true`) Setting the task to being enabled or disabled.
+* `is_enabled` - (Optional) Describes whether the task is enabled. When true the task should run when false it should not run.
+* `frequency` - (Optional) Set frequency for the task. Valid values: "hourly", "daily", "weekly", "continuous".
+* `start_time` - (Optional) DATETIME in ISO-8601 format. Sets a start time for scheduled actions. If "frequency" or "cronExpression" are not used - the task will run only once at the start time and will then be deleted from the instance configuration.
+   Example: 2019-05-23T10:55:09Z
+* `cron_expression` - (Optional) A valid cron expression. For example : " * * * * * ". The cron is running in UTC time zone and is in Unix cron format Cron Expression Validator Script. Only one of ‘frequency’ or ‘cronExpression’ should be used at a time.
+   Example: 0 1 * * *
+* `task_type`- (Required) The task type to run. Valid Values: "pause", "resume", "recycle".
 
 Usage:
 
 ```hcl
-  scheduled_task = [{
-    task_type             = "backup_ami"
-    cron_expression       = ""
-    start_time            = "1970-01-01T01:00:00Z"
-    frequency             = "hourly"
-    is_enabled            = false
-  }]
+    scheduled_task = [{
+      task_type         = "pause"
+      cron_expression   = "* * * * *"
+      start_time        = "2019-11-20T23:59:59Z"
+      frequency         = "hourly"
+      is_enabled        = "true"
+    }]
 ```
 
-<a id="network-interface"></a>
-## Network Interfaces
-
-Each of the `network_interface` attributes controls a portion of the AWS
-Instance's "Elastic Network Interfaces". It's a good idea to familiarize yourself with [AWS's Elastic Network
-Interfaces docs](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html)
-to understand the implications of using these attributes.
-
-* `network_interface_id` - (Optional) The ID of the network interface.
-* `device_index` - (Required) The index of the device on the instance for the network interface attachment.
-* `description` - (Required) The description of the network interface.
-* `private_ip_address` - (Optional) The private IP address of the network interface.
-* `delete_on_termination` - (Optional) If set to true, the interface is deleted when the instance is terminated.
-* `secondary_private_ip_address_count` - (Optional) The number of secondary private IP addresses.
-* `associate_public_ip_address` - (Optional) Indicates whether to assign a public IP address to an instance you launch in a VPC. The public IP address can only be assigned to a network interface for eth0, and can only be assigned to a new network interface, not an existing one.
-* `associate_ipv6_address` - (Optional) Indicates whether to assign IPV6 addresses to your instance. Requires a subnet with IPV6 CIDR block ranges.
+<a id="integrations"></a>
+## Load Balancers
+   * `loadBalancersConfig` - (Optional) LB integration object.
+       * `load_balancers` - (Optional) List of load balancers configs.
+            * `name` - The AWS resource name. Required for Classic Load Balancer. Optional for Application Load Balancer.
+            * `arn` - The AWS resource ARN (Required only for ALB target groups).
+            * `balancer_id` - The Multai load balancer ID.
+            Default: lb-123456
+            * `target_set_id` - The Multai load target set ID.
+            Default: ts-123456
+            * `auto_weight` - “Auto Weight” will automatically provide a higher weight for instances that are larger as appropriate. For example, if you have configured your Elastigroup with m4.large and m4.xlarge instances the m4.large will have half the weight of an m4.xlarge. This ensures that larger instances receive a higher number of MLB requests.
+            * `zone_awareness` - “AZ Awareness” will ensure that instances within the same AZ are using the corresponding MLB runtime instance in the same AZ. This feature reduces multi-zone data transfer fees.
+            * `type` - The resource type. Valid Values: CLASSIC, TARGET_GROUP, MULTAI_TARGET_SET.
 
 Usage:
+   
+   ```hcl
+   load_balancers = [
+     {
+       arn  = "arn"
+       type = "CLASSIC"
+       balancer_id   = "lb-123"
+       target_set_id = "ts-123"
+       auto_weight   = "true"
+       az_awareness = "true"
+     }
+   ]
+   ```
 
-```hcl
-  network_interface = [{ 
-    network_interface_id               = "" 
-    device_index                       = 1
-    description                        = "nic description in here"
-    private_ip_address                 = "1.1.1.1"
-    delete_on_termination              = false
-    secondary_private_ip_address_count = 1
-    associate_public_ip_address        = true
-  }]
-```
+   ## route53
+   * `integration_route53` - (Optional) Describes the [Route53](https://aws.amazon.com/documentation/route53/?id=docs_gateway) integration.
 
-
-
-<a id="health-check"></a>
-## Health Check
-
-* `health_check_type` - (Optional) The service that will perform health checks for the instance. Supported values : `"ELB"`, `"HCS"`, `"TARGET_GROUP"`, `"CUSTOM"`, `"K8S_NODE"`, `"MLB"`, `"EC2"`, `"MULTAI_TARGET_SET"`, `"MLB_RUNTIME"`, `"K8S_NODE"`, `"NOMAD_NODE"`, `"ECS_CLUSTER_INSTANCE"`.
-* `health_check_grace_period` - (Optional) The amount of time, in seconds, after the instance has launched to starts and check its health
-* `health_check_unhealthy_duration_before_replacement` - (Optional) The amount of time, in seconds, that we will wait before replacing an instance that is running and became unhealthy (this is only applicable for instances that were once healthy)
-
-Usage:
-
-```hcl
-  health_check_type                                  = "ELB" 
-  health_check_grace_period                          = 100
-  health_check_unhealthy_duration_before_replacement = 120
-```
-
-* `integration_route53` - (Optional) Describes the [Route53](https://aws.amazon.com/documentation/route53/?id=docs_gateway) integration.
-
-    * `domains` - (Required) Collection of one or more domains to register.
-        * `hosted_zone_id` - (Required) The id associated with a hosted zone.
-        * `spotinst_acct_id` - (Optional) The Spotinst account ID that is linked to the AWS account that holds the Route 53 hosted Zone ID. The default is the user Spotinst account provided as a URL parameter.
-        * `record_sets` - (Required) Collection of records containing authoritative DNS information for the specified domain name.
-            * `name` - (Required) The record set name.
-            * `use_public_ip` - (Optional, Default: `false`) - Designates if the IP address should be exposed to connections outside the VPC.
-
-Usage:
-
-```hcl
-    integration_route53 = {
-      domains = {
-        hosted_zone_id   = "zone-id"
+       * `domains` - (Required) Route 53 Domain configurations.
+           * `hosted_zone_id` - (Required) The Route 53 Hosted Zone Id for the registered Domain.
+           * `spotinst_acct_id` - (Optional) The Spotinst account ID that is linked to the AWS account that holds the Route 53 hosted Zone Id. The default is the user Spotinst account provided as a URL parameter.
+           * `record_sets` - (Required) List of record sets
+               * `name` - (Required) The record set name.
+               * `use_public_ip` - (Optional)
+   
+   Usage:
+   
+   ```hcl
+  integration_route53 = {
+    domains = [
+      {
+        hosted_zone_id   = "id_create"
         spotinst_acct_id = "act-123456"
-        
         record_sets = {
-          name          = "foo.example.com"
-          use_public_ip = true
+          name = "test_create"
+          use_public_ip = false
         }
       }
-    }
+    ]
+  }
 ```
-
-## Attributes Reference
-
-The following attributes are exported:
-
-* `id` - The group ID.

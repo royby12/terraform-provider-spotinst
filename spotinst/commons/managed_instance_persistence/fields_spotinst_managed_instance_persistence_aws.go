@@ -143,7 +143,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		PersistBlockDevices,
 		&schema.Schema{
 			Type:     schema.TypeBool,
-			Optional: true,
+			Required: true,
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)

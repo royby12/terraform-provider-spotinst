@@ -66,7 +66,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if managedInstance.HealthCheck != nil && managedInstance.HealthCheck.AutoHealing != nil {
 				value = managedInstance.HealthCheck.AutoHealing
 			}
-			if err := resourceData.Set(string(AutoHealing), value); err != nil {
+			if err := resourceData.Set(string(AutoHealing), spotinst.BoolValue(value)); err != nil {
 				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(AutoHealing), err)
 			}
 			return nil
@@ -74,16 +74,16 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if v, ok := resourceData.GetOk(string(AutoHealing)); ok {
-				managedInstance.HealthCheck.SetAutoHealing(spotinst.Bool(v.(bool)))
+			if v, ok := resourceData.Get(string(AutoHealing)).(bool); ok {
+				managedInstance.HealthCheck.SetAutoHealing(spotinst.Bool(v))
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if v, ok := resourceData.GetOk(string(AutoHealing)); ok {
-				managedInstance.HealthCheck.SetAutoHealing(spotinst.Bool(v.(bool)))
+			if v, ok := resourceData.Get(string(AutoHealing)).(bool); ok {
+				managedInstance.HealthCheck.SetAutoHealing(spotinst.Bool(v))
 			}
 			return nil
 		},

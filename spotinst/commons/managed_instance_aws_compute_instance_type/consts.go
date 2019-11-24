@@ -5,5 +5,5 @@ import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/comm
 const (
 	Product       commons.FieldName = "product"
 	PreferredType commons.FieldName = "preferred_type"
-	Types         commons.FieldName = "types"
+	Types         commons.FieldName = "instance_types"
 )

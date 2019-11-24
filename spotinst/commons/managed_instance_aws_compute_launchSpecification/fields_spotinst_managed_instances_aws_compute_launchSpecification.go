@@ -15,9 +15,9 @@ import (
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
-	fieldsMap[EbsOptimized] = commons.NewGenericField(
+	fieldsMap[EBSOptimized] = commons.NewGenericField(
 		commons.ManagedInstanceAwsLaunchSpecification,
-		EbsOptimized,
+		EBSOptimized,
 		&schema.Schema{
 			Type:     schema.TypeBool,
 			Optional: true,
@@ -31,15 +31,15 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 				managedInstance.Compute.LaunchSpecification.EBSOptimized != nil {
 				value = managedInstance.Compute.LaunchSpecification.EBSOptimized
 			}
-			if err := resourceData.Set(string(EbsOptimized), spotinst.BoolValue(value)); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(EbsOptimized), err)
+			if err := resourceData.Set(string(EBSOptimized), spotinst.BoolValue(value)); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(EBSOptimized), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if v, ok := resourceData.Get(string(EbsOptimized)).(bool); ok {
+			if v, ok := resourceData.Get(string(EBSOptimized)).(bool); ok {
 				managedInstance.Compute.LaunchSpecification.SetEBSOptimized(spotinst.Bool(v))
 			}
 			return nil
@@ -47,7 +47,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if v, ok := resourceData.Get(string(EbsOptimized)).(bool); ok {
+			if v, ok := resourceData.Get(string(EBSOptimized)).(bool); ok {
 				managedInstance.Compute.LaunchSpecification.SetEBSOptimized(spotinst.Bool(v))
 			}
 			return nil
@@ -331,7 +331,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			Type:     schema.TypeString,
 			Optional: true,
 			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum
+				// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum //TODO SALI EXPLAIN
 				if (old == "da39a3ee5e6b4b0d3255bfef95601890afd80709" && new == "") ||
 					(old == "" && new == "da39a3ee5e6b4b0d3255bfef95601890afd80709") {
 					return true

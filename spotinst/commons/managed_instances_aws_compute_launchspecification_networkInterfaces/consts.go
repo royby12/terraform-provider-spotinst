@@ -8,4 +8,4 @@ const (
 	DeviceIndex              commons.FieldName = "device_index"
 	AssociatePublicIpAddress commons.FieldName = "associate_public_ip_address"
 	AssociateIPV6Address     commons.FieldName = "associate_ipv6_address"
-)
+) //TODO SALI STOPED HERE WITH NADAV

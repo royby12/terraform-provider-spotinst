@@ -5,12 +5,6 @@ import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/comm
 type BalancerType string
 
 const (
-	BalancerTypeClassic         BalancerType = "CLASSIC"
-	BalancerTypeTargetGroup     BalancerType = "TARGET_GROUP"
-	BalancerTypeMultaiTargetSet BalancerType = "MULTAI_TARGET_SET"
-)
-
-const (
 	// - ROUTE53 -------------------------
 	IntegrationRoute53 commons.FieldName = "integration_route53"
 	Domains            commons.FieldName = "domains"
@@ -18,10 +12,15 @@ const (
 	SpotinstAcctID     commons.FieldName = "spotinst_acct_id"
 	RecordSets         commons.FieldName = "record_sets"
 	UsePublicIP        commons.FieldName = "use_public_ip"
-	Name               commons.FieldName = "name"
+	Route53Name        commons.FieldName = "name"
 	// -----------------------------------
 
-	ElasticLoadBalancers
-
-	//TODO sali ADD load balncer
+	LoadBalancers    commons.FieldName = "load_balancers"
+	Arn              commons.FieldName = "arn"
+	AzAwareness      commons.FieldName = "az_awareness"
+	LoadBalancerName commons.FieldName = "name"
+	Type             commons.FieldName = "type"
+	BalancerID       commons.FieldName = "balancer_id"
+	TargetSetID      commons.FieldName = "target_set_id"
+	AutoWeight       commons.FieldName = "auto_weight"
 )
