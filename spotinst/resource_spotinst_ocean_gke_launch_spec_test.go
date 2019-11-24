@@ -147,7 +147,7 @@ func createOceanGKELaunchSpecTerraform(lscm *GKELaunchSpecConfigMetadata, update
 
 // region OceanGKELaunchSpec: Baseline
 func TestAccSpotinstOceanGKELaunchSpec_Baseline(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -255,7 +255,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
 
 // region OceanGKELaunchSpec: Labels
 func TestAccSpotinstOceanGKELaunchSpec_Labels(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -351,7 +351,7 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
 
 // region OceanGKELaunchSpec: Taints
 func TestAccSpotinstOceanGKELaunchSpec_Taints(t *testing.T) {
-	oceanID := "o-c290e75c"
+	oceanID := "o-431d5b4a"
 	resourceName := createOceanGKELaunchSpecResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -443,6 +443,143 @@ resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
      key = "testTaintKey2"
      value = "testTaintVal2"
      effect = "NoSchedule"
+   }
+ ]
+}
+
+`
+
+//endregion
+
+// region OceanGKELaunchSpec: AutoScale
+func TestAccSpotinstOceanGKELaunchSpec_AutoScale(t *testing.T) {
+	oceanID := "o-431d5b4a"
+	resourceName := createOceanGKELaunchSpecResource(oceanID)
+
+	var launchSpec gcp.LaunchSpec
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t, "gcp") },
+		Providers:    TestAccProviders,
+		CheckDestroy: testOceanGKELaunchSpecDestroy,
+
+		Steps: []resource.TestStep{
+			{
+				Config: createOceanGKELaunchSpecTerraform(&GKELaunchSpecConfigMetadata{oceanID: oceanID}, testAutoScaleOceanGKELaunchSpecConfig_Create, testAutoScaleOceanGKELaunchSpecConfig_Create),
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
+					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "2"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.4058284811.memory_per_unit", "256"),
+				),
+			},
+			{
+				Config: createOceanGKELaunchSpecTerraform(&GKELaunchSpecConfigMetadata{oceanID: oceanID, updateBaselineFields: true}, testAutoScaleOceanGKELaunchSpecConfig_Update, testAutoScaleOceanGKELaunchSpecConfig_Update),
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
+					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.cpu_per_unit", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.gpu_per_unit", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.num_of_units", "1"),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.3279616137.memory_per_unit", "512"),
+				),
+			},
+			{
+				Config: createOceanGKELaunchSpecTerraform(&GKELaunchSpecConfigMetadata{oceanID: oceanID, updateBaselineFields: true}, testAutoScaleOceanGKELaunchSpecConfig_Delete, testAutoScaleOceanGKELaunchSpecConfig_Delete),
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOceanGKELaunchSpecExists(&launchSpec, resourceName),
+					testCheckOceanGKELaunchSpecAttributes(&launchSpec, oceanID),
+					resource.TestCheckResourceAttr(resourceName, "autoscale_headrooms.#", "0"),
+				),
+			},
+		},
+	})
+}
+
+const testAutoScaleOceanGKELaunchSpecConfig_Create = `
+resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
+ provider = "%v"  
+
+ ocean_id = "%v"
+ source_image = "https://www.googleapis.com/compute/v1/projects/gke-node-images/global/images/gke-1118-gke6-cos-69-10895-138-0-v190330-pre"
+
+ metadata = [
+   {
+     key = "gci-update-strategy"
+     value = "update_disabled"
+   },
+ ]
+
+ autoscale_headrooms = [
+   {
+     cpu_per_unit = 1024
+     gpu_per_unit = 1
+     memory_per_unit = 512
+     num_of_units = 1
+   },
+   {
+     cpu_per_unit = 1024
+     gpu_per_unit = 1
+     memory_per_unit = 256
+     num_of_units = 1
+   }
+  ]
+}
+
+`
+
+const testAutoScaleOceanGKELaunchSpecConfig_Update = `
+resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
+ provider = "%v"
+
+ ocean_id = "%v"
+ source_image = "https://www.googleapis.com/compute/v1/projects/gke-node-images/global/images/gke-1118-gke6-cos-69-10895-138-0-v190330-pre"
+
+ metadata = [
+   {
+     key = "gci-update-strategy"
+     value = "update_disabled"
+   },
+   {
+     key = "gci-ensure-gke-docker"
+     value = "true"
+   }
+ ]
+
+ autoscale_headrooms = [
+   {
+     cpu_per_unit = 1024
+     gpu_per_unit = 1
+     memory_per_unit = 512
+     num_of_units = 1
+   }
+  ]
+}
+
+`
+
+const testAutoScaleOceanGKELaunchSpecConfig_Delete = `
+resource "` + string(commons.OceanGKELaunchSpecResourceName) + `" "%v" {
+ provider = "%v"
+
+ ocean_id = "%v"
+ source_image = "https://www.googleapis.com/compute/v1/projects/gke-node-images/global/images/gke-1118-gke6-cos-69-10895-138-0-v190330-pre"
+
+ metadata = [
+   {
+     key = "gci-update-strategy"
+     value = "update_disabled"
+   },
+   {
+     key = "gci-ensure-gke-docker"
+     value = "true"
    }
  ]
 }
