@@ -132,11 +132,11 @@ func expandAWSManagedInstanceRoute53IntegrationDomains(data interface{}) ([]*aws
 		}
 
 		if v, ok := attr[string(HostedZoneId)].(string); ok && v != "" {
-			domain.SetHostedZoneID(spotinst.String(v))
+			domain.SetHostedZoneId(spotinst.String(v))
 		}
 
 		if v, ok := attr[string(SpotinstAcctID)].(string); ok && v != "" {
-			domain.SetSpotinstAccountID(spotinst.String(v))
+			domain.SetSpotinstAccountId(spotinst.String(v))
 		}
 
 		if r, ok := attr[string(RecordSets)]; ok {

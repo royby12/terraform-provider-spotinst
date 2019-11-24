@@ -157,12 +157,14 @@ github.com/posener/complete
 github.com/posener/complete/cmd/install
 github.com/posener/complete/cmd
 github.com/posener/complete/match
-# github.com/spotinst/spotinst-sdk-go v0.0.0-20191113114953-8a1732696b3b
+# github.com/spotinst/spotinst-sdk-go v0.0.0-20191124124337-f956ebd7412a
 github.com/spotinst/spotinst-sdk-go/service/elastigroup
 github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws
 github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/azure
 github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/gcp
 github.com/spotinst/spotinst-sdk-go/service/healthcheck
+github.com/spotinst/spotinst-sdk-go/service/managedinstance
+github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws
 github.com/spotinst/spotinst-sdk-go/service/mrscaler
 github.com/spotinst/spotinst-sdk-go/service/multai
 github.com/spotinst/spotinst-sdk-go/service/ocean

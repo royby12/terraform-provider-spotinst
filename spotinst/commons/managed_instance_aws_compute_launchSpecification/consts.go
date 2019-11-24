@@ -22,5 +22,3 @@ const (
 	ShutdownScript     commons.FieldName = "shutdown_script"
 	CPUCredits         commons.FieldName = "cpu_credits"
 )
-
-//todo sali ask about ebs/ EBS

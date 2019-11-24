@@ -67,8 +67,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
 			var value *string = nil
-			if managedInstance.Compute != nil && managedInstance.Compute.VpcId != nil {
-				value = managedInstance.Compute.VpcId
+			if managedInstance.Compute != nil && managedInstance.Compute.VpcID != nil {
+				value = managedInstance.Compute.VpcID
 			}
 			if err := resourceData.Set(string(VpcId), value); err != nil {
 				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(VpcId), err)

@@ -67,8 +67,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
 			var value *bool = nil
-			if managedInstance.Persistence != nil && managedInstance.Persistence.PersistPrivateIp != nil {
-				value = managedInstance.Persistence.PersistPrivateIp
+			if managedInstance.Persistence != nil && managedInstance.Persistence.PersistPrivateIP != nil {
+				value = managedInstance.Persistence.PersistPrivateIP
 			}
 			if err := resourceData.Set(string(PersistPrivateIp), value); err != nil {
 				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PersistPrivateIp), err)
