@@ -20,9 +20,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 
-	"github.com/hashicorp/terraform/configs/hcl2shim"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/mitchellh/copystructure"
 	"github.com/mitchellh/mapstructure"
@@ -33,27 +31,6 @@ const PanicOnErr = "TF_SCHEMA_PANIC_ON_ERROR"
 
 // type used for schema package context keys
 type contextKey string
-
-var (
-	protoVersionMu sync.Mutex
-	protoVersion5  = false
-)
-
-func isProto5() bool {
-	protoVersionMu.Lock()
-	defer protoVersionMu.Unlock()
-	return protoVersion5
-
-}
-
-// SetProto5 enables a feature flag for any internal changes required required
-// to work with the new plugin protocol.  This should not be called by
-// provider.
-func SetProto5() {
-	protoVersionMu.Lock()
-	defer protoVersionMu.Unlock()
-	protoVersion5 = true
-}
 
 // Schema is used to describe the structure of a value.
 //
@@ -167,11 +144,10 @@ type Schema struct {
 	// The following fields are only set for a TypeList, TypeSet, or TypeMap.
 	//
 	// Elem represents the element type. For a TypeMap, it must be a *Schema
-	// with a Type that is one of the primitives: TypeString, TypeBool,
-	// TypeInt, or TypeFloat. Otherwise it may be either a *Schema or a
+	// with a Type of TypeString, otherwise it may be either a *Schema or a
 	// *Resource. If it is *Schema, the element type is just a simple value.
 	// If it is *Resource, the element type is a complex structure,
-	// potentially managed via its own CRUD actions on the API.
+	// potentially with its own lifecycle.
 	Elem interface{}
 
 	// The following fields are only set for a TypeList or TypeSet.
@@ -188,8 +164,21 @@ type Schema struct {
 	//
 	// If the field Optional is set to true then MinItems is ignored and thus
 	// effectively zero.
+	//
+	// If MaxItems is 1, you may optionally also set AsSingle in order to have
+	// Terraform v0.12 or later treat a TypeList or TypeSet as if it were a
+	// single value. It will remain a list or set in Terraform v0.10 and v0.11.
+	// Enabling this for an existing attribute after you've made at least one
+	// v0.12-compatible provider release is a breaking change. AsSingle is
+	// likely to misbehave when used with deeply-nested set structures due to
+	// the imprecision of set diffs, so be sure to test it thoroughly,
+	// including updates that change the set members at all levels. AsSingle
+	// exists primarily to be used in conjunction with ConfigMode when forcing
+	// a nested resource to be treated as an attribute, so it can be considered
+	// an attribute of object type rather than of list/set of object.
 	MaxItems int
 	MinItems int
+	AsSingle bool
 
 	// PromoteSingle originally allowed for a single element to be assigned
 	// where a primitive list was expected, but this no longer works from
@@ -238,8 +227,7 @@ type Schema struct {
 	// guaranteed to be of the proper Schema type, and it can yield warnings or
 	// errors based on inspection of that value.
 	//
-	// ValidateFunc is honored only when the schema's Type is set to TypeInt,
-	// TypeFloat, TypeString, TypeBool, or TypeMap. It is ignored for all other types.
+	// ValidateFunc currently only works for primitive types.
 	ValidateFunc SchemaValidateFunc
 
 	// Sensitive ensures that the attribute's value does not get displayed in
@@ -425,11 +413,6 @@ func (s *Schema) finalizeDiff(d *terraform.ResourceAttrDiff, customized bool) *t
 	return d
 }
 
-// InternalMap is used to aid in the transition to the new schema types and
-// protocol. The name is not meant to convey any usefulness, as this is not to
-// be used directly by any providers.
-type InternalMap = schemaMap
-
 // schemaMap is a wrapper that adds nice functions on top of schemas.
 type schemaMap map[string]*Schema
 
@@ -470,8 +453,7 @@ func (m schemaMap) Diff(
 	s *terraform.InstanceState,
 	c *terraform.ResourceConfig,
 	customizeDiff CustomizeDiffFunc,
-	meta interface{},
-	handleRequiresNew bool) (*terraform.InstanceDiff, error) {
+	meta interface{}) (*terraform.InstanceDiff, error) {
 	result := new(terraform.InstanceDiff)
 	result.Attributes = make(map[string]*terraform.ResourceAttrDiff)
 
@@ -517,85 +499,82 @@ func (m schemaMap) Diff(
 		}
 	}
 
-	if handleRequiresNew {
-		// If the diff requires a new resource, then we recompute the diff
-		// so we have the complete new resource diff, and preserve the
-		// RequiresNew fields where necessary so the user knows exactly what
-		// caused that.
-		if result.RequiresNew() {
-			// Create the new diff
-			result2 := new(terraform.InstanceDiff)
-			result2.Attributes = make(map[string]*terraform.ResourceAttrDiff)
+	// If the diff requires a new resource, then we recompute the diff
+	// so we have the complete new resource diff, and preserve the
+	// RequiresNew fields where necessary so the user knows exactly what
+	// caused that.
+	if result.RequiresNew() {
+		// Create the new diff
+		result2 := new(terraform.InstanceDiff)
+		result2.Attributes = make(map[string]*terraform.ResourceAttrDiff)
 
-			// Preserve the DestroyTainted flag
-			result2.DestroyTainted = result.DestroyTainted
+		// Preserve the DestroyTainted flag
+		result2.DestroyTainted = result.DestroyTainted
 
-			// Reset the data to not contain state. We have to call init()
-			// again in order to reset the FieldReaders.
-			d.state = nil
-			d.init()
+		// Reset the data to not contain state. We have to call init()
+		// again in order to reset the FieldReaders.
+		d.state = nil
+		d.init()
 
-			// Perform the diff again
-			for k, schema := range m {
-				err := m.diff(k, schema, result2, d, false)
+		// Perform the diff again
+		for k, schema := range m {
+			err := m.diff(k, schema, result2, d, false)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// Re-run customization
+		if !result2.DestroyTainted && customizeDiff != nil {
+			mc := m.DeepCopy()
+			rd := newResourceDiff(mc, c, d.state, result2)
+			if err := customizeDiff(rd, meta); err != nil {
+				return nil, err
+			}
+			for _, k := range rd.UpdatedKeys() {
+				err := m.diff(k, mc[k], result2, rd, false)
 				if err != nil {
 					return nil, err
 				}
 			}
-
-			// Re-run customization
-			if !result2.DestroyTainted && customizeDiff != nil {
-				mc := m.DeepCopy()
-				rd := newResourceDiff(mc, c, d.state, result2)
-				if err := customizeDiff(rd, meta); err != nil {
-					return nil, err
-				}
-				for _, k := range rd.UpdatedKeys() {
-					err := m.diff(k, mc[k], result2, rd, false)
-					if err != nil {
-						return nil, err
-					}
-				}
-			}
-
-			// Force all the fields to not force a new since we know what we
-			// want to force new.
-			for k, attr := range result2.Attributes {
-				if attr == nil {
-					continue
-				}
-
-				if attr.RequiresNew {
-					attr.RequiresNew = false
-				}
-
-				if s != nil {
-					attr.Old = s.Attributes[k]
-				}
-			}
-
-			// Now copy in all the requires new diffs...
-			for k, attr := range result.Attributes {
-				if attr == nil {
-					continue
-				}
-
-				newAttr, ok := result2.Attributes[k]
-				if !ok {
-					newAttr = attr
-				}
-
-				if attr.RequiresNew {
-					newAttr.RequiresNew = true
-				}
-
-				result2.Attributes[k] = newAttr
-			}
-
-			// And set the diff!
-			result = result2
 		}
 
+		// Force all the fields to not force a new since we know what we
+		// want to force new.
+		for k, attr := range result2.Attributes {
+			if attr == nil {
+				continue
+			}
+
+			if attr.RequiresNew {
+				attr.RequiresNew = false
+			}
+
+			if s != nil {
+				attr.Old = s.Attributes[k]
+			}
+		}
+
+		// Now copy in all the requires new diffs...
+		for k, attr := range result.Attributes {
+			if attr == nil {
+				continue
+			}
+
+			newAttr, ok := result2.Attributes[k]
+			if !ok {
+				newAttr = attr
+			}
+
+			if attr.RequiresNew {
+				newAttr.RequiresNew = true
+			}
+
+			result2.Attributes[k] = newAttr
+		}
+
+		// And set the diff!
+		result = result2
 	}
 
 	// Go through and detect all of the ComputedWhens now that we've
@@ -724,10 +703,8 @@ func (m schemaMap) internalValidate(topSchemaMap schemaMap, attrsOnly bool) erro
 			// Since "Auto" for Elem: *Resource would create a nested block,
 			// and that's impossible inside an attribute, we require it to be
 			// explicitly overridden as mode "Attr" for clarity.
-			if _, ok := v.Elem.(*Resource); ok {
-				if attrsOnly {
-					return fmt.Errorf("%s: in *schema.Resource with ConfigMode of attribute, so must also have ConfigMode of attribute", k)
-				}
+			if _, ok := v.Elem.(*Resource); ok && attrsOnly {
+				return fmt.Errorf("%s: in *schema.Resource with ConfigMode of attribute, so must also have ConfigMode of attribute", k)
 			}
 		default:
 			return fmt.Errorf("%s: invalid ConfigMode value", k)
@@ -762,7 +739,7 @@ func (m schemaMap) internalValidate(topSchemaMap schemaMap, attrsOnly bool) erro
 
 					var ok bool
 					if target, ok = sm[part]; !ok {
-						return fmt.Errorf("%s: ConflictsWith references unknown attribute (%s) at part (%s)", k, key, part)
+						return fmt.Errorf("%s: ConflictsWith references unknown attribute (%s)", k, key)
 					}
 
 					if subResource, ok := target.Elem.(*Resource); ok {
@@ -812,6 +789,15 @@ func (m schemaMap) internalValidate(topSchemaMap schemaMap, attrsOnly bool) erro
 		} else {
 			if v.MaxItems > 0 || v.MinItems > 0 {
 				return fmt.Errorf("%s: MaxItems and MinItems are only supported on lists or sets", k)
+			}
+		}
+
+		if v.AsSingle {
+			if v.MaxItems != 1 {
+				return fmt.Errorf("%s: MaxItems must be 1 when AsSingle is set", k)
+			}
+			if v.Type != TypeList && v.Type != TypeSet {
+				return fmt.Errorf("%s: AsSingle can be used only with TypeList and TypeSet schemas", k)
 			}
 		}
 
@@ -889,19 +875,10 @@ func (m schemaMap) diff(
 	for attrK, attrV := range unsupressedDiff.Attributes {
 		switch rd := d.(type) {
 		case *ResourceData:
-			if schema.DiffSuppressFunc != nil && attrV != nil &&
+			if schema.DiffSuppressFunc != nil &&
+				attrV != nil &&
 				schema.DiffSuppressFunc(attrK, attrV.Old, attrV.New, rd) {
-				// If this attr diff is suppressed, we may still need it in the
-				// overall diff if it's contained within a set. Rather than
-				// dropping the diff, make it a NOOP.
-				if !all {
-					continue
-				}
-
-				attrV = &terraform.ResourceAttrDiff{
-					Old: attrV.Old,
-					New: attrV.Old,
-				}
+				continue
 			}
 		}
 		diff.Attributes[attrK] = attrV
@@ -1284,7 +1261,7 @@ func (m schemaMap) diffString(
 		return fmt.Errorf("%s: %s", k, err)
 	}
 
-	if os == ns && !all && !computed {
+	if os == ns && !all {
 		// They're the same value. If there old value is not blank or we
 		// have an ID, then return right away since we're already setup.
 		if os != "" || d.Id() != "" {
@@ -1292,7 +1269,7 @@ func (m schemaMap) diffString(
 		}
 
 		// Otherwise, only continue if we're computed
-		if !schema.Computed {
+		if !schema.Computed && !computed {
 			return nil
 		}
 	}
@@ -1365,18 +1342,6 @@ func (m schemaMap) validate(
 			"%q: this field cannot be set", k)}
 	}
 
-	// If the value is unknown then we can't validate it yet.
-	// In particular, this avoids spurious type errors where downstream
-	// validation code sees UnknownVariableValue as being just a string.
-	// The SDK has to allow the unknown value through initially, so that
-	// Required fields set via an interpolated value are accepted.
-	if !isWhollyKnown(raw) {
-		if schema.Deprecated != "" {
-			return []string{fmt.Sprintf("%q: [DEPRECATED] %s", k, schema.Deprecated)}, nil
-		}
-		return nil, nil
-	}
-
 	err := m.validateConflictingAttributes(k, schema, c)
 	if err != nil {
 		return nil, []error{err}
@@ -1385,28 +1350,6 @@ func (m schemaMap) validate(
 	return m.validateType(k, raw, schema, c)
 }
 
-// isWhollyKnown returns false if the argument contains an UnknownVariableValue
-func isWhollyKnown(raw interface{}) bool {
-	switch raw := raw.(type) {
-	case string:
-		if raw == hcl2shim.UnknownVariableValue {
-			return false
-		}
-	case []interface{}:
-		for _, v := range raw {
-			if !isWhollyKnown(v) {
-				return false
-			}
-		}
-	case map[string]interface{}:
-		for _, v := range raw {
-			if !isWhollyKnown(v) {
-				return false
-			}
-		}
-	}
-	return true
-}
 func (m schemaMap) validateConflictingAttributes(
 	k string,
 	schema *Schema,
@@ -1416,15 +1359,10 @@ func (m schemaMap) validateConflictingAttributes(
 		return nil
 	}
 
-	for _, conflictingKey := range schema.ConflictsWith {
-		if raw, ok := c.Get(conflictingKey); ok {
-			if raw == hcl2shim.UnknownVariableValue {
-				// An unknown value might become unset (null) once known, so
-				// we must defer validation until it's known.
-				continue
-			}
+	for _, conflicting_key := range schema.ConflictsWith {
+		if _, ok := c.Get(conflicting_key); ok {
 			return fmt.Errorf(
-				"%q: conflicts with %s", k, conflictingKey)
+				"%q: conflicts with %s", k, conflicting_key)
 		}
 	}
 
@@ -1436,18 +1374,6 @@ func (m schemaMap) validateList(
 	raw interface{},
 	schema *Schema,
 	c *terraform.ResourceConfig) ([]string, []error) {
-	// first check if the list is wholly unknown
-	if s, ok := raw.(string); ok {
-		if s == hcl2shim.UnknownVariableValue {
-			return nil, nil
-		}
-	}
-
-	// schemaMap can't validate nil
-	if raw == nil {
-		return nil, nil
-	}
-
 	// We use reflection to verify the slice because you can't
 	// case to []interface{} unless the slice is exactly that type.
 	rawV := reflect.ValueOf(raw)
@@ -1462,15 +1388,6 @@ func (m schemaMap) validateList(
 	if rawV.Kind() != reflect.Slice {
 		return nil, []error{fmt.Errorf(
 			"%s: should be a list", k)}
-	}
-
-	// We can't validate list length if this came from a dynamic block.
-	// Since there's no way to determine if something was from a dynamic block
-	// at this point, we're going to skip validation in the new protocol if
-	// there are any unknowns. Validate will eventually be called again once
-	// all values are known.
-	if isProto5() && !isWhollyKnown(raw) {
-		return nil, nil
 	}
 
 	// Validate length
@@ -1528,17 +1445,6 @@ func (m schemaMap) validateMap(
 	raw interface{},
 	schema *Schema,
 	c *terraform.ResourceConfig) ([]string, []error) {
-	// first check if the list is wholly unknown
-	if s, ok := raw.(string); ok {
-		if s == hcl2shim.UnknownVariableValue {
-			return nil, nil
-		}
-	}
-
-	// schemaMap can't validate nil
-	if raw == nil {
-		return nil, nil
-	}
 	// We use reflection to verify the slice because you can't
 	// case to []interface{} unless the slice is exactly that type.
 	rawV := reflect.ValueOf(raw)
@@ -1665,12 +1571,6 @@ func (m schemaMap) validateObject(
 	schema map[string]*Schema,
 	c *terraform.ResourceConfig) ([]string, []error) {
 	raw, _ := c.Get(k)
-
-	// schemaMap can't validate nil
-	if raw == nil {
-		return nil, nil
-	}
-
 	if _, ok := raw.(map[string]interface{}); !ok && !c.IsComputed(k) {
 		return nil, []error{fmt.Errorf(
 			"%s: expected object, got %s",
@@ -1715,14 +1615,6 @@ func (m schemaMap) validatePrimitive(
 	raw interface{},
 	schema *Schema,
 	c *terraform.ResourceConfig) ([]string, []error) {
-
-	// a nil value shouldn't happen in the old protocol, and in the new
-	// protocol the types have already been validated. Either way, we can't
-	// reflect on nil, so don't panic.
-	if raw == nil {
-		return nil, nil
-	}
-
 	// Catch if the user gave a complex type where a primitive was
 	// expected, so we can return a friendly error message that
 	// doesn't contain Go type system terminology.
@@ -1754,25 +1646,12 @@ func (m schemaMap) validatePrimitive(
 		}
 		decoded = n
 	case TypeInt:
-		switch {
-		case isProto5():
-			// We need to verify the type precisely, because WeakDecode will
-			// decode a float as an integer.
-
-			// the config shims only use int for integral number values
-			if v, ok := raw.(int); ok {
-				decoded = v
-			} else {
-				return nil, []error{fmt.Errorf("%s: must be a whole number, got %v", k, raw)}
-			}
-		default:
-			// Verify that we can parse this as an int
-			var n int
-			if err := mapstructure.WeakDecode(raw, &n); err != nil {
-				return nil, []error{fmt.Errorf("%s: %s", k, err)}
-			}
-			decoded = n
+		// Verify that we can parse this as an int
+		var n int
+		if err := mapstructure.WeakDecode(raw, &n); err != nil {
+			return nil, []error{fmt.Errorf("%s: %s", k, err)}
 		}
+		decoded = n
 	case TypeFloat:
 		// Verify that we can parse this as an int
 		var n float64
