@@ -1,3 +1,8 @@
+## 1.13.7 (Unreleased)
+
+FEATURES:
+* *New Resource*: `spotinst_managed_instance_aws`
+
 ## 1.13.6 (Unreleased)
 
 * resource/spotinst_ocean_aws_launch_spec: added `autoscale_headrooms`

@@ -1,4 +1,4 @@
-package mrscaler
+package aws
 
 import (
 	"context"
@@ -12,12 +12,11 @@ import (
 // of the Spotinst API. See this package's package overview docs for details on
 // the service.
 type Service interface {
-	List(context.Context, *ListScalersInput) (*ListScalersOutput, error)
-	Create(context.Context, *CreateScalerInput) (*CreateScalerOutput, error)
-	Read(context.Context, *ReadScalerInput) (*ReadScalerOutput, error)
-	ReadScalerCluster(context.Context, *ScalerClusterStatusInput) (*ScalerClusterStatusOutput, error)
-	Update(context.Context, *UpdateScalerInput) (*UpdateScalerOutput, error)
-	Delete(context.Context, *DeleteScalerInput) (*DeleteScalerOutput, error)
+	List(context.Context, *ListManagedInstancesInput) (*ListManagedInstancesOutput, error)
+	Create(context.Context, *CreateManagedInstanceInput) (*CreateManagedInstanceOutput, error)
+	Read(context.Context, *ReadManagedInstanceInput) (*ReadManagedInstanceOutput, error)
+	Update(context.Context, *UpdateManagedInstanceInput) (*UpdateManagedInstanceOutput, error)
+	Delete(context.Context, *DeleteManagedInstanceInput) (*DeleteManagedInstanceOutput, error)
 }
 
 type ServiceOp struct {

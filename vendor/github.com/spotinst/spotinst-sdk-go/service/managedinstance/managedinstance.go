@@ -1,8 +1,7 @@
-package mrscaler
+package managedinstance
 
 import (
-	"context"
-
+	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/client"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/session"
@@ -12,12 +11,7 @@ import (
 // of the Spotinst API. See this package's package overview docs for details on
 // the service.
 type Service interface {
-	List(context.Context, *ListScalersInput) (*ListScalersOutput, error)
-	Create(context.Context, *CreateScalerInput) (*CreateScalerOutput, error)
-	Read(context.Context, *ReadScalerInput) (*ReadScalerOutput, error)
-	ReadScalerCluster(context.Context, *ScalerClusterStatusInput) (*ScalerClusterStatusOutput, error)
-	Update(context.Context, *UpdateScalerInput) (*UpdateScalerOutput, error)
-	Delete(context.Context, *DeleteScalerInput) (*DeleteScalerOutput, error)
+	CloudProviderAWS() aws.Service
 }
 
 type ServiceOp struct {
@@ -32,6 +26,12 @@ func New(sess *session.Session, cfgs ...*spotinst.Config) *ServiceOp {
 	cfg.Merge(cfgs...)
 
 	return &ServiceOp{
-		Client: client.New(sess.Config),
+		Client: client.New(cfg),
+	}
+}
+
+func (s *ServiceOp) CloudProviderAWS() aws.Service {
+	return &aws.ServiceOp{
+		Client: s.Client,
 	}
 }
