@@ -72,7 +72,7 @@ resource "spotinst_elastigroup_gcp" "example" {
     }
   ]
 
-  instance_types_ondemand   = ["n1-standard-1"]
+  instance_types_ondemand   = "n1-standard-1"
   instance_types_preemptible = ["n1-standard-1", "n1-standard-2"]
 
   instance_types_custom = [
