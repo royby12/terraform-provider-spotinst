@@ -2,18 +2,20 @@ package spotinst
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/spotinst/spotinst-sdk-go/spotinst/client"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"log"
 
 	"context"
-	"github.com/hashicorp/terraform/helper/resource"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/elastigroup_aws_beanstalk"
 	"strings"
 	"time"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/elastigroup_aws_beanstalk"
 )
 
 func resourceSpotinstElastigroupAWSBeanstalk() *schema.Resource {

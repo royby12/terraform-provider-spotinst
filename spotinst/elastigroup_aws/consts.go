@@ -36,7 +36,7 @@ const (
 	HealthCheckUnhealthyDurationBeforeReplacement commons.FieldName = "health_check_unhealthy_duration_before_replacement"
 
 	Region                     commons.FieldName = "region"
-	SubnetIds                  commons.FieldName = "subnet_ids"
+	SubnetIDs                  commons.FieldName = "subnet_ids"
 	AvailabilityZones          commons.FieldName = "availability_zones"
 	PreferredAvailabilityZones commons.FieldName = "preferred_availability_zones"
 	ElasticLoadBalancers       commons.FieldName = "elastic_load_balancers"

@@ -2,6 +2,7 @@ package managed_instance_aws_compute_instance_type
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -11,7 +12,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[Product] = commons.NewGenericField(
-		commons.ManagedInstanceAwsComputeInstanceType,
+		commons.ManagedInstanceAWSComputeInstanceType,
 		Product,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -44,7 +45,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Types] = commons.NewGenericField(
-		commons.ManagedInstanceAwsComputeInstanceType,
+		commons.ManagedInstanceAWSComputeInstanceType,
 		Types,
 		&schema.Schema{
 			Type:     schema.TypeList,
@@ -99,7 +100,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[PreferredType] = commons.NewGenericField(
-		commons.ManagedInstanceAwsComputeInstanceType,
+		commons.ManagedInstanceAWSComputeInstanceType,
 		PreferredType,
 		&schema.Schema{
 			Type:     schema.TypeString,

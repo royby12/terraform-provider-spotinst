@@ -2,16 +2,17 @@ package commons
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
-	"log"
 )
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Variables
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 const (
-	ManagedInstanceAwsResourceName ResourceName = "spotinst_managed_instance_aws"
+	ManagedInstanceAWSResourceName ResourceName = "spotinst_managed_instance_aws"
 )
 
 var ManagedInstanceResource *ManagedInstanceTerraformResource
@@ -36,7 +37,7 @@ type MangedInstanceAWSWrapper struct {
 func NewManagedInstanceResource(fieldsMap map[FieldName]*GenericField) *ManagedInstanceTerraformResource {
 	return &ManagedInstanceTerraformResource{
 		GenericResource: GenericResource{
-			resourceName: ManagedInstanceAwsResourceName,
+			resourceName: ManagedInstanceAWSResourceName,
 			fields:       NewGenericFields(fieldsMap),
 		},
 	}

@@ -1,17 +1,18 @@
 package managed_instance_aws_integrations
 
 import (
+	"regexp"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"regexp"
 )
 
 func SetupLoadBalancers(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[LoadBalancers] = commons.NewGenericField(
-		commons.ManagedInstanceAws,
+		commons.ManagedInstanceAWS,
 		LoadBalancers,
 		&schema.Schema{
 			Type:     schema.TypeSet,

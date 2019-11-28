@@ -2,6 +2,7 @@ package managed_instance_healthcheck
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
@@ -13,7 +14,7 @@ import (
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	fieldsMap[HealthCheckType] = commons.NewGenericField(
-		commons.ManagedInstanceAwsHealthCheck,
+		commons.ManagedInstanceAWSHealthCheck,
 		HealthCheckType,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -53,7 +54,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[AutoHealing] = commons.NewGenericField(
-		commons.ManagedInstanceAwsHealthCheck,
+		commons.ManagedInstanceAWSHealthCheck,
 		AutoHealing,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -91,7 +92,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[GracePeriod] = commons.NewGenericField(
-		commons.ManagedInstanceAwsHealthCheck,
+		commons.ManagedInstanceAWSHealthCheck,
 		GracePeriod,
 		&schema.Schema{
 			Type:     schema.TypeInt,
@@ -131,7 +132,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[UnhealthyDuration] = commons.NewGenericField(
-		commons.ManagedInstanceAws,
+		commons.ManagedInstanceAWS,
 		UnhealthyDuration,
 		&schema.Schema{
 			Type:     schema.TypeInt,

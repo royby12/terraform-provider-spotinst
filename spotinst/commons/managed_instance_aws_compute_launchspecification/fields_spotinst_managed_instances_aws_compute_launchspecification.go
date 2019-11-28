@@ -1,22 +1,23 @@
-package managed_instance_aws_compute_launchSpecification
+package managed_instance_aws_compute_launchspecification
 
 import (
 	"bytes"
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"regexp"
+
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"regexp"
 )
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[EBSOptimized] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		EBSOptimized,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -56,7 +57,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[EnableMonitoring] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		EnableMonitoring,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -96,7 +97,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[PlacementTenancy] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		PlacementTenancy,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -137,7 +138,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		nil,
 	)
 	fieldsMap[SecurityGroupIds] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		SecurityGroupIds,
 		&schema.Schema{
 			Type:     schema.TypeList,
@@ -185,7 +186,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[ImageId] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		ImageId,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -224,7 +225,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[KeyPair] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		KeyPair,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -263,7 +264,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[UserData] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		UserData,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -325,7 +326,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[ShutdownScript] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		ShutdownScript,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -387,7 +388,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[IamInstanceProfile] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		IamInstanceProfile,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -445,7 +446,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		nil,
 	)
 	fieldsMap[CPUCredits] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		CPUCredits,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -493,7 +494,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Tags] = commons.NewGenericField(
-		commons.ManagedInstanceAwsLaunchSpecification,
+		commons.ManagedInstanceAWSLaunchSpecification,
 		Tags,
 		&schema.Schema{
 			Type:     schema.TypeSet,

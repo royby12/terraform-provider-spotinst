@@ -1,4 +1,4 @@
-package managed_instance_aws_compute_launchSpecification
+package managed_instance_aws_compute_launchspecification
 
 import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 

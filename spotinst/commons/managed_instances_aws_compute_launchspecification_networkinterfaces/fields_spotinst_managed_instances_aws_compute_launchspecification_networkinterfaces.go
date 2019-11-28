@@ -1,13 +1,14 @@
-package managed_instances_aws_compute_launchspecification_networkInterfaces
+package managed_instances_aws_compute_launchspecification_networkinterfaces
 
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"strconv"
 )
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -16,7 +17,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[NetworkInterface] = commons.NewGenericField(
-		commons.ManagedInstanceAwsNetworkInterfaces,
+		commons.ManagedInstanceAWSNetworkInterfaces,
 		NetworkInterface,
 		&schema.Schema{
 			Type:     schema.TypeSet,
@@ -28,7 +29,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 						Required: true,
 					},
 
-					string(AssociatePublicIpAddress): {
+					string(AssociatePublicIPAddress): {
 						Type:     schema.TypeBool,
 						Optional: true,
 					},
@@ -99,7 +100,7 @@ func flattenAWSManagedInstanceNetworkInterfaces(networkInterfaces []*aws.Network
 	result := make([]interface{}, 0, len(networkInterfaces))
 	for _, iface := range networkInterfaces {
 		m := make(map[string]interface{})
-		m[string(AssociatePublicIpAddress)] = spotinst.BoolValue(iface.AssociatePublicIPAddress)
+		m[string(AssociatePublicIPAddress)] = spotinst.BoolValue(iface.AssociatePublicIPAddress)
 		m[string(AssociateIPV6Address)] = spotinst.BoolValue(iface.AssociateIPV6Address)
 
 		if iface.DeviceIndex != nil {
@@ -118,14 +119,14 @@ func expandAWSManagedInstanceNetworkInterfaces(data interface{}) ([]*aws.Network
 		m := item.(map[string]interface{})
 		networkInterface := &aws.NetworkInterface{}
 
-		if v, ok := m[string(NetworkInterfaceId)].(string); ok && v != "" {
-			if v, ok := m[string(AssociatePublicIpAddress)].(bool); ok && v {
+		if v, ok := m[string(NetworkInterfaceID)].(string); ok && v != "" {
+			if v, ok := m[string(AssociatePublicIPAddress)].(bool); ok && v {
 				return nil, errors.New("invalid Network interface: associate_public_ip_address must be undefined when using network_interface_id")
 			}
 			networkInterface.SetId(spotinst.String(v))
 		} else {
-			// AssociatePublicIp cannot be set at all when NetworkInterfaceId is specified
-			if v, ok := m[string(AssociatePublicIpAddress)].(bool); ok {
+			// AssociatePublicIp cannot be set at all when NetworkInterfaceID is specified
+			if v, ok := m[string(AssociatePublicIPAddress)].(bool); ok {
 				networkInterface.SetAssociatePublicIPAddress(spotinst.Bool(v))
 			}
 		}

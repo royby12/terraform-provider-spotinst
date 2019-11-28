@@ -2,6 +2,7 @@ package managed_instance_strategy
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -15,7 +16,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[LifeCycle] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		LifeCycle,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -53,7 +54,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Orientation] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		Orientation,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -91,7 +92,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[DrainingTimeout] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		DrainingTimeout,
 		&schema.Schema{
 			Type:     schema.TypeInt,
@@ -130,7 +131,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[FallbackToOd] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		FallbackToOd,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -168,7 +169,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[UtilizeReservedInstances] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		UtilizeReservedInstances,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -206,7 +207,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[RevertToSpot] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		RevertToSpot,
 		&schema.Schema{
 			Type:     schema.TypeList,
@@ -265,7 +266,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[OptimizationWindows] = commons.NewGenericField(
-		commons.ManagedInstanceAwsStrategy,
+		commons.ManagedInstanceAWSStrategy,
 		OptimizationWindows,
 		&schema.Schema{
 			Type:     schema.TypeList,

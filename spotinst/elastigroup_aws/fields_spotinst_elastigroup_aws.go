@@ -437,9 +437,9 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		nil,
 	)
 
-	fieldsMap[SubnetIds] = commons.NewGenericField(
+	fieldsMap[SubnetIDs] = commons.NewGenericField(
 		commons.ElastigroupAWS,
-		SubnetIds,
+		SubnetIDs,
 		&schema.Schema{
 			Type:          schema.TypeList,
 			Elem:          &schema.Schema{Type: schema.TypeString},
@@ -453,15 +453,15 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if elastigroup.Compute != nil && elastigroup.Compute.SubnetIDs != nil {
 				value = elastigroup.Compute.SubnetIDs
 			}
-			if err := resourceData.Set(string(SubnetIds), value); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(SubnetIds), err)
+			if err := resourceData.Set(string(SubnetIDs), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(SubnetIDs), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
-			if value, ok := resourceData.GetOk(string(SubnetIds)); ok && value != nil {
+			if value, ok := resourceData.GetOk(string(SubnetIDs)); ok && value != nil {
 				if subnetIds, err := expandSubnetIDs(value); err != nil {
 					return err
 				} else {
@@ -473,7 +473,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
-			if value, ok := resourceData.GetOk(string(SubnetIds)); ok && value != nil {
+			if value, ok := resourceData.GetOk(string(SubnetIDs)); ok && value != nil {
 				if subnetIds, err := expandSubnetIDs(value); err != nil {
 					return err
 				} else {
@@ -541,7 +541,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
-			if _, exists := resourceData.GetOk(string(SubnetIds)); !exists {
+			if _, exists := resourceData.GetOk(string(SubnetIDs)); !exists {
 				if value, ok := resourceData.GetOk(string(AvailabilityZones)); ok {
 					if zones, err := expandAvailabilityZonesSlice(value); err != nil {
 						return err
@@ -555,7 +555,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
-			if _, exists := resourceData.GetOk(string(SubnetIds)); !exists {
+			if _, exists := resourceData.GetOk(string(SubnetIDs)); !exists {
 				if value, ok := resourceData.GetOk(string(AvailabilityZones)); ok {
 					if zones, err := expandAvailabilityZonesSlice(value); err != nil {
 						return err
