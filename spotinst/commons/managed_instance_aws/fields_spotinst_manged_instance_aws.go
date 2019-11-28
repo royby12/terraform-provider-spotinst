@@ -2,6 +2,7 @@ package managed_instance_aws
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
@@ -14,7 +15,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[Name] = commons.NewGenericField(
-		commons.ManagedInstanceAws,
+		commons.ManagedInstanceAWS,
 		Name,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -48,7 +49,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Description] = commons.NewGenericField(
-		commons.ManagedInstanceAws,
+		commons.ManagedInstanceAWS,
 		Description,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -86,7 +87,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[Region] = commons.NewGenericField(
-		commons.ManagedInstanceAws,
+		commons.ManagedInstanceAWS,
 		Region,
 		&schema.Schema{
 			Type:     schema.TypeString,

@@ -2,6 +2,7 @@ package managed_instance_aws_compute
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
@@ -9,9 +10,9 @@ import (
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
-	fieldsMap[SubnetIds] = commons.NewGenericField(
-		commons.ManagedInstanceAwsCompute,
-		SubnetIds,
+	fieldsMap[SubnetIDs] = commons.NewGenericField(
+		commons.ManagedInstanceAWSCompute,
+		SubnetIDs,
 		&schema.Schema{
 			Type:     schema.TypeList,
 			Elem:     &schema.Schema{Type: schema.TypeString},
@@ -24,15 +25,15 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if managedInstance.Compute != nil && managedInstance.Compute.SubnetIDs != nil {
 				value = managedInstance.Compute.SubnetIDs
 			}
-			if err := resourceData.Set(string(SubnetIds), value); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(SubnetIds), err)
+			if err := resourceData.Set(string(SubnetIDs), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(SubnetIDs), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(SubnetIds)); ok && value != nil {
+			if value, ok := resourceData.GetOk(string(SubnetIDs)); ok && value != nil {
 				if subnetIds, err := expandSubnetIDs(value); err != nil {
 					return err
 				} else {
@@ -44,7 +45,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(SubnetIds)); ok && value != nil {
+			if value, ok := resourceData.GetOk(string(SubnetIDs)); ok && value != nil {
 				if subnetIds, err := expandSubnetIDs(value); err != nil {
 					return err
 				} else {
@@ -56,9 +57,9 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		nil,
 	)
 
-	fieldsMap[VpcId] = commons.NewGenericField(
-		commons.ManagedInstanceAwsCompute,
-		VpcId,
+	fieldsMap[VpcID] = commons.NewGenericField(
+		commons.ManagedInstanceAWSCompute,
+		VpcID,
 		&schema.Schema{
 			Type:     schema.TypeString,
 			Required: true,
@@ -70,29 +71,29 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if managedInstance.Compute != nil && managedInstance.Compute.VpcID != nil {
 				value = managedInstance.Compute.VpcID
 			}
-			if err := resourceData.Set(string(VpcId), value); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(VpcId), err)
+			if err := resourceData.Set(string(VpcID), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(VpcID), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			managedInstance.Compute.SetVpcId(spotinst.String(resourceData.Get(string(VpcId)).(string)))
+			managedInstance.Compute.SetVpcId(spotinst.String(resourceData.Get(string(VpcID)).(string)))
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			managedInstance.Compute.SetVpcId(spotinst.String(resourceData.Get(string(VpcId)).(string)))
+			managedInstance.Compute.SetVpcId(spotinst.String(resourceData.Get(string(VpcID)).(string)))
 			return nil
 		},
 		nil,
 	)
 
-	fieldsMap[ElasticIp] = commons.NewGenericField(
-		commons.ManagedInstanceAwsCompute,
-		ElasticIp,
+	fieldsMap[ElasticIP] = commons.NewGenericField(
+		commons.ManagedInstanceAWSCompute,
+		ElasticIP,
 		&schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
@@ -104,33 +105,33 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if managedInstance.Compute != nil && managedInstance.Compute.ElasticIP != nil {
 				value = managedInstance.Compute.ElasticIP
 			}
-			if err := resourceData.Set(string(ElasticIp), value); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(ElasticIp), err)
+			if err := resourceData.Set(string(ElasticIP), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(ElasticIP), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(ElasticIp)); ok && value != nil {
-				managedInstance.Compute.SetElasticIP(spotinst.String(resourceData.Get(string(ElasticIp)).(string)))
+			if value, ok := resourceData.GetOk(string(ElasticIP)); ok && value != nil {
+				managedInstance.Compute.SetElasticIP(spotinst.String(resourceData.Get(string(ElasticIP)).(string)))
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(ElasticIp)); ok && value != nil {
-				managedInstance.Compute.SetElasticIP(spotinst.String(resourceData.Get(string(ElasticIp)).(string)))
+			if value, ok := resourceData.GetOk(string(ElasticIP)); ok && value != nil {
+				managedInstance.Compute.SetElasticIP(spotinst.String(resourceData.Get(string(ElasticIP)).(string)))
 			}
 			return nil
 		},
 		nil,
 	)
 
-	fieldsMap[PrivateIp] = commons.NewGenericField(
-		commons.ManagedInstanceAwsCompute,
-		PrivateIp,
+	fieldsMap[PrivateIP] = commons.NewGenericField(
+		commons.ManagedInstanceAWSCompute,
+		PrivateIP,
 		&schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
@@ -142,24 +143,24 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if managedInstance.Compute != nil && managedInstance.Compute.PrivateIP != nil {
 				value = managedInstance.Compute.PrivateIP
 			}
-			if err := resourceData.Set(string(PrivateIp), value); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PrivateIp), err)
+			if err := resourceData.Set(string(PrivateIP), value); err != nil {
+				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(PrivateIP), err)
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(PrivateIp)); ok && value != nil {
-				managedInstance.Compute.SetPrivateIP(spotinst.String(resourceData.Get(string(PrivateIp)).(string)))
+			if value, ok := resourceData.GetOk(string(PrivateIP)); ok && value != nil {
+				managedInstance.Compute.SetPrivateIP(spotinst.String(resourceData.Get(string(PrivateIP)).(string)))
 			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			miWrapper := resourceObject.(*commons.MangedInstanceAWSWrapper)
 			managedInstance := miWrapper.GetManagedInstance()
-			if value, ok := resourceData.GetOk(string(PrivateIp)); ok && value != nil {
-				managedInstance.Compute.SetPrivateIP(spotinst.String(resourceData.Get(string(PrivateIp)).(string)))
+			if value, ok := resourceData.GetOk(string(PrivateIP)); ok && value != nil {
+				managedInstance.Compute.SetPrivateIP(spotinst.String(resourceData.Get(string(PrivateIP)).(string)))
 			}
 			return nil
 		},

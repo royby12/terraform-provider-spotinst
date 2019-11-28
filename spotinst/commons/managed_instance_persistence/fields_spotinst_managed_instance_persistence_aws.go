@@ -2,6 +2,7 @@ package managed_instance_persistence
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -15,7 +16,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[BlockDevicesMode] = commons.NewGenericField(
-		commons.ManagedInstanceAwsPersistence,
+		commons.ManagedInstanceAWSPersistence,
 		BlockDevicesMode,
 		&schema.Schema{
 			Type:     schema.TypeString,
@@ -57,7 +58,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[PersistPrivateIp] = commons.NewGenericField(
-		commons.ManagedInstanceAwsPersistence,
+		commons.ManagedInstanceAWSPersistence,
 		PersistPrivateIp,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -97,7 +98,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[PersistRootDevice] = commons.NewGenericField(
-		commons.ManagedInstanceAwsPersistence,
+		commons.ManagedInstanceAWSPersistence,
 		PersistRootDevice,
 		&schema.Schema{
 			Type:     schema.TypeBool,
@@ -139,7 +140,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	)
 
 	fieldsMap[PersistBlockDevices] = commons.NewGenericField(
-		commons.ManagedInstanceAwsPersistence,
+		commons.ManagedInstanceAWSPersistence,
 		PersistBlockDevices,
 		&schema.Schema{
 			Type:     schema.TypeBool,

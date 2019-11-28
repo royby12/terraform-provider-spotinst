@@ -2,6 +2,7 @@ package managed_instance_scheduling
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -14,7 +15,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[ScheduledTask] = commons.NewGenericField(
-		commons.ManagedInstanceAwsScheduling,
+		commons.ManagedInstanceAWSScheduling,
 		ScheduledTask,
 		&schema.Schema{
 			Type:     schema.TypeSet,

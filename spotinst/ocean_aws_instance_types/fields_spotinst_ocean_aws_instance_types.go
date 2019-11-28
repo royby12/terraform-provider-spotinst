@@ -2,6 +2,7 @@ package ocean_aws_instance_types
 
 import (
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 )

@@ -3,6 +3,10 @@ package spotinst
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
@@ -12,26 +16,23 @@ import (
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws_compute"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws_compute_instance_type"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws_compute_launchSpecification"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws_compute_launchspecification"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_aws_integrations"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_healthcheck"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_persistence"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_scheduling"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instance_strategy"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instances_aws_compute_launchspecification_networkInterfaces"
-	"log"
-	"strings"
-	"time"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons/managed_instances_aws_compute_launchspecification_networkinterfaces"
 )
 
-func resourceSpotinstMangedInstanceAws() *schema.Resource {
+func resourceSpotinstMangedInstanceAWS() *schema.Resource {
 	setupMangedInstanceResource()
 
 	return &schema.Resource{
-		Create: resourceSpotinstManagedInstanceAwsCreate,
-		Read:   resourceSpotinstManagedInstanceAwsRead,
-		Update: resourceSpotinstManagedInstanceAwsUpdate,
-		Delete: resourceSpotinstManagedInstanceAwsDelete,
+		Create: resourceSpotinstManagedInstanceAWSCreate,
+		Read:   resourceSpotinstManagedInstanceAWSRead,
+		Update: resourceSpotinstManagedInstanceAWSUpdate,
+		Delete: resourceSpotinstManagedInstanceAWSDelete,
 
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -51,8 +52,8 @@ func setupMangedInstanceResource() {
 	managed_instance_aws_compute.Setup(fieldsMap)
 	managed_instance_aws_integrations.Setup(fieldsMap)
 	managed_instance_scheduling.Setup(fieldsMap)
-	managed_instances_aws_compute_launchspecification_networkInterfaces.Setup(fieldsMap)
-	managed_instance_aws_compute_launchSpecification.Setup(fieldsMap)
+	managed_instances_aws_compute_launchspecification_networkinterfaces.Setup(fieldsMap)
+	managed_instance_aws_compute_launchspecification.Setup(fieldsMap)
 	managed_instance_aws_compute_instance_type.Setup(fieldsMap)
 
 	commons.ManagedInstanceResource = commons.NewManagedInstanceResource(fieldsMap)
@@ -63,7 +64,7 @@ func setupMangedInstanceResource() {
 ////-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 const ErrCodeManagedInstanceDoesntExist = "MANAGED_INSTANCE_DOESNT_EXIST"
 
-func resourceSpotinstManagedInstanceAwsRead(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAWSRead(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
 	log.Printf(string(commons.ResourceOnRead),
 		commons.ManagedInstanceResource.GetName(), id)
@@ -103,7 +104,7 @@ func resourceSpotinstManagedInstanceAwsRead(resourceData *schema.ResourceData, m
 ////-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 ////            Create
 ////-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstManagedInstanceAwsCreate(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAWSCreate(resourceData *schema.ResourceData, meta interface{}) error {
 	log.Printf(string(commons.ResourceOnCreate),
 		commons.ManagedInstanceResource.GetName())
 
@@ -121,7 +122,7 @@ func resourceSpotinstManagedInstanceAwsCreate(resourceData *schema.ResourceData,
 
 	log.Printf("===> ManagedInstance created successfully: %s <===", resourceData.Id())
 
-	return resourceSpotinstManagedInstanceAwsRead(resourceData, meta)
+	return resourceSpotinstManagedInstanceAWSRead(resourceData, meta)
 }
 
 func createManagedInstance(resourceData *schema.ResourceData, mangedInstance *aws.ManagedInstance, spotinstClient *Client) (*string, error) {
@@ -130,7 +131,7 @@ func createManagedInstance(resourceData *schema.ResourceData, mangedInstance *aw
 	} else {
 		log.Printf("===> ManagedInstance create configuration: %s", json)
 	}
-	if v, ok := resourceData.Get(string(managed_instance_aws_compute_launchSpecification.IamInstanceProfile)).(string); ok && v != "" {
+	if v, ok := resourceData.Get(string(managed_instance_aws_compute_launchspecification.IamInstanceProfile)).(string); ok && v != "" {
 		time.Sleep(5 * time.Second)
 	}
 	input := &aws.CreateManagedInstanceInput{ManagedInstance: mangedInstance}
@@ -165,7 +166,7 @@ func createManagedInstance(resourceData *schema.ResourceData, mangedInstance *aw
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Update
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstManagedInstanceAwsUpdate(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAWSUpdate(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
 	log.Printf(string(commons.ResourceOnUpdate),
 		commons.ManagedInstanceResource.GetName(), id)
@@ -177,16 +178,16 @@ func resourceSpotinstManagedInstanceAwsUpdate(resourceData *schema.ResourceData,
 
 	if shouldUpdate {
 		managedInstance.SetId(spotinst.String(id))
-		if err := updateAwsManagedInstance(managedInstance, resourceData, meta); err != nil {
+		if err := updateAWSManagedInstance(managedInstance, resourceData, meta); err != nil {
 			return err
 		}
 	}
 
 	log.Printf("===> ManagedInstance updated successfully: %s <===", id)
-	return resourceSpotinstManagedInstanceAwsRead(resourceData, meta)
+	return resourceSpotinstManagedInstanceAWSRead(resourceData, meta)
 }
 
-func updateAwsManagedInstance(managedInstance *aws.ManagedInstance, resourceData *schema.ResourceData, meta interface{}) error {
+func updateAWSManagedInstance(managedInstance *aws.ManagedInstance, resourceData *schema.ResourceData, meta interface{}) error {
 	var input = &aws.UpdateManagedInstanceInput{
 		ManagedInstance: managedInstance,
 	}
@@ -208,7 +209,7 @@ func updateAwsManagedInstance(managedInstance *aws.ManagedInstance, resourceData
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //           Delete
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func resourceSpotinstManagedInstanceAwsDelete(resourceData *schema.ResourceData, meta interface{}) error {
+func resourceSpotinstManagedInstanceAWSDelete(resourceData *schema.ResourceData, meta interface{}) error {
 	id := resourceData.Id()
 	log.Printf(string(commons.ResourceOnDelete),
 		commons.ManagedInstanceResource.GetName(), id)

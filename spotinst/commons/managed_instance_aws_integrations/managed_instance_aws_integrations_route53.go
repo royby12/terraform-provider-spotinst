@@ -2,6 +2,7 @@ package managed_instance_aws_integrations
 
 import (
 	"errors"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -13,7 +14,7 @@ import (
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 func SetupRoute53(fieldsMap map[commons.FieldName]*commons.GenericField) {
 	fieldsMap[IntegrationRoute53] = commons.NewGenericField(
-		commons.ManagedInstanceAwsIntegrations,
+		commons.ManagedInstanceAWSIntegrations,
 		IntegrationRoute53,
 		&schema.Schema{
 			Type:     schema.TypeList,

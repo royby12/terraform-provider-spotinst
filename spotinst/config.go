@@ -3,9 +3,10 @@ package spotinst
 import (
 	"errors"
 	"fmt"
-	"github.com/terraform-providers/terraform-provider-spotinst/version"
 	stdlog "log"
 	"strings"
+
+	"github.com/terraform-providers/terraform-provider-spotinst/version"
 
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup"

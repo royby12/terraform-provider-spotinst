@@ -3,15 +3,16 @@ package spotinst
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	"testing"
+
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/spotinst/spotinst-sdk-go/service/managedinstance/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/elastigroup_aws_launch_configuration"
-	"log"
-	"strings"
-	"testing"
 )
 
 func init() {
@@ -50,13 +51,13 @@ func testSweepManagedInstance(region string) error {
 }
 
 func createManagedInstanceAWSResourceName(name string) string {
-	return fmt.Sprintf("%v.%v", string(commons.ManagedInstanceAwsResourceName), name)
+	return fmt.Sprintf("%v.%v", string(commons.ManagedInstanceAWSResourceName), name)
 }
 
 func testManagedInstanceAWSDestroy(s *terraform.State) error {
 	client := testAccProviderAWS.Meta().(*Client)
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != string(commons.ManagedInstanceAwsResourceName) {
+		if rs.Type != string(commons.ManagedInstanceAWSResourceName) {
 			continue
 		}
 		input := &aws.ReadManagedInstanceInput{ManagedInstanceID: spotinst.String(rs.Primary.ID)}
@@ -220,7 +221,7 @@ func TestAccSpotinstManagedInstanceBaseline(t *testing.T) {
 }
 
 const testBaselineManagedInstanceConfig_Create = `
-resource "` + string(commons.ManagedInstanceAwsResourceName) + `" "%v" {
+resource "` + string(commons.ManagedInstanceAWSResourceName) + `" "%v" {
   provider = "%v"
   name = "%v"
   description = "description"
@@ -240,7 +241,7 @@ resource "` + string(commons.ManagedInstanceAwsResourceName) + `" "%v" {
 `
 
 const testBaselineManagedInstanceConfig_Update = `
-resource "` + string(commons.ManagedInstanceAwsResourceName) + `" "%v" {
+resource "` + string(commons.ManagedInstanceAWSResourceName) + `" "%v" {
   provider = "%v"
   name = "%v"
   description = "description updated"

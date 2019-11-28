@@ -209,11 +209,7 @@ Usage:
    load_balancers = [
      {
        arn  = "arn"
-       type = "CLASSIC"
-       balancer_id   = "lb-123"
-       target_set_id = "ts-123"
-       auto_weight   = "true"
-       az_awareness = "true"
+       type = "TARGET_GROUP"
      }
    ]
    ```
