@@ -95,9 +95,7 @@ func (r *DiffFieldReader) readMap(
 		return FieldReadResult{}, err
 	}
 	if source.Exists {
-		// readMap may return a nil value, or an unknown value placeholder in
-		// some cases, causing the type assertion to panic if we don't assign the ok value
-		result, _ = source.Value.(map[string]interface{})
+		result = source.Value.(map[string]interface{})
 		resultSet = true
 	}
 
@@ -176,9 +174,6 @@ func (r *DiffFieldReader) readPrimitive(
 
 func (r *DiffFieldReader) readSet(
 	address []string, schema *Schema) (FieldReadResult, error) {
-	// copy address to ensure we don't modify the argument
-	address = append([]string(nil), address...)
-
 	prefix := strings.Join(address, ".") + "."
 
 	// Create the set that will be our result
