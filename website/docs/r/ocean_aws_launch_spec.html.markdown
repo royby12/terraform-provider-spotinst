@@ -51,7 +51,7 @@ The following arguments are supported:
 * `image_id` - (Optional) ID of the image used to launch the instances.
 * `iam_instance_profile` - (Optional) The ARN or name of an IAM instance profile to associate with launched instances.
 * `security_groups` - (Optional) Optionally adds security group IDs.
-* `subnetIds` - (Optional) Set subnets in launchSpec. Each element in array should be subnet ID.
+* `subnet_ids` - (Optional) Set subnets in launchSpec. Each element in array should be subnet ID.
 
 * `labels` - (Optional) Optionally adds labels to instances launched in an Ocean cluster.
     * `key` - (Required) The tag key.

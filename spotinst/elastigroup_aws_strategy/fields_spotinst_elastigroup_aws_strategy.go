@@ -87,9 +87,11 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
-			if v, ok := resourceData.GetOkExists(string(OnDemandCount)); ok && v.(int) > 0 {
+			if v, ok := resourceData.GetOkExists(string(OnDemandCount)); ok && v != nil {
 				value := v.(int)
-				elastigroup.Strategy.SetOnDemandCount(spotinst.Int(value))
+				if value >= 0 {
+					elastigroup.Strategy.SetOnDemandCount(spotinst.Int(value))
+				}
 			} else {
 				elastigroup.Strategy.SetOnDemandCount(nil)
 			}
