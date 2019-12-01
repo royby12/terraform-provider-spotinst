@@ -68,8 +68,10 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if elastigroup.Strategy != nil && elastigroup.Strategy.OnDemandCount != nil {
 				value = elastigroup.Strategy.OnDemandCount
 			}
-			if err := resourceData.Set(string(OnDemandCount), spotinst.IntValue(value)); err != nil {
-				return fmt.Errorf(string(commons.FailureFieldReadPattern), string(OnDemandCount), err)
+			if value != nil {
+				if err := resourceData.Set(string(OnDemandCount), spotinst.IntValue(value)); err != nil {
+					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(OnDemandCount), err)
+				}
 			}
 			return nil
 		},
@@ -87,7 +89,11 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			elastigroup := egWrapper.GetElastigroup()
 			if v, ok := resourceData.GetOkExists(string(OnDemandCount)); ok && v != nil {
 				value := v.(int)
-				elastigroup.Strategy.SetOnDemandCount(spotinst.Int(value))
+				if value >= 0 {
+					elastigroup.Strategy.SetOnDemandCount(spotinst.Int(value))
+				}
+			} else {
+				elastigroup.Strategy.SetOnDemandCount(nil)
 			}
 			return nil
 		},

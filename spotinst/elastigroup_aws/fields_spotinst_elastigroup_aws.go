@@ -706,12 +706,12 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			Optional: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
-					string(MultaiTargetSetId): {
+					string(MultaiTargetSetID): {
 						Type:     schema.TypeString,
 						Required: true,
 					},
 
-					string(MultaiBalancerId): {
+					string(MultaiBalancerID): {
 						Type:     schema.TypeString,
 						Required: true,
 					},
@@ -1416,10 +1416,10 @@ func expandAWSGroupMultaiTargetSets(data interface{}) ([]*aws.LoadBalancer, erro
 		multaiBalancer := &aws.LoadBalancer{
 			Type: spotinst.String(strings.ToUpper(string(BalancerTypeMultaiTargetSet))),
 		}
-		if v, ok := m[string(MultaiTargetSetId)].(string); ok && v != "" {
+		if v, ok := m[string(MultaiTargetSetID)].(string); ok && v != "" {
 			multaiBalancer.SetTargetSetId(spotinst.String(v))
 		}
-		if v, ok := m[string(MultaiBalancerId)].(string); ok && v != "" {
+		if v, ok := m[string(MultaiBalancerID)].(string); ok && v != "" {
 			multaiBalancer.SetBalancerId(spotinst.String(v))
 		}
 		balancers = append(balancers, multaiBalancer)
@@ -1461,8 +1461,8 @@ func flattenAWSGroupMultaiTargetSets(balancers []*aws.LoadBalancer) []interface{
 		balType := spotinst.StringValue(balancer.Type)
 		if balType == string(BalancerTypeMultaiTargetSet) {
 			m := make(map[string]interface{})
-			m[string(MultaiTargetSetId)] = spotinst.StringValue(balancer.TargetSetID)
-			m[string(MultaiBalancerId)] = spotinst.StringValue(balancer.BalancerID)
+			m[string(MultaiTargetSetID)] = spotinst.StringValue(balancer.TargetSetID)
+			m[string(MultaiBalancerID)] = spotinst.StringValue(balancer.BalancerID)
 			result = append(result, m)
 		}
 	}

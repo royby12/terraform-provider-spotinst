@@ -1,3 +1,12 @@
+## 1.13.8 (Unreleased)
+
+* resource/spotinst_ocean_aws_launch_spec: added `subnet_ids`
+* resource/spotinst_ocean_aws: added `max_scale_down_percentage`
+
+BUG FIXES:
+* resource/spotinst_elastigroup_aws: resolved errors with `ondemand_count`.
+* resource/spotinst_elastigroup_gcp: resolved errors with `startup_script`. 
+
 ## 1.13.7 (Unreleased)
 
 FEATURES:

@@ -42,8 +42,8 @@ const (
 	ElasticLoadBalancers       commons.FieldName = "elastic_load_balancers"
 	TargetGroupArns            commons.FieldName = "target_group_arns"
 	MultaiTargetSets           commons.FieldName = "multai_target_sets"
-	MultaiTargetSetId          commons.FieldName = "target_set_id"
-	MultaiBalancerId           commons.FieldName = "balancer_id"
+	MultaiTargetSetID          commons.FieldName = "target_set_id"
+	MultaiBalancerID           commons.FieldName = "balancer_id"
 	Tags                       commons.FieldName = "tags"
 
 	RevertToSpot commons.FieldName = "revert_to_spot"
