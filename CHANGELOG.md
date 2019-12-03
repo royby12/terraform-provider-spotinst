@@ -2,6 +2,7 @@
 
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `blacklist`.
+* resource/spotinst_ocean_gke_import: resolved errors with `whitelist`.
 
 ## 1.13.8 (Unreleased)
 
