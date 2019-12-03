@@ -1,3 +1,8 @@
+## 1.13.9 (Unreleased)
+
+BUG FIXES:
+* resource/spotinst_ocean_aws: resolved errors with `blacklist`.
+
 ## 1.13.8 (Unreleased)
 
 * resource/spotinst_ocean_aws_launch_spec: added `subnet_ids`

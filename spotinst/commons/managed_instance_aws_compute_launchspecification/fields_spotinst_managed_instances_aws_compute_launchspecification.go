@@ -332,7 +332,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			Type:     schema.TypeString,
 			Optional: true,
 			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-				// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum //TODO SALI EXPLAIN
+				// Sometimes the EC2 API responds with the equivalent, empty SHA1 sum
 				if (old == "da39a3ee5e6b4b0d3255bfef95601890afd80709" && new == "") ||
 					(old == "" && new == "da39a3ee5e6b4b0d3255bfef95601890afd80709") {
 					return true
