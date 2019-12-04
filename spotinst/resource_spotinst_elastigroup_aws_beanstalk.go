@@ -2,6 +2,7 @@ package spotinst
 
 import (
 	"fmt"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/elastigroup_aws_beanstalk_scheduled_task"
 	"log"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -38,6 +39,7 @@ func setupElastigroupAWSBeanstalk() {
 	fieldsMap := make(map[commons.FieldName]*commons.GenericField)
 
 	elastigroup_aws_beanstalk.Setup(fieldsMap)
+	elastigroup_aws_beanstalk_scheduled_task.Setup(fieldsMap)
 
 	commons.ElastigroupAWSBeanstalkResource = commons.NewElastigroupAWSBeanstalkResource(fieldsMap)
 }

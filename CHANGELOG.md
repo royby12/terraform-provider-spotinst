@@ -1,5 +1,7 @@
 ## 1.13.9 (Unreleased)
 
+* resource/spotinst_elastigroup_aws_beanstalk: added `scheduled_task`
+
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `blacklist`.
 * resource/spotinst_ocean_gke_import: resolved errors with `whitelist`.
