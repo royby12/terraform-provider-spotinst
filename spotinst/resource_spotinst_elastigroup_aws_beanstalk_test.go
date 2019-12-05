@@ -410,6 +410,14 @@ func TestAccSpotinstElastigroupAWSBeanstalk_ScheduledTask(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1172895501.grace_period", "150"),
 				),
 			},
+			{
+				Config: createElastigroupAWSBeanstalkTerraform(&BeanstalkGroupConfigMetadata{groupName: groupName, updateBaselineFields: true}, testScheduledTaskBeanstalkGroupConfig_EmptyFields, testScheduledTaskBeanstalkGroupConfig_Create),
+				Check: resource.ComposeTestCheckFunc(
+					testCheckElastigroupAWSBeanstalkExists(&group, resourceName),
+					testCheckElastigroupAWSBeanstalkAttributes(&group, groupName),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.#", "0"),
+				),
+			},
 		},
 	})
 }
@@ -504,6 +512,25 @@ resource "` + string(commons.ElastigroupAWSBeanstalkResourceName) + `" "%v" {
     batch_size_percentage = 66
     grace_period = 150
   }]
+}
+ // -------------------------------------
+`
+
+const testScheduledTaskBeanstalkGroupConfig_EmptyFields = `
+ // --- SCHEDULED TASK ------------------
+resource "` + string(commons.ElastigroupAWSBeanstalkResourceName) + `" "%v" {
+ provider = "%v"
+
+ name 	 = "%v"
+ product = "Linux/UNIX"
+ region  = "us-west-2"
+
+ max_size 		  = 3
+ min_size 		  = 1
+ desired_capacity = 2
+
+ beanstalk_environment_id = "e-mzp2rk47dw"
+ instance_types_spot        = ["t2.small", "t2.medium"]
 }
  // -------------------------------------
 `
