@@ -16,8 +16,9 @@ const (
 	ProviderToken   FieldName = "token"
 	ProviderAccount FieldName = "account"
 
-	Subscription            ResourceAffinity = "Subscription"
-	ElastigroupAWSBeanstalk ResourceAffinity = "ElastigroupAWSBeanstalk"
+	Subscription                         ResourceAffinity = "Subscription"
+	ElastigroupAWSBeanstalk              ResourceAffinity = "ElastigroupAWSBeanstalk"
+	ElastigroupAWSBeanstalkScheduledTask ResourceAffinity = "ElastigroupAWSBeanstalk_Scheduled_Task"
 
 	OceanAWS                    ResourceAffinity = "Ocean_AWS"
 	OceanAWSInstanceTypes       ResourceAffinity = "Ocean_AWS_Instance_Types"

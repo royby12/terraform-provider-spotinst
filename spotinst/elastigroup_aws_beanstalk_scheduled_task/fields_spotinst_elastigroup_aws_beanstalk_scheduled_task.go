@@ -1,4 +1,4 @@
-package elastigroup_aws_scheduled_task
+package elastigroup_aws_beanstalk_scheduled_task
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ import (
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 
 	fieldsMap[ScheduledTask] = commons.NewGenericField(
-		commons.ElastigroupAWSScheduledTask,
+		commons.ElastigroupAWSBeanstalkScheduledTask,
 		ScheduledTask,
 		&schema.Schema{
 			Type:     schema.TypeSet,
@@ -102,8 +102,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			},
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
-			elastigroup := egWrapper.GetElastigroup()
+			egWrapper := resourceObject.(*commons.ElastigroupAWSBeanstalkWrapper)
+			elastigroup := egWrapper.GetElastigroupAWSBeanstalk()
 			var value []interface{} = nil
 			if elastigroup.Scheduling != nil && elastigroup.Scheduling.Tasks != nil {
 				tasks := elastigroup.Scheduling.Tasks
@@ -121,8 +121,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
-			elastigroup := egWrapper.GetElastigroup()
+			egWrapper := resourceObject.(*commons.ElastigroupAWSBeanstalkWrapper)
+			elastigroup := egWrapper.GetElastigroupAWSBeanstalk()
 			if v, ok := resourceData.GetOk(string(ScheduledTask)); ok {
 				if tasks, err := expandAWSGroupScheduledTasks(v); err != nil {
 					return err
@@ -133,8 +133,8 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
-			elastigroup := egWrapper.GetElastigroup()
+			egWrapper := resourceObject.(*commons.ElastigroupAWSBeanstalkWrapper)
+			elastigroup := egWrapper.GetElastigroupAWSBeanstalk()
 			var value []*aws.Task = nil
 			if v, ok := resourceData.GetOk(string(ScheduledTask)); ok {
 				if interfaces, err := expandAWSGroupScheduledTasks(v); err != nil {
