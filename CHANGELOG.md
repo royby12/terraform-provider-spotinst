@@ -1,3 +1,8 @@
+## 1.14.2 (Unreleased)
+
+ENHANCEMENTS:
+* resource/spotinst_ocean_aws_launch_spec: added `root_volume_size`
+
 ## 1.14.1 (Unreleased)
 
 BUG FIXES:
