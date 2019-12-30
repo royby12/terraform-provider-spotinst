@@ -4,5 +4,5 @@ go 1.13
 
 require (
 	github.com/hashicorp/terraform v0.11.14
-	github.com/spotinst/spotinst-sdk-go v1.38.1
+	github.com/spotinst/spotinst-sdk-go v1.38.2
 )
