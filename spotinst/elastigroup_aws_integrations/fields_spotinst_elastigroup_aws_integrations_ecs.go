@@ -115,18 +115,6 @@ func SetupEcs(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			},
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
-			elastigroup := egWrapper.GetElastigroup()
-			var result []interface{} = nil
-			if elastigroup != nil && elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil {
-				result = flattenECSIntegration(elastigroup.Integration.EC2ContainerService)
-			}
-
-			if result != nil {
-				if err := resourceData.Set(string(IntegrationEcs), result); err != nil {
-					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(IntegrationEcs), err)
-				}
-			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
