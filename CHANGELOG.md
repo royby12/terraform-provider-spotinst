@@ -1,3 +1,8 @@
+## 1.14.3 (Unreleased)
+
+BUG FIXES:
+* resource/spotinst_elastigroup_aws: resolved errors with `integration_ecs`
+
 ## 1.14.2 (Unreleased)
 
 ENHANCEMENTS:
