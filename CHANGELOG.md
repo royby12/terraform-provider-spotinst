@@ -1,3 +1,8 @@
+## 1.14.3 (Unreleased)
+
+ENHANCEMENTS:
+* resource/spotinst_mrscaler_aws: added `ClusterID` support recreate
+
 ## 1.14.2 (Unreleased)
 
 ENHANCEMENTS:
@@ -6,7 +11,7 @@ ENHANCEMENTS:
 ## 1.14.1 (Unreleased)
 
 BUG FIXES:
-* resource/spotinst_elastigroup_aws: resolved errors with `IntegrationEcs - roll_config`.
+* resource/spotinst_elastigroup_aws: resolved errors with `IntegrationEcs - roll_config`
 
 ## 1.13.9 (Unreleased)
 
