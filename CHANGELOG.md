@@ -1,9 +1,9 @@
 ## 1.14.4 (Unreleased)
 
 BUG FIXES:
-* resource/spotinst_ocean_aws: resolved errors with `DesiredCapacity`
-* resource/spotinst_ocean_aws: resolved errors with `MinSize`
-* resource/spotinst_ocean_aws: resolved errors with `MaxSize`
+* resource/spotinst_ocean_aws: resolved errors with `desired_capacity`
+* resource/spotinst_ocean_aws: resolved errors with `min_size`
+* resource/spotinst_ocean_aws: resolved errors with `max_size`
 
 ## 1.14.3 (Unreleased)
 
