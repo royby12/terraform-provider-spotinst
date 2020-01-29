@@ -1,3 +1,8 @@
+## 1.14.5 (Unreleased)
+
+BUG FIXES:
+* resource/spotinst_elastigroup_aws: resolved errors with roll_config
+
 ## 1.14.4 (Unreleased)
 
 BUG FIXES:
