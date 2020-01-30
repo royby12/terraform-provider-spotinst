@@ -1,7 +1,12 @@
-## 1.14.5 (Unreleased)
+## 1.14.6 (Unreleased)
 ​
 ENHANCEMENTS:
-* resource/spotinst_ocean_aws_launch_spec: added `launch_spec_name`
+* resource/spotinst_ocean_aws_launch_spec: added `name`
+
+## 1.14.5 (Unreleased)
+
+BUG FIXES:
+* resource/spotinst_elastigroup_aws: resolved errors with roll_config
 
 ## 1.14.4 (Unreleased)
 
