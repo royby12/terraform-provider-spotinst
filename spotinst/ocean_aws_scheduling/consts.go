@@ -2,7 +2,7 @@ package ocean_aws_scheduling
 
 import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 
-const (
+const ( //
 	ScheduledTask  commons.FieldName = "scheduled_task"
 	ShutdownHours  commons.FieldName = "shutdown_hours"
 	TimeWindows    commons.FieldName = "time_windows"
