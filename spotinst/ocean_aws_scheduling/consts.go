@@ -7,7 +7,7 @@ const ( //
 	ShutdownHours  commons.FieldName = "shutdown_hours"
 	TimeWindows    commons.FieldName = "time_windows"
 	IsEnabled      commons.FieldName = "is_enabled"
-	tasks          commons.FieldName = "tasks"
+	Tasks          commons.FieldName = "tasks"
 	tasksIsEnabled commons.FieldName = "tasks_is_enabled"
 	CronExpression commons.FieldName = "cron_expression"
 	TaskType       commons.FieldName = "task_type"
