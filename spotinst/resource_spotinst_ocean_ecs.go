@@ -3,7 +3,6 @@ package spotinst
 import (
 	"context"
 	"fmt"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_scheduling"
 	"log"
 	"strings"
 	"time"
@@ -19,6 +18,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_autoscaler"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_instance_types"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_launch_specification"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_scheduling"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_ecs_strategy"
 )
 

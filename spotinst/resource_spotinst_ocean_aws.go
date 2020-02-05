@@ -3,7 +3,6 @@ package spotinst
 import (
 	"context"
 	"fmt"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_scheduling"
 	"log"
 	"strings"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_auto_scaling"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_instance_types"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_launch_configuration"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_scheduling"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_aws_strategy"
 )
 
