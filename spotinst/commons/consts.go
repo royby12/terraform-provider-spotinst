@@ -43,6 +43,7 @@ const (
 	OceanECSInstanceTypes       ResourceAffinity = "Ocean_ECS_Instance_Types"
 	OceanECSLaunchSpecification ResourceAffinity = "Ocean_ECS_Launch_Specification"
 	OceanECSStrategy            ResourceAffinity = "Ocean_ECS_Strategy"
+	OceanECSScheduling          ResourceAffinity = "Ocean_ECS_Scheduling"
 
 	OceanECSLaunchSpec ResourceAffinity = "Ocean_ECS_Launch_Spec"
 

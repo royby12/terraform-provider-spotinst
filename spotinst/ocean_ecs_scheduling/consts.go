@@ -1,4 +1,4 @@
-package ocean_aws_scheduling
+package ocean_ecs_scheduling
 
 import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 
