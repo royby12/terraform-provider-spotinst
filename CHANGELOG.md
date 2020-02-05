@@ -1,6 +1,12 @@
 ## 1.14.6 (Unreleased)
 ​
 ENHANCEMENTS:
+* resource/spotinst_ocean_aws: added `scheduled_task`
+* resource/spotinst_ocean_ecs: added `scheduled_task`
+
+## 1.14.6 (Unreleased)
+​
+ENHANCEMENTS:
 * resource/spotinst_ocean_aws_launch_spec: added `name`
 
 ## 1.14.5 (Unreleased)
