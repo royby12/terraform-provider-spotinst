@@ -113,7 +113,7 @@ type OceanGKEImportMetadata struct {
 	updateBaselineFields bool
 }
 
-func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata, update string, create string) string {
+func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata) string {
 	if clusterMeta == nil {
 		return ""
 	}
@@ -129,16 +129,18 @@ func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata, update s
 	}
 	`
 	if clusterMeta.updateBaselineFields {
-		format := testBaselineOceanGKEImportConfig_Create
+		format := testBaselineOceanGKEImportConfig_Update
 		template += fmt.Sprintf(format,
 			clusterMeta.clusterName,
 			clusterMeta.provider,
+			clusterMeta.fieldsToAppend,
 		)
 	} else {
 		format := testBaselineOceanGKEImportConfig_Create
 		template += fmt.Sprintf(format,
 			clusterMeta.clusterName,
 			clusterMeta.provider,
+			clusterMeta.fieldsToAppend,
 		)
 
 	}
@@ -160,7 +162,9 @@ func TestAccSpotinstOceanGKEImport_Baseline(t *testing.T) {
 
 		Steps: []resource.TestStep{
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName}, testBaselineOceanGKEImportConfig_Update, testBaselineOceanGKEImportConfig_Create),
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName: spotClusterName,
+				}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
@@ -170,7 +174,9 @@ func TestAccSpotinstOceanGKEImport_Baseline(t *testing.T) {
 				),
 			},
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName, updateBaselineFields: true}, testBaselineOceanGKEImportConfig_Update, testBaselineOceanGKEImportConfig_Create),
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName:          spotClusterName,
+					updateBaselineFields: true}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
@@ -186,13 +192,11 @@ const testBaselineOceanGKEImportConfig_Create = `
 resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
  provider = "%v"
 
- //min_size 			= 0
- //max_size 			= 1
- //desired_capacity 	= 0
  cluster_name = "terraform-acc-tests-do-not-delete"
  location     = "us-central1-a"
 
  whitelist = ["n1-standard-1", "n1-standard-2"]
+ %v
 }
 
 `
@@ -201,20 +205,18 @@ const testBaselineOceanGKEImportConfig_Update = `
 resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
  provider = "%v"
 
- //min_size 			= 0
- //max_size 			= 1
- //desired_capacity 	= 0
  cluster_name = "terraform-acc-tests-do-not-delete"
  location     = "us-central1-a"
 
  whitelist = ["n1-standard-1"]
+ %v
 }
 
 `
 
-// endregion
+//endregion
 
-// region Ocean GKE Import: BackendServices
+//region Ocean GKE Import: BackendServices
 func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 	spotClusterName := "terraform-acc-tests-ocean-gke-import-be-services"
 	resourceName := createOceanGKEImportResourceName(spotClusterName)
@@ -227,13 +229,13 @@ func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 
 		Steps: []resource.TestStep{
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName}, testBackendServicesOceanGKEImportConfig_Update, testBackendServicesOceanGKEImportConfig_Create),
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName:    spotClusterName,
+					fieldsToAppend: testBackendServicesOceanGKEImportConfig_Create,
+				}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.0", "n1-standard-1"),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.1", "n1-standard-2"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.1781664423.location_type", "global"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.1781664423.service_name", "terraform-acc-test-backend-service"),
@@ -245,13 +247,13 @@ func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 				),
 			},
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName, updateBaselineFields: true}, testBackendServicesOceanGKEImportConfig_Update, testBackendServicesOceanGKEImportConfig_Create),
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName:    spotClusterName,
+					fieldsToAppend: testBackendServicesOceanGKEImportConfig_Update,
+				}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.#", "2"),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.0", "n1-standard-1"),
-					resource.TestCheckResourceAttr(resourceName, "whitelist.1", "n1-standard-2"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.location_type", "global"),
 					resource.TestCheckResourceAttr(resourceName, "backend_services.3984833389.service_name", "terraform-acc-test-backend-service"),
@@ -266,50 +268,34 @@ func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
 }
 
 const testBackendServicesOceanGKEImportConfig_Create = `
-resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
- provider = "%v"
+ backend_services = [
+   {
+     service_name = "terraform-acc-test-backend-service"
+     location_type = "global"
 
- cluster_name = "terraform-acc-tests-do-not-delete"
- location     = "us-central1-a"
+     named_ports = {
+       name = "http"
+       ports = [
+         80,
+         8080]
+     }
+   }]
 
- whitelist = ["n1-standard-1", "n1-standard-2"]
-
-  backend_services = [
-    {
-      service_name = "terraform-acc-test-backend-service"
-      location_type = "global"
-
-      named_ports = {
-        name = "http"
-        ports = [
-          80,
-          8080]
-      }
-    }]
-}
 
 `
 
 const testBackendServicesOceanGKEImportConfig_Update = `
-resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
- provider = "%v"
+ backend_services = [
+   {
+     service_name = "terraform-acc-test-backend-service"
+     location_type = "global"
 
- cluster_name = "terraform-acc-tests-do-not-delete"
- location     = "us-central1-a"
+     named_ports = {
+       name = "https"
+       ports = [443]
+     }
+   }]
 
- whitelist = ["n1-standard-1", "n1-standard-2"]
-
-  backend_services = [
-    {
-      service_name = "terraform-acc-test-backend-service"
-      location_type = "global"
-
-      named_ports = {
-        name = "https"
-        ports = [443]
-      }
-    }]
-}
 
 `
 
@@ -328,8 +314,11 @@ func TestAccSpotinstOceanGKEImport_Scheduling(t *testing.T) {
 
 		Steps: []resource.TestStep{
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName}, testOceanGKEScheduling_Update, testOceanGKEScheduling_Create),
-				//
+				ResourceName: resourceName,
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName:    spotClusterName,
+					fieldsToAppend: testOceanGKEScheduling_Create,
+				}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
@@ -345,7 +334,11 @@ func TestAccSpotinstOceanGKEImport_Scheduling(t *testing.T) {
 				),
 			},
 			{
-				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName, updateBaselineFields: true}, testOceanGKEScheduling_Update, testOceanGKEScheduling_Create),
+				ResourceName: resourceName,
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{
+					clusterName:    spotClusterName,
+					fieldsToAppend: testOceanGKEScheduling_Update,
+				}),
 				Check: resource.ComposeTestCheckFunc(
 					testCheckOceanGKEImportExists(&cluster, resourceName),
 					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
@@ -357,7 +350,7 @@ func TestAccSpotinstOceanGKEImport_Scheduling(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.cron_expression", "0 1 * * *"),
 					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.is_enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.task_type", "clusterRoll"),
-					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.batch_size_percentage", "50"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.batch_size_percentage", "20"),
 				),
 			},
 		},
@@ -365,49 +358,35 @@ func TestAccSpotinstOceanGKEImport_Scheduling(t *testing.T) {
 }
 
 const testOceanGKEScheduling_Create = `
-resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
- provider = "%v"
+  scheduled_task = {
+     shutdown_hours =  {
+       is_enabled = true
+       time_windows = ["Fri:15:30-Sat:17:30"]
+     }
+     tasks = {
+       is_enabled = true
+       cron_expression = "0 1 1 * *"
+       task_type = "clusterRoll"
+       batch_size_percentage = 50
+     }
+   }
 
- cluster_name = "terraform-acc-tests-do-not-delete"
- location     = "us-central1-a"
-
-   scheduled_task = {
-      shutdown_hours =  {
-        is_enabled = true
-        time_windows = ["Fri:15:30-Sat:17:30"]
-      }
-      tasks = {
-        is_enabled = true
-        cron_expression = "0 1 1 * *"
-        task_type = "clusterRoll"
-        batch_size_percentage = 50
-      }
-    }
-
-}
 
 `
 
 const testOceanGKEScheduling_Update = `
-resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
- provider = "%v"
-
- cluster_name = "terraform-acc-tests-do-not-delete"
- location     = "us-central1-a"
-
-   scheduled_task = {
-      shutdown_hours =  {
-        is_enabled = false
-        time_windows = ["Fri:15:30-Sat:18:30"]
-      }
-      tasks = {
-        is_enabled = false
-        cron_expression = "0 1 * * *"
-        task_type = "clusterRoll"
-        batch_size_percentage = 20
-      }
-    }
-}
+  scheduled_task = {
+     shutdown_hours =  {
+       is_enabled = false
+       time_windows = ["Fri:15:30-Sat:18:30"]
+     }
+     tasks = {
+       is_enabled = false
+       cron_expression = "0 1 * * *"
+       task_type = "clusterRoll"
+       batch_size_percentage = 20
+     }
+   }
 
 `
 
