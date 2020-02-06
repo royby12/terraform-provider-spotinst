@@ -3,16 +3,14 @@ package spotinst
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"testing"
 
-	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/gcp"
-	"github.com/spotinst/spotinst-sdk-go/spotinst"
-
-	"log"
-
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/gcp"
+	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 )
 
@@ -131,18 +129,18 @@ func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata, update s
 	}
 	`
 	if clusterMeta.updateBaselineFields {
-		format := update
-
+		format := testBaselineOceanGKEImportConfig_Create
 		template += fmt.Sprintf(format,
 			clusterMeta.clusterName,
 			clusterMeta.provider,
 		)
 	} else {
-		format := create
+		format := testBaselineOceanGKEImportConfig_Create
 		template += fmt.Sprintf(format,
 			clusterMeta.clusterName,
 			clusterMeta.provider,
 		)
+
 	}
 
 	log.Printf("Terraform [%v] template:\n%v", clusterMeta.clusterName, template)
@@ -311,6 +309,104 @@ resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
         ports = [443]
       }
     }]
+}
+
+`
+
+// endregion
+
+// region Ocean GKE Import: Scheduling
+func TestAccSpotinstOceanGKEImport_Scheduling(t *testing.T) {
+	spotClusterName := "terraform-acc-tests-do-not-delete"
+	resourceName := createOceanGKEImportResourceName(spotClusterName)
+
+	var cluster gcp.Cluster
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t, "gcp") },
+		Providers:    TestAccProviders,
+		CheckDestroy: testOceanGKEImportDestroy,
+
+		Steps: []resource.TestStep{
+			{
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName}, testOceanGKEScheduling_Update, testOceanGKEScheduling_Create),
+				//
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOceanGKEImportExists(&cluster, resourceName),
+					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.shutdown_hours.0.is_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.shutdown_hours.0.time_windows.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.shutdown_hours.0.time_windows.0", "Fri:15:30-Sat:17:30"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.tasks.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.tasks.0.cron_expression", "0 1 1 * *"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.tasks.0.is_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.tasks.0.task_type", "clusterRoll"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.1137025357.tasks.0.batch_size_percentage", "50"),
+				),
+			},
+			{
+				Config: createOceanGKEImportTerraform(&OceanGKEImportMetadata{clusterName: spotClusterName, updateBaselineFields: true}, testOceanGKEScheduling_Update, testOceanGKEScheduling_Create),
+				Check: resource.ComposeTestCheckFunc(
+					testCheckOceanGKEImportExists(&cluster, resourceName),
+					testCheckOceanGKEImportAttributes(&cluster, GcpClusterName),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.shutdown_hours.0.is_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.shutdown_hours.0.time_windows.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.shutdown_hours.0.time_windows.0", "Fri:15:30-Sat:18:30"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.cron_expression", "0 1 * * *"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.is_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.task_type", "clusterRoll"),
+					resource.TestCheckResourceAttr(resourceName, "scheduled_task.2134430294.tasks.0.batch_size_percentage", "50"),
+				),
+			},
+		},
+	})
+}
+
+const testOceanGKEScheduling_Create = `
+resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
+ provider = "%v"
+
+ cluster_name = "terraform-acc-tests-do-not-delete"
+ location     = "us-central1-a"
+
+   scheduled_task = {
+      shutdown_hours =  {
+        is_enabled = true
+        time_windows = ["Fri:15:30-Sat:17:30"]
+      }
+      tasks = {
+        is_enabled = true
+        cron_expression = "0 1 1 * *"
+        task_type = "clusterRoll"
+        batch_size_percentage = 50
+      }
+    }
+
+}
+
+`
+
+const testOceanGKEScheduling_Update = `
+resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
+ provider = "%v"
+
+ cluster_name = "terraform-acc-tests-do-not-delete"
+ location     = "us-central1-a"
+
+   scheduled_task = {
+      shutdown_hours =  {
+        is_enabled = false
+        time_windows = ["Fri:15:30-Sat:18:30"]
+      }
+      tasks = {
+        is_enabled = false
+        cron_expression = "0 1 * * *"
+        task_type = "clusterRoll"
+        batch_size_percentage = 20
+      }
+    }
 }
 
 `
