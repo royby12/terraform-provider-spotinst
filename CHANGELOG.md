@@ -1,3 +1,8 @@
+## 1.14.7 (Unreleased)
+​
+ENHANCEMENTS:
+* resource/spotinst_ocean_gke_import: added `scheduled_task`
+
 ## 1.14.6 (Unreleased)
 ​
 ENHANCEMENTS:
