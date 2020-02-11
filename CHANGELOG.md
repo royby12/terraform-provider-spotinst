@@ -3,6 +3,9 @@
 ENHANCEMENTS:
 * resource/spotinst_ocean_gke_import: added `scheduled_task`
 
+NOTES: 
+* documentation: resource/mrscaler: retries are now accurate
+
 ## 1.14.6 (Unreleased)
 ​
 ENHANCEMENTS:
