@@ -141,12 +141,13 @@ type LoadBalancer struct {
 }
 
 type AutoScaler struct {
-	IsEnabled      *bool                     `json:"isEnabled,omitempty"`
-	IsAutoConfig   *bool                     `json:"isAutoConfig,omitempty"`
-	Cooldown       *int                      `json:"cooldown,omitempty"`
-	Headroom       *AutoScalerHeadroom       `json:"headroom,omitempty"`
-	ResourceLimits *AutoScalerResourceLimits `json:"resourceLimits,omitempty"`
-	Down           *AutoScalerDown           `json:"down,omitempty"`
+	IsEnabled              *bool                     `json:"isEnabled,omitempty"`
+	IsAutoConfig           *bool                     `json:"isAutoConfig,omitempty"`
+	Cooldown               *int                      `json:"cooldown,omitempty"`
+	Headroom               *AutoScalerHeadroom       `json:"headroom,omitempty"`
+	ResourceLimits         *AutoScalerResourceLimits `json:"resourceLimits,omitempty"`
+	Down                   *AutoScalerDown           `json:"down,omitempty"`
+	AutoHeadroomPercentage *int                      `json:"autoHeadroomPercentage,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string

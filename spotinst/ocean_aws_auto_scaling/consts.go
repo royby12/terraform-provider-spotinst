@@ -3,8 +3,9 @@ package ocean_aws_auto_scaling
 import "github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 
 const (
-	Autoscaler             commons.FieldName = "autoscaler"
-	AutoscaleCooldown      commons.FieldName = "autoscale_cooldown"
+	Autoscaler        commons.FieldName = "autoscaler"
+	AutoscaleCooldown commons.FieldName = "autoscale_cooldown"
+	//AutoHeadroomPercentage commons.FieldName = "auto_headroom_percentage" //todo sali add
 	AutoscaleDown          commons.FieldName = "autoscale_down"
 	AutoscaleHeadroom      commons.FieldName = "autoscale_headroom"
 	AutoscaleIsAutoConfig  commons.FieldName = "autoscale_is_auto_config"
