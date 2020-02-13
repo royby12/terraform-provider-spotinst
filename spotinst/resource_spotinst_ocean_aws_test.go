@@ -218,9 +218,9 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
   controller_id = "%v"
   region = "us-west-2"
 
-  //max_size         = 0
-  //min_size         = 0
-  //desired_capacity = 0
+  max_size         = 1000
+  min_size         = 0
+  desired_capacity = 1
 
   subnet_ids      = ["subnet-09d9755d9bdeca3c5"]
 
@@ -743,6 +743,7 @@ func TestAccSpotinstOceanAWS_Autoscaler(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_cooldown", "300"),
+					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.auto_headroom_percentage", "30"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.0.evaluation_periods", "300"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.0.max_scale_down_percentage", "50"),
@@ -770,6 +771,7 @@ func TestAccSpotinstOceanAWS_Autoscaler(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_cooldown", "600"),
+					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.auto_headroom_percentage", "60"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.0.evaluation_periods", "600"),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.0.max_scale_down_percentage", "10"),
@@ -820,6 +822,7 @@ const testScalingConfig_Create = `
     autoscale_is_enabled     = false
     autoscale_is_auto_config = false
     autoscale_cooldown       = 300
+    auto_headroom_percentage = 30
 
     autoscale_headroom = {
       cpu_per_unit    = 1024
@@ -849,6 +852,7 @@ const testScalingConfig_Update = `
     autoscale_is_enabled     = true
     autoscale_is_auto_config = true
     autoscale_cooldown       = 600
+    auto_headroom_percentage = 60
 
     autoscale_headroom = {
       cpu_per_unit    = 512
