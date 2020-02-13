@@ -170,7 +170,7 @@ func createOceanAWSTerraform(ccm *ClusterConfigMetadata) string {
 // region OceanAWS: Baseline
 func TestAccSpotinstOceanAWS_Baseline(t *testing.T) {
 	clusterName := "test-acc-cluster-baseline"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "baseline-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -257,7 +257,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
 // region OceanAWS: Instance Types Whitelist
 func TestAccSpotinstOceanAWS_InstanceTypesLists(t *testing.T) {
 	clusterName := "test-acc-cluster-instance-types-whitelist"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "whitelist-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -365,7 +365,7 @@ const testInstanceTypesBlacklistAWSConfig_EmptyFields = `
 // region OceanAWS: Launch Configuration
 func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 	clusterName := "test-acc-luster-launch-configuration"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "launch-config-cluster-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -527,7 +527,7 @@ const testLaunchConfigAWSConfig_EmptyFields = `
 // region OceanAWS: Strategy
 func TestAccSpotinstOceanAWS_Strategy(t *testing.T) {
 	clusterName := "test-acc-cluster-strategy"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "strategy-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -614,7 +614,7 @@ const testStrategyConfig_EmptyFields = `
 // region OceanAWS: Scheduling
 func TestAccSpotinstOceanAWS_Scheduling(t *testing.T) {
 	clusterName := "test-acc-cluster-scheduling"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "scheduling-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -721,7 +721,7 @@ const testSchedulingConfig_EmptyFields = `
 // region OceanAWS: Autoscaler
 func TestAccSpotinstOceanAWS_Autoscaler(t *testing.T) {
 	clusterName := "test-acc-cluster-autoscaler"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "autoscaler-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -906,7 +906,7 @@ const testScalingConfig_EmptyFields = `
 
 func TestAccSpotinstOceanAWS_UpdatePolicy(t *testing.T) {
 	clusterName := "test-acc-cluster-update-policy"
-	controllerClusterID := "NoamCSTFTest"
+	controllerClusterID := "update-policy-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
