@@ -2,6 +2,7 @@
 ​
 ENHANCEMENTS:
 * resource/spotinst_ocean_gke_import: added `scheduled_task`
+* resource/spotinst_ocean_aws: added `AutoHeadroomPercentage`
 
 NOTES: 
 * documentation: resource/mrscaler: retries are now accurate

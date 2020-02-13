@@ -26,10 +26,10 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 						Optional: true,
 					},
 
-					//string(AutoHeadroomPercentage): {
-					//	Type:     schema.TypeInt,
-					//	Optional: true,
-					//},
+					string(AutoHeadroomPercentage): {
+						Type:     schema.TypeInt,
+						Optional: true,
+					},
 
 					string(AutoscaleDown): {
 						Type:     schema.TypeList,
@@ -161,11 +161,11 @@ func expandAutoscaler(data interface{}, nullify bool) (*aws.AutoScaler, error) {
 		autoscaler.SetCooldown(spotinst.Int(v))
 	}
 
-	//if v, ok := m[string(AutoHeadroomPercentage)].(int); ok && v > 0 {
-	//	autoscaler.SetAutoHeadroomPercentage(spotinst.Int(v))
-	//} else {
-	//	autoscaler.SetAutoHeadroomPercentage(nil)
-	//}
+	if v, ok := m[string(AutoHeadroomPercentage)].(int); ok && v > 0 {
+		autoscaler.SetAutoHeadroomPercentage(spotinst.Int(v))
+	} else {
+		autoscaler.SetAutoHeadroomPercentage(nil)
+	}
 
 	if v, ok := m[string(AutoscaleDown)]; ok {
 		down, err := expandOceanAWSAutoScalerDown(v)

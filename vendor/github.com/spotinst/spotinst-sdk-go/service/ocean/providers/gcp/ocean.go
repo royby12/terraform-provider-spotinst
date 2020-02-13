@@ -1051,7 +1051,7 @@ func (o *AutoScaler) SetCooldown(v *int) *AutoScaler {
 
 func (o *AutoScaler) SetAutoHeadroomPercentage(v *int) *AutoScaler {
 	if o.AutoHeadroomPercentage = v; o.AutoHeadroomPercentage == nil {
-		o.nullFields = append(o.nullFields, "autoHeadroomPercentage")
+		o.nullFields = append(o.nullFields, "AutoHeadroomPercentage")
 	}
 	return o
 }

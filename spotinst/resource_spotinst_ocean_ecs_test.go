@@ -165,7 +165,7 @@ func createOceanECSTerraform(ccm *ECSClusterConfigMetadata) string {
 // region OceanECS: Baseline
 func TestAccSpotinstOceanECS_Baseline(t *testing.T) {
 	name := "test-acc-cluster-baseline"
-	clusterName := "baseline-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -257,7 +257,7 @@ resource "` + string(commons.OceanECSResourceName) + `" "%v" {
 // region OceanECS: Instance Types
 func TestAccSpotinstOceanECS_InstanceTypesWhitelist(t *testing.T) {
 	name := "test-acc-cluster-instance-types-whitelist"
-	clusterName := "whitelist-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -326,7 +326,7 @@ const testInstanceTypesWhitelistECSConfig_EmptyFields = `
 // region OceanECS: Launch Specification
 func TestAccSpotinstOceanECS_LaunchSpecification(t *testing.T) {
 	name := "test-acc-cluster-launch-spec"
-	clusterName := "launch-spec-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -403,7 +403,7 @@ const testLaunchSpecECSConfig_Update = `
 // region oceanECS: Autoscaler
 func TestAccSpotinstoceanECS_Autoscaler(t *testing.T) {
 	name := "test-acc-cluster-auto-scaler"
-	clusterName := "auto-scaler-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -542,7 +542,7 @@ autoscaler = {
 // region oceanECS: Strategy
 func TestAccSpotinstoceanECS_Strategy(t *testing.T) {
 	name := "test-acc-cluster-strategy"
-	clusterName := "strategy-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -618,7 +618,7 @@ const testStrategy_EmptyFields = `
 // region OceanECS: Scheduling
 func TestAccSpotinstoceanECS_Scheduling(t *testing.T) {
 	name := "test-acc-cluster-scheduling"
-	clusterName := "scheduling-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster
@@ -728,7 +728,7 @@ const testScheduling_EmptyFields = `
 // region oceanECS: Update Policy
 func TestAccSpotinstOceanECS_UpdatePolicy(t *testing.T) {
 	name := "test-acc-cluster-update-policy"
-	clusterName := "update-policy-cluster-name"
+	clusterName := "sali_terraform-ecs-cluster"
 	resourceName := createOceanECSResourceName(clusterName)
 
 	var cluster aws.ECSCluster

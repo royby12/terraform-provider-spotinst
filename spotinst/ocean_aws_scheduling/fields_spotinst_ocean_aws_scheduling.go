@@ -2,11 +2,11 @@ package ocean_aws_scheduling
 
 import (
 	"fmt"
-
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
+	"log"
 )
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
@@ -68,11 +68,11 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			cluster := clusterWrapper.GetCluster()
 			var result []interface{} = nil
 			if cluster != nil && cluster.Scheduling != nil {
-				scheduling := cluster.Scheduling
-				result = flattenScheduledTasks(scheduling)
+				result = flattenScheduledTasks(cluster.Scheduling)
 			}
-
-			if result != nil {
+			log.Printf("[DEBUG] len(result): %v", len(result))
+			log.Printf("[DEBUG] result: %+v", result)
+			if len(result) > 0 {
 				if err := resourceData.Set(string(ScheduledTask), result); err != nil {
 					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(ScheduledTask), err)
 				}
@@ -115,17 +115,25 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 //            Utils
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 func flattenScheduledTasks(scheduling *aws.Scheduling) []interface{} {
-	result := make(map[string]interface{})
+	var out []interface{}
 
 	if scheduling != nil {
+		result := make(map[string]interface{})
+
 		if scheduling.ShutdownHours != nil {
 			result[string(ShutdownHours)] = flattenShutdownHours(scheduling.ShutdownHours)
 		}
-		if scheduling.Tasks != nil {
+
+		if len(scheduling.Tasks) > 0 {
 			result[string(Tasks)] = flattenTasks(scheduling.Tasks)
 		}
+
+		if len(result) > 0 {
+			out = append(out, result)
+		}
 	}
-	return []interface{}{result}
+
+	return out
 }
 
 func flattenShutdownHours(shutdownHours *aws.ShutdownHours) []interface{} {
@@ -139,11 +147,13 @@ func flattenShutdownHours(shutdownHours *aws.ShutdownHours) []interface{} {
 		}
 		result[string(TimeWindows)] = timeWindowList
 	}
+
 	return []interface{}{result}
 }
 
 func flattenTasks(tasks []*aws.Task) []interface{} {
 	result := make([]interface{}, 0, len(tasks))
+
 	for _, task := range tasks {
 		m := make(map[string]interface{})
 		m[string(TasksIsEnabled)] = spotinst.BoolValue(task.IsEnabled)
@@ -151,6 +161,7 @@ func flattenTasks(tasks []*aws.Task) []interface{} {
 		m[string(CronExpression)] = spotinst.StringValue(task.CronExpression)
 		result = append(result, m)
 	}
+
 	return result
 }
 

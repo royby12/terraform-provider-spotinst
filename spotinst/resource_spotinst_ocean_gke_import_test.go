@@ -14,7 +14,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 )
 
-var GcpClusterName = "terraform-acc-tests-do-not-delete"
+var GcpClusterName = "sali-terraform-acc-tests-do-not-delete"
 
 func init() {
 	resource.AddTestSweepers("resource_spotinst_ocean_gke_import", &resource.Sweeper{
@@ -151,7 +151,7 @@ func createOceanGKEImportTerraform(clusterMeta *OceanGKEImportMetadata) string {
 
 // region Ocean GKE Import: Baseline
 func TestAccSpotinstOceanGKEImport_Baseline(t *testing.T) {
-	spotClusterName := "terraform-acc-tests-ocean-gke-import-baseline"
+	spotClusterName := "sali-terraform-acc-tests-do-not-delete"
 	resourceName := createOceanGKEImportResourceName(spotClusterName)
 
 	var cluster gcp.Cluster
@@ -192,7 +192,7 @@ const testBaselineOceanGKEImportConfig_Create = `
 resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
  provider = "%v"
 
- cluster_name = "terraform-acc-tests-do-not-delete"
+ cluster_name = "sali-terraform-acc-tests-do-not-delete"
  location     = "us-central1-a"
 
  whitelist = ["n1-standard-1", "n1-standard-2"]
@@ -205,7 +205,7 @@ const testBaselineOceanGKEImportConfig_Update = `
 resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
  provider = "%v"
 
- cluster_name = "terraform-acc-tests-do-not-delete"
+ cluster_name = "sali-terraform-acc-tests-do-not-delete"
  location     = "us-central1-a"
 
  whitelist = ["n1-standard-1"]
@@ -218,7 +218,7 @@ resource "` + string(commons.OceanGKEImportResourceName) + `" "%v" {
 
 //region Ocean GKE Import: BackendServices
 func TestAccSpotinstOceanGKEImport_BackendServices(t *testing.T) {
-	spotClusterName := "terraform-acc-tests-ocean-gke-import-be-services"
+	spotClusterName := "sali-terraform-acc-tests-do-not-delete"
 	resourceName := createOceanGKEImportResourceName(spotClusterName)
 
 	var cluster gcp.Cluster
