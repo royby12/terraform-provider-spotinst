@@ -144,10 +144,10 @@ type AutoScaler struct {
 	IsEnabled              *bool                     `json:"isEnabled,omitempty"`
 	IsAutoConfig           *bool                     `json:"isAutoConfig,omitempty"`
 	Cooldown               *int                      `json:"cooldown,omitempty"`
+	AutoHeadroomPercentage *int                      `json:"autoHeadroomPercentage,omitempty"`
 	Headroom               *AutoScalerHeadroom       `json:"headroom,omitempty"`
 	ResourceLimits         *AutoScalerResourceLimits `json:"resourceLimits,omitempty"`
 	Down                   *AutoScalerDown           `json:"down,omitempty"`
-	AutoHeadroomPercentage *int                      `json:"autoHeadroomPercentage,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -903,6 +903,13 @@ func (o *AutoScaler) SetIsAutoConfig(v *bool) *AutoScaler {
 func (o *AutoScaler) SetCooldown(v *int) *AutoScaler {
 	if o.Cooldown = v; o.Cooldown == nil {
 		o.nullFields = append(o.nullFields, "Cooldown")
+	}
+	return o
+}
+
+func (o *AutoScaler) SetAutoHeadroomPercentage(v *int) *AutoScaler {
+	if o.AutoHeadroomPercentage = v; o.AutoHeadroomPercentage == nil {
+		o.nullFields = append(o.nullFields, "AutoHeadroomPercentage")
 	}
 	return o
 }

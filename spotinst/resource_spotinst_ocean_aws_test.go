@@ -170,7 +170,7 @@ func createOceanAWSTerraform(ccm *ClusterConfigMetadata) string {
 // region OceanAWS: Baseline
 func TestAccSpotinstOceanAWS_Baseline(t *testing.T) {
 	clusterName := "test-acc-cluster-baseline"
-	controllerClusterID := "baseline-controller-id"
+	controllerClusterID := "NoamCSTFTest"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -218,9 +218,9 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
   controller_id = "%v"
   region = "us-west-2"
 
-  //max_size         = 0
-  //min_size         = 0
-  //desired_capacity = 0
+  max_size         = 1000
+  min_size         = 0
+  desired_capacity = 1
 
   subnet_ids      = ["subnet-09d9755d9bdeca3c5"]
 
@@ -257,7 +257,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
 // region OceanAWS: Instance Types Whitelist
 func TestAccSpotinstOceanAWS_InstanceTypesLists(t *testing.T) {
 	clusterName := "test-acc-cluster-instance-types-whitelist"
-	controllerClusterID := "whitelist-controller-id"
+	controllerClusterID := "NoamCSTFTest"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -365,7 +365,7 @@ const testInstanceTypesBlacklistAWSConfig_EmptyFields = `
 // region OceanAWS: Launch Configuration
 func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 	clusterName := "test-acc-luster-launch-configuration"
-	controllerClusterID := "launch-config-cluster-id"
+	controllerClusterID := "NoamCSTFTest"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -527,7 +527,7 @@ const testLaunchConfigAWSConfig_EmptyFields = `
 // region OceanAWS: Strategy
 func TestAccSpotinstOceanAWS_Strategy(t *testing.T) {
 	clusterName := "test-acc-cluster-strategy"
-	controllerClusterID := "strategy-controller-id"
+	controllerClusterID := "NoamCSTFTest"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster

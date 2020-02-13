@@ -6,3 +6,5 @@ require (
 	github.com/hashicorp/terraform v0.11.14
 	github.com/spotinst/spotinst-sdk-go v1.40.0
 )
+
+replace github.com/spotinst/spotinst-sdk-go v1.40.0 => /Users/sali.haguli/.go/src/github.com/spotinst/spotinst-sdk-go
