@@ -6,7 +6,6 @@ import (
 	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
-	"log"
 )
 
 func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
@@ -70,8 +69,6 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			if cluster != nil && cluster.Scheduling != nil {
 				result = flattenScheduledTasks(cluster.Scheduling)
 			}
-			log.Printf("[DEBUG] len(result): %v", len(result))
-			log.Printf("[DEBUG] result: %+v", result)
 			if len(result) > 0 {
 				if err := resourceData.Set(string(ScheduledTask), result); err != nil {
 					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(ScheduledTask), err)
