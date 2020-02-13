@@ -3,7 +3,6 @@ package spotinst
 import (
 	"context"
 	"fmt"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_gke_import_scheduling"
 	"log"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/spotinst/spotinst-sdk-go/spotinst/client"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_gke_import"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/ocean_gke_import_scheduling"
 )
 
 func resourceSpotinstOceanGKEImport() *schema.Resource {
