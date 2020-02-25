@@ -7,6 +7,9 @@ ENHANCEMENTS:
 NOTES: 
 * documentation: resource/mrscaler: retries are now accurate
 
+BUG FIXES:
+* resource/spotinst_mrscaler_aws: resolved errors with `core_min_size`, `core_max_size` , `core_desired_capacity`
+
 ## 1.14.6 (Unreleased)
 ​
 ENHANCEMENTS:
