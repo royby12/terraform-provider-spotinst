@@ -222,7 +222,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
   min_size         = 0
   desired_capacity = 1
 
-  subnet_ids      = ["subnet-09d9755d9bdeca3c5"]
+  subnet_ids      = ["subnet-bce60ec4"]
 
  %v
  %v
@@ -243,7 +243,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
   min_size         = 2
   desired_capacity = 2
 
-  subnet_ids      = ["subnet-09d9755d9bdeca3c5"]
+  subnet_ids      = ["subnet-bce60ec4"]
 
  %v
  %v
@@ -257,7 +257,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
 // region OceanAWS: Instance Types Whitelist
 func TestAccSpotinstOceanAWS_InstanceTypesLists(t *testing.T) {
 	clusterName := "test-acc-cluster-instance-types-whitelist"
-	controllerClusterID := "whitelist-controller-id"
+	controllerClusterID := "baseline-controller-id"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -387,7 +387,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "image_id", "ami-79826301"),
 					resource.TestCheckResourceAttr(resourceName, "security_groups.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-042d658b3ee907848"),
+					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-a2bce9fa"),
 					resource.TestCheckResourceAttr(resourceName, "associate_public_ip_address", "false"),
 					//resource.TestCheckResourceAttr(resourceName, "key_name", "my-key.ssh"),
 					resource.TestCheckResourceAttr(resourceName, "user_data", ocean_aws_launch_configuration.Base64StateFunc("echo hello world")),
@@ -417,7 +417,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "image_id", "ami-79826301"),
 					resource.TestCheckResourceAttr(resourceName, "security_groups.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-042d658b3ee907848"),
+					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-a2bce9fa"),
 					resource.TestCheckResourceAttr(resourceName, "associate_public_ip_address", "true"),
 					//resource.TestCheckResourceAttr(resourceName, "key_name", "my-key-updated.ssh"),
 					resource.TestCheckResourceAttr(resourceName, "user_data", ocean_aws_launch_configuration.Base64StateFunc("echo hello world updated")),
@@ -447,7 +447,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "image_id", "ami-79826301"),
 					resource.TestCheckResourceAttr(resourceName, "security_groups.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-042d658b3ee907848"),
+					resource.TestCheckResourceAttr(resourceName, "security_groups.0", "sg-a2bce9fa"),
 					resource.TestCheckResourceAttr(resourceName, "tags.#", "0"),
 				),
 			},
@@ -458,7 +458,7 @@ func TestAccSpotinstOceanAWS_LaunchConfiguration(t *testing.T) {
 const testLaunchConfigAWSConfig_Create = `
  // --- LAUNCH CONFIGURATION --------------
   image_id                    = "ami-79826301"
-  security_groups             = ["sg-042d658b3ee907848"]
+  security_groups             = ["sg-a2bce9fa"]
   //key_name                  = "my-key.ssh"
   user_data                   = "echo hello world"
   //iam_instance_profile      = "iam-profile"
@@ -488,7 +488,7 @@ const testLaunchConfigAWSConfig_Create = `
 const testLaunchConfigAWSConfig_Update = `
  // --- LAUNCH CONFIGURATION --------------
   image_id                    = "ami-79826301"
-  security_groups             = ["sg-042d658b3ee907848"]
+  security_groups             = ["sg-a2bce9fa"]
   //key_name                  = "my-key-updated.ssh"
   user_data                   = "echo hello world updated"
   //iam_instance_profile      = "iam-profile updated"
@@ -518,7 +518,7 @@ const testLaunchConfigAWSConfig_Update = `
 const testLaunchConfigAWSConfig_EmptyFields = `
  // --- LAUNCH CONFIGURATION --------------
   image_id        = "ami-79826301"
-  security_groups = ["sg-042d658b3ee907848"]
+  security_groups = ["sg-a2bce9fa"]
  // ---------------------------------------
 `
 
@@ -550,6 +550,7 @@ func TestAccSpotinstOceanAWS_Strategy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "spot_percentage", "100"),
 					resource.TestCheckResourceAttr(resourceName, "utilize_reserved_instances", "false"),
 					resource.TestCheckResourceAttr(resourceName, "draining_timeout", "120"),
+					resource.TestCheckResourceAttr(resourceName, "grace_period", "50"),
 				),
 			},
 			{
@@ -565,6 +566,7 @@ func TestAccSpotinstOceanAWS_Strategy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "spot_percentage", "50"),
 					resource.TestCheckResourceAttr(resourceName, "utilize_reserved_instances", "true"),
 					resource.TestCheckResourceAttr(resourceName, "draining_timeout", "240"),
+					resource.TestCheckResourceAttr(resourceName, "grace_period", "100"),
 				),
 			},
 			{
@@ -592,6 +594,7 @@ const testStrategyConfig_Create = `
  spot_percentage            = 100
  utilize_reserved_instances = false
  draining_timeout			= 120
+ grace_period = 50
  // ---------------------------------
 `
 
@@ -601,6 +604,7 @@ const testStrategyConfig_Update = `
  spot_percentage            = 50
  utilize_reserved_instances = true
  draining_timeout			= 240
+ grace_period = 100
  // ---------------------------------
 `
 
