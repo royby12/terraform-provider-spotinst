@@ -176,7 +176,7 @@ resource "` + string(commons.HealthCheckResourceName) + `" "%v" {
     name = "test-acc-health_check_terraform_test"
     proxy_address = "http://proxy.com"
     proxy_port = "6"
-  check {
+  check = {
     protocol = "http"
     port = "1336"
     end_point = "http://endpoint.com"
@@ -196,7 +196,7 @@ resource "` + string(commons.HealthCheckResourceName) + `" "%v" {
   name = "test-acc-health_check_terraform_test"
   proxy_address = "http://proxy.com"
   proxy_port = "7"
-  check {
+  check = {
    protocol = "http"
    port = "1335"
    end_point = "http://endpoint.com"
