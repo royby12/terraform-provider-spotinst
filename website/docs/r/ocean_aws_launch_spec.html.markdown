@@ -41,6 +41,12 @@ resource "spotinst_ocean_aws_launch_spec" "example" {
     gpu_per_unit = 0
     memory_per_unit = 2048
   }]
+
+tags {
+     key   = "Env"
+     value = "production"
+  } 
+
 }
 ```
 
@@ -56,6 +62,7 @@ The following arguments are supported:
 * `security_groups` - (Optional) Optionally adds security group IDs.
 * `subnet_ids` - (Optional) Set subnets in launchSpec. Each element in array should be subnet ID.
 * `root_volume_size` - (Optional) Set root volume size (in GB).
+* `tags` - (Optional) A key/value mapping of tags to assign to the resource.
 
 * `labels` - (Optional) Optionally adds labels to instances launched in an Ocean cluster.
     * `key` - (Required) The tag key.
