@@ -150,7 +150,7 @@ func createOceanECSLaunchSpecTerraform(lscm *ECSLaunchSpecConfigMetadata, format
 
 // region OceanECSLaunchSpec: Baseline
 func TestAccSpotinstOceanECSLaunchSpec_Baseline(t *testing.T) {
-	oceanID := "o-921d89f8"
+	oceanID := "o-d190d627"
 	launchSpecName := "test-acc-ocean-ecs-launch-spec"
 	resourceName := createOceanECSLaunchSpecResourceOceanName(launchSpecName)
 
@@ -250,7 +250,7 @@ resource "` + string(commons.OceanECSLaunchSpecResourceName) + `" "%v" {
 
 // region OceanECSLaunchSpec: AutoScale
 func TestAccSpotinstOceanECSLaunchSpec_AutoScale(t *testing.T) {
-	oceanID := "o-921d89f8"
+	oceanID := "o-d190d627"
 	launchSpecName := "test-acc-ocean-ecs-launch-spec"
 	resourceName := createOceanECSLaunchSpecResourceOceanName(launchSpecName)
 
