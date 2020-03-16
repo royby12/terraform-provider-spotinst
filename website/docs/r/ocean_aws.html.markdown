@@ -149,7 +149,7 @@ whitelist = ["t1.micro", "m1.small"]
 ```
 
 * `fallback_to_ondemand` - (Optional, Default: `true`) If not Spot instance markets are available, enable Ocean to launch On-Demand instances instead.
-* `utilize_reserved_instances` - (Optional, Default `false`) If Reserved instances exist, OCean will utilize them before launching Spot instances.
+* `utilize_reserved_instances` - (Optional, Default `true`) If Reserved instances exist, OCean will utilize them before launching Spot instances.
 * `draining_timeout` - (Optional) The time in seconds, the instance is allowed to run while detached from the ELB. This is to allow the instance time to be drained from incoming TCP connections before terminating it, during a scale down operation.
 
 ```hcl
