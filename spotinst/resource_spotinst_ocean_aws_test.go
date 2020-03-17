@@ -257,7 +257,7 @@ resource "` + string(commons.OceanAWSResourceName) + `" "%v" {
 // region OceanAWS: Instance Types Whitelist
 func TestAccSpotinstOceanAWS_InstanceTypesLists(t *testing.T) {
 	clusterName := "test-acc-cluster-instance-types-whitelist"
-	controllerClusterID := "baseline-controller-id"
+	controllerClusterID := "test-acc-cluster-baseline"
 	resourceName := createOceanAWSResourceName(clusterName)
 
 	var cluster aws.Cluster
@@ -580,7 +580,7 @@ func TestAccSpotinstOceanAWS_Strategy(t *testing.T) {
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "fallback_to_ondemand", "true"),
 					resource.TestCheckResourceAttr(resourceName, "spot_percentage", "0"),
-					resource.TestCheckResourceAttr(resourceName, "utilize_reserved_instances", "false"),
+					resource.TestCheckResourceAttr(resourceName, "utilize_reserved_instances", "true"),
 					resource.TestCheckResourceAttr(resourceName, "draining_timeout", "0"),
 				),
 			},
