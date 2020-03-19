@@ -3889,6 +3889,12 @@ func TestAccSpotinstElastigroupAWS_UpdatePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.action", "REPLACE_SERVER"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.batch_min_healthy_percentage", "50"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.should_drain_instances", "false"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.action_type", "DETACH_NEW"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.should_handle_all_batches", "true"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.batch_num", "2"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.draining_timeout", "600"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.should_decrement_target_capacity", "true"),
 				),
 			},
 			{
@@ -3912,6 +3918,12 @@ func TestAccSpotinstElastigroupAWS_UpdatePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.action", "RESTART_SERVER"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.batch_min_healthy_percentage", "20"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.should_drain_instances", "true"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.action_type", "DETACH_OLD"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.should_handle_all_batches", "false"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.batch_num", "1"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.draining_timeout", "300"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.strategy.0.on_failure.0.should_decrement_target_capacity", "false"),
 				),
 			},
 			{
@@ -3945,7 +3957,14 @@ const testUpdatePolicyGroupConfig_Create = `
       strategy {
         action = "REPLACE_SERVER"
         should_drain_instances = false
-        //batch_min_healthy_percentage = 10
+        batch_min_healthy_percentage = 50
+        on_failure {
+          action_type = "DETACH_NEW"
+          should_handle_all_batches = true
+          batch_num = 2
+          draining_timeout = 600
+          should_decrement_target_capacity = true
+        }
       }
     }
   }
@@ -3968,6 +3987,13 @@ const testUpdatePolicyGroupConfig_Update = `
         action = "RESTART_SERVER"
         should_drain_instances = true
         batch_min_healthy_percentage = 20
+		on_failure {
+          action_type = "DETACH_OLD"
+          should_handle_all_batches = false
+          batch_num = 1
+          draining_timeout = 300
+          should_decrement_target_capacity = false
+        }
       }
     }
   }
