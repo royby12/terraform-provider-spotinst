@@ -203,7 +203,7 @@ tags = [{
     }
     tasks = {
       is_enabled = false
-      cron_expression = "salitestcron3"
+      cron_expression = "0 1 * * *"
       task_type = "clusterRoll"
     }
   }
