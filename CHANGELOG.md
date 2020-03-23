@@ -1,3 +1,12 @@
+## 1.14.4 (Unreleased)
+
+ENHANCEMENTS:
+* resource/spotinst_elastigroup_aws: added `OnFailure` under `roll_config`
+
+
+BUG FIXES:
+* resource/spotinst_ocean_aws: resolved errors with `max_size`
+
 ## 1.14.3 (Unreleased)
 ​
 ENHANCEMENTS:
@@ -8,7 +17,6 @@ ENHANCEMENTS:
 * resource/spotinst_ocean_aws: added `auto_headroom_percentage`
 * resource/spotinst_ocean_aws_launch_spec: added `tags`
 * resource/spotinst_ocean_aws: added `grace_period`
-* resource/spotinst_elastigroup_aws: added `OnFailure` under `roll_config`
 
 NOTES: 
 * documentation: resource/spotinst_mrscaler_aws: retries are now accurate
