@@ -85,6 +85,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 					string(AutoscaleIsEnabled): {
 						Type:     schema.TypeBool,
 						Optional: true,
+						Default:  true,
 					},
 
 					string(ResourceLimits): {

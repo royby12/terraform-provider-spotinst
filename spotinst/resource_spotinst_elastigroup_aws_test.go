@@ -144,7 +144,7 @@ func createElastigroupTerraform(gcm *GroupConfigMetadata) string {
 	if gcm.updateBaselineFields {
 		format := testBaselineGroupConfig_Update
 		if gcm.useSubnetIDs {
-			format = testBaselineSubnetIDsGroupConfig_Update
+			format = testBaselineSubnetIdsGroupConfig_Update
 		}
 		template += fmt.Sprintf(format,
 			gcm.groupName,
@@ -158,7 +158,7 @@ func createElastigroupTerraform(gcm *GroupConfigMetadata) string {
 	} else {
 		format := testBaselineGroupConfig_Create
 		if gcm.useSubnetIDs {
-			format = testBaselineSubnetIDsGroupConfig_Create
+			format = testBaselineSubnetIdsGroupConfig_Create
 		}
 		template += fmt.Sprintf(format,
 			gcm.groupName,
@@ -272,7 +272,7 @@ resource "` + string(commons.ElastigroupAWSResourceName) + `" "%v" {
 
 `
 
-const testBaselineSubnetIDsGroupConfig_Create = `
+const testBaselineSubnetIdsGroupConfig_Create = `
 resource "` + string(commons.ElastigroupAWSResourceName) + `" "%v" {
  provider = "%v"
 
@@ -300,7 +300,7 @@ resource "` + string(commons.ElastigroupAWSResourceName) + `" "%v" {
 
 `
 
-const testBaselineSubnetIDsGroupConfig_Update = `
+const testBaselineSubnetIdsGroupConfig_Update = `
 resource "` + string(commons.ElastigroupAWSResourceName) + `" "%v" {
  provider = "%v"
 
@@ -852,7 +852,7 @@ const testPreferredAvailabilityZonesGroupConfig_EmptyFields = `
 // endregion
 
 // region Elastigroup: Load Balancers
-func TestAccSpotinstElastigroupAWS_LoadBalancers(t *testing.T) {
+func TestAccSpotinstElastigroupAWS_LoadBalancers(t *testing.T) { //todo this test isnt working
 	groupName := "test-acc-eg-load-balancers"
 	resourceName := createElastigroupResourceName(groupName)
 
