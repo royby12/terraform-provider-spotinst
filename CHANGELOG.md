@@ -3,9 +3,9 @@
 ENHANCEMENTS:
 * resource/spotinst_elastigroup_aws: added `OnFailure` under `roll_config`
 
-
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `max_size`
+* resource/spotinst_ocean_aws: resolved errors with `autoscale_is_enabled`
 
 ## 1.14.3 (Unreleased)
 ​
