@@ -149,7 +149,7 @@ func createOceanGKELaunchSpecImportTerraform(launchSpecMeta *OceanGKELaunchSpecI
 
 // region Ocean GKE Import: Baseline
 func TestAccSpotinstOceanGKELaunchSpecImport_Baseline(t *testing.T) {
-	oceanID := "o-0507758c"
+	oceanID := "o-a424eae0"
 	resourceName := createOceanGKELaunchSpecImportResource(oceanID)
 
 	var launchSpec gcp.LaunchSpec
@@ -165,7 +165,7 @@ func TestAccSpotinstOceanGKELaunchSpecImport_Baseline(t *testing.T) {
 					testCheckOceanGKELaunchSpecImportExists(&launchSpec, resourceName),
 					testCheckOceanGKELaunchSpecImportAttributes(&launchSpec, oceanID),
 					resource.TestCheckResourceAttr(resourceName, "ocean_id", oceanID),
-					resource.TestCheckResourceAttr(resourceName, "node_pool_name", "default-pool"),
+					resource.TestCheckResourceAttr(resourceName, "node_pool_name", "pool-1"),
 				),
 			},
 		},
@@ -176,7 +176,7 @@ const testBaselineOceanGKELaunchSpecImportConfig_Create = `
 resource "` + string(commons.OceanGKELaunchSpecImportResourceName) + `" "%v" {
  provider = "%v"
  ocean_id = "%v"
- node_pool_name = "default-pool"
+ node_pool_name = "pool-1"
 }
 
 `
