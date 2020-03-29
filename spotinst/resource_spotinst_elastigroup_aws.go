@@ -264,11 +264,10 @@ func resourceSpotinstElastigroupAWSUpdate(resourceData *schema.ResourceData, met
 	return resourceSpotinstElastigroupAWSRead(resourceData, meta)
 }
 
-func updateGroup(elastigroup *aws.Group, resourceData *schema.ResourceData, meta interface{}) error { //todo sali
+func updateGroup(elastigroup *aws.Group, resourceData *schema.ResourceData, meta interface{}) error {
 	var input = &aws.UpdateGroupInput{
 		Group: elastigroup,
 	}
-
 	var shouldRoll = false
 	groupId := resourceData.Id()
 	if updatePolicy, exists := resourceData.GetOkExists(string(elastigroup_aws.UpdatePolicy)); exists {
@@ -301,7 +300,7 @@ func updateGroup(elastigroup *aws.Group, resourceData *schema.ResourceData, meta
 	if _, err := meta.(*Client).elastigroup.CloudProviderAWS().Update(context.Background(), input); err != nil {
 		return fmt.Errorf("[ERROR] Failed to update group [%v]: %v", groupId, err)
 	} else if shouldRoll {
-		if err := rollGroup(resourceData, meta); err != nil { // todo look into it here we call the roll
+		if err := rollGroup(resourceData, meta); err != nil {
 			log.Printf("[ERROR] Group [%v] roll failed, error: %v", groupId, err)
 			return err
 		}
@@ -396,7 +395,7 @@ func rollGroup(resourceData *schema.ResourceData, meta interface{}) error {
 		// Wait for the roll completion.
 		err = awaitReadyRoll(ctx, groupID, rollConfig, rollECS, rollOut, meta.(*Client))
 		if err != nil {
-			err = fmt.Errorf("[ERROR] Timed out when waiting for minimum roll percentage: %v", err) //todo sali look into ot
+			err = fmt.Errorf("[ERROR] Timed out when waiting for minimum roll percentage: %v", err)
 			return resource.NonRetryableError(err)
 		}
 
@@ -458,7 +457,7 @@ func awaitReadyRoll(ctx context.Context, groupID string, rollConfig interface{},
 	rollID := spotinst.StringValue(getRollStatus(rollOut))
 
 	if pctTimeout <= 0 || pctComplete <= 0 {
-		return fmt.Errorf("invalid timeout/complete durations: timeout=%d, complete=%d", pctTimeout, pctComplete) //todo sali look into it
+		return fmt.Errorf("invalid timeout/complete durations: timeout=%d, complete=%d", pctTimeout, pctComplete)
 	}
 	if rollID == "" {
 		return fmt.Errorf("invalid roll id: %s", rollID)
