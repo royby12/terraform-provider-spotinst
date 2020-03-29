@@ -3880,7 +3880,7 @@ func TestAccSpotinstElastigroupAWS_UpdatePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "update_policy.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_resume_stateful", "false"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.auto_apply_tags", "false"),
-					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_roll", "false"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_roll", "true"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.batch_size_percentage", "33"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.grace_period", "300"),
@@ -3909,7 +3909,7 @@ func TestAccSpotinstElastigroupAWS_UpdatePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "update_policy.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_resume_stateful", "true"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.auto_apply_tags", "true"),
-					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_roll", "true"),
+					resource.TestCheckResourceAttr(resourceName, "update_policy.0.should_roll", "false"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.batch_size_percentage", "66"),
 					resource.TestCheckResourceAttr(resourceName, "update_policy.0.roll_config.0.grace_period", "600"),
@@ -3947,7 +3947,7 @@ const testUpdatePolicyGroupConfig_Create = `
   update_policy {
     should_resume_stateful = false
     auto_apply_tags = false
-    should_roll = false
+    should_roll = true
 
     roll_config {
       batch_size_percentage = 33
@@ -3976,7 +3976,7 @@ const testUpdatePolicyGroupConfig_Update = `
   update_policy {
     should_resume_stateful = true
     auto_apply_tags = true
-    should_roll = true
+    should_roll = false
 
     roll_config {
       batch_size_percentage = 66

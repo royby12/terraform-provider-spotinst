@@ -268,7 +268,6 @@ func updateGroup(elastigroup *aws.Group, resourceData *schema.ResourceData, meta
 	var input = &aws.UpdateGroupInput{
 		Group: elastigroup,
 	}
-
 	var shouldRoll = false
 	groupId := resourceData.Id()
 	if updatePolicy, exists := resourceData.GetOkExists(string(elastigroup_aws.UpdatePolicy)); exists {
