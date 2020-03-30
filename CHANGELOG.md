@@ -17,6 +17,7 @@ BUG FIXES:
 * resource/spotinst_ocean_ecs: resolved errors with `utilize_reserved_instances`
 * resource/spotinst_ocean_aws: resolved errors with `max_size`
 * resource/spotinst_ocean_aws: resolved errors with `autoscale_is_enabled`
+* resource/spotinst_elastigroup_aws: resolved `autoscale_cooldown` under `integration_ecs` 
 
 FEATURES:
 * *New Resource*: `spotinst_health_check`
