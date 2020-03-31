@@ -1,3 +1,8 @@
+## 1.14.8 (Unreleased)
+
+ENHANCEMENTS:
+* resource/spotinst_ocean_ecs_launch_spec: added `tags`
+
 ## 1.14.7 (Unreleased)
 ​
 ENHANCEMENTS:
