@@ -2,6 +2,7 @@
 
 ENHANCEMENTS:
 * resource/spotinst_ocean_ecs_launch_spec: added `tags`
+* resource/spotinst_subscription: update the doc
 
 ## 1.14.7 (Unreleased)
 ​
