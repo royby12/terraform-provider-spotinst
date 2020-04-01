@@ -3,6 +3,7 @@
 ENHANCEMENTS:
 * resource/spotinst_elastigroup_aws: added `OnFailure` under `roll_config`
 * resource/spotinst_ocean_gke_import: added `autoscale`
+* resource/spotinst_subscription: update the doc
 
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `max_size`
