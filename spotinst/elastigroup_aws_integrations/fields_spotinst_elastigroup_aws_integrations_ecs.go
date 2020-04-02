@@ -9,6 +9,7 @@ import (
 	"github.com/spotinst/spotinst-sdk-go/service/elastigroup/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/commons"
+	"log"
 )
 
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -115,6 +116,24 @@ func SetupEcs(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			},
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
+			elastigroup := egWrapper.GetElastigroup()
+			var result []interface{} = nil
+			log.Printf("#### elastigroup.Integration:  %v", elastigroup.Integration)
+			log.Printf("#### elastigroup.Integration.EC2ContainerService: %v", elastigroup.Integration.EC2ContainerService)
+			if elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil {
+				log.Printf("#### inside the if elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil  ")
+				result = flattenECSIntegration(elastigroup.Integration.EC2ContainerService)
+			}
+
+			log.Printf("#### result before the if: %s", result)
+			if result != nil {
+				log.Printf("#### result in the if: %s", result)
+
+				//if err := resourceData.Set(string(IntegrationEcs), result); err != nil {
+				//	return fmt.Errorf(string(commons.FailureFieldReadPattern), string(IntegrationEcs), err)
+				//}
+			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
@@ -229,6 +248,65 @@ func expandAWSGroupEC2ContainerServiceIntegration(data interface{}) (*aws.EC2Con
 		}
 	}
 	return integration, nil
+}
+
+func flattenAutoScaleHeadroom(autoScaleHeadroom *aws.AutoScaleHeadroom) []interface{} {
+	headRoom := make(map[string]interface{})
+	headRoom[string(CpuPerUnit)] = spotinst.IntValue(autoScaleHeadroom.CPUPerUnit)
+	headRoom[string(MemoryPerUnit)] = spotinst.IntValue(autoScaleHeadroom.MemoryPerUnit)
+	headRoom[string(NumOfUnits)] = spotinst.IntValue(autoScaleHeadroom.NumOfUnits)
+	return []interface{}{headRoom}
+}
+
+func flattenAutoScaleDown(autoScaleDown *aws.AutoScaleDown) []interface{} {
+	down := make(map[string]interface{})
+	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
+	down[string(MaxScaleDownPercentage)] = spotinst.IntValue(autoScaleDown.MaxScaleDownPercentage)
+	return []interface{}{down}
+}
+
+func flattenAutoScale(autoScale *aws.AutoScale) []interface{} {
+	result := make(map[string]interface{})
+	result[string(AutoscaleIsEnabled)] = spotinst.BoolValue(autoScale.IsEnabled)
+	result[string(AutoscaleIsAutoConfig)] = spotinst.BoolValue(autoScale.IsAutoConfig)
+	result[string(AutoscaleCooldown)] = spotinst.IntValue(autoScale.Cooldown)
+	if autoScale.Headroom != nil {
+		result[string(AutoscaleHeadroom)] = flattenAutoScaleHeadroom(autoScale.Headroom)
+	}
+	if autoScale.Down != nil {
+		result[string(AutoscaleDown)] = flattenAutoScaleDown(autoScale.Down)
+	}
+	return []interface{}{result}
+}
+
+func flattenECSIntegrationAutoScaleAttributes(attrs []*aws.AutoScaleAttributes) []interface{} {
+	result := make(map[string]interface{})
+
+	for _, attr := range attrs {
+		result[string(Key)] = spotinst.StringValue(attr.Key)
+		result[string(Value)] = spotinst.StringValue(attr.Value)
+	}
+
+	return []interface{}{result}
+}
+
+func flattenECSIntegration(ecs *aws.EC2ContainerServiceIntegration) []interface{} {
+	result := make(map[string]interface{})
+	result[string(ClusterName)] = spotinst.StringValue(ecs.ClusterName)
+	result[string(ShouldScaleDownNonServiceTasks)] = spotinst.BoolValue(ecs.AutoScale.ShouldScaleDownNonServiceTasks)
+
+	if ecs.AutoScale != nil {
+		if autoScale := flattenAutoScale(&ecs.AutoScale.AutoScale); len(autoScale) > 0 {
+			for k, v := range autoScale[0].(map[string]interface{}) {
+				result[k] = v
+			}
+		}
+		if ecs.AutoScale.Attributes != nil {
+			result[string(AutoscaleAttributes)] = flattenECSIntegrationAutoScaleAttributes(ecs.AutoScale.Attributes)
+		}
+	}
+
+	return []interface{}{result}
 }
 
 func expandECSAutoScaleAttributes(data interface{}) ([]*aws.AutoScaleAttributes, error) {
