@@ -252,7 +252,7 @@ tags {
     }
     tasks  {
       is_enabled = false
-      cron_expression = "salitestcron3"
+      cron_expression = "* * * * *"
       task_type = "clusterRoll"
     }
   }
