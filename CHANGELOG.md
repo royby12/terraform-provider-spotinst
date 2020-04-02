@@ -1,3 +1,9 @@
+## 1.14.8 (Unreleased)
+
+ENHANCEMENTS:
+* resource/spotinst_ocean_ecs_launch_spec: added `tags`
+* resource/spotinst_subscription: update the doc
+
 ## 1.14.7 (Unreleased)
 ​
 ENHANCEMENTS:
@@ -5,6 +11,8 @@ ENHANCEMENTS:
 * resource/spotinst_ocean_aws: added `auto_headroom_percentage`
 * resource/spotinst_ocean_aws_launch_spec: added `tags`
 * resource/spotinst_ocean_aws: added `grace_period`
+* resource/spotinst_elastigroup_aws: added `OnFailure` under `roll_config`
+* resource/spotinst_ocean_gke_import: added `autoscale`
 
 NOTES: 
 * documentation: resource/mrscaler: retries are now accurate
@@ -13,6 +21,9 @@ BUG FIXES:
 * resource/spotinst_mrscaler_aws: resolved errors with `core_min_size`, `core_max_size` , `core_desired_capacity`
 * resource/spotinst_ocean_aws: resolved errors with `utilize_reserved_instances`
 * resource/spotinst_ocean_ecs: resolved errors with `utilize_reserved_instances`
+* resource/spotinst_ocean_aws: resolved errors with `max_size`
+* resource/spotinst_ocean_aws: resolved errors with `autoscale_is_enabled`
+* resource/spotinst_elastigroup_aws: resolved `autoscale_cooldown` under `integration_ecs` 
 
 FEATURES:
 * *New Resource*: `spotinst_health_check`
