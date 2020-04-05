@@ -237,6 +237,7 @@ func expandOceanGCPAutoScalerDown(data interface{}) (*gcp.AutoScalerDown, error)
 
 			if v, ok := m[string(MaxScaleDownPercentage)].(float64); ok && v > 0 {
 				autoScaleDown.SetMaxScaleDownPercentage(spotinst.Float64(v))
+
 			}
 		}
 		return autoScaleDown, nil
@@ -340,6 +341,7 @@ func flattenAutoScaleDown(autoScaleDown *gcp.AutoScalerDown) []interface{} {
 	down := make(map[string]interface{})
 	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
 	down[string(MaxScaleDownPercentage)] = spotinst.Float64Value(autoScaleDown.MaxScaleDownPercentage)
+
 	return []interface{}{down}
 }
 
