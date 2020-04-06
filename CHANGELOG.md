@@ -10,7 +10,7 @@ BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `autoscale_is_enabled`
 * resource/spotinst_elastigroup_aws: resolved `autoscale_cooldown` under `integration_ecs` 
 
-## 1.14.3 (Unreleased)
+## 1.14.3 (April 01, 2020)
 
 ENHANCEMENTS:
 * resource/spotinst_ocean_aws_launch_spec: added `name`
