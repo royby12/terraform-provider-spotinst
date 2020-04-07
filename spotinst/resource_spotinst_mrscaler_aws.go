@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_terminationPolicies"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/mrscaler"
@@ -47,6 +49,7 @@ func setupMRScalerAWSResource() {
 	mrscaler_aws_cluster.Setup(fieldsMap)
 	mrscaler_aws_scaling_policies.Setup(fieldsMap)
 	mrscaler_aws_scheduled_task.Setup(fieldsMap)
+	mrscaler_aws_terminationPolicies.Setup(fieldsMap)
 
 	commons.MRScalerAWSResource = commons.NewMRScalerAWSResource(fieldsMap)
 }
