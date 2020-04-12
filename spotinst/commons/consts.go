@@ -106,6 +106,7 @@ const (
 	MRScalerAWSStrategy            ResourceAffinity = "MRScaler_AWS_Strategy"
 	MRScalerAWSCluster             ResourceAffinity = "MRScaler_AWS_Cluster"
 	MRScalerAWSScheduledTask       ResourceAffinity = "MRScaler_AWS_Scheduled_Task"
+	MRScalerAWSTerminationPolicies ResourceAffinity = "MRScaler_AWS_Termination_Policies"
 
 	MultaiBalancer    ResourceAffinity = "Multai_Balancer"
 	MultaiDeployment  ResourceAffinity = "Multai_Deployment"
