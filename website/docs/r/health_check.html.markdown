@@ -30,7 +30,6 @@ resource "spotinst_health_check" "http_check" {
     unhealthy = 1
   }
 
- 
     proxy_address = "http://proxy.com"
     proxy_port = 80
   
