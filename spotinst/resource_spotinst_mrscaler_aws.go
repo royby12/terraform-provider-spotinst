@@ -3,10 +3,11 @@ package spotinst
 import (
 	"context"
 	"fmt"
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_terminationPolicies"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_terminationPolicies"
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
