@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_terminationPolicies"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/mrscaler"
@@ -21,6 +19,7 @@ import (
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_scaling_policies"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_scheduled_task"
 	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_strategy"
+	"github.com/terraform-providers/terraform-provider-spotinst/spotinst/mrscaler_aws_terminationPolicies"
 )
 
 func resourceSpotinstMRScalerAWS() *schema.Resource {
