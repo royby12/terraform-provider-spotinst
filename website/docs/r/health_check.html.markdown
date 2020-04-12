@@ -19,21 +19,17 @@ resource "spotinst_health_check" "http_check" {
 
   check {
     protocol = "http"
-    endpoint = "http://endpoint.com"
+    end_point = "http://endpoint.com"
     port     = 1337
     interval = 10
-    timeout  = 10
-  }
-
-  threshold {
+    time_out  = 10
     healthy   = 1
     unhealthy = 1
   }
 
-  proxy {
-    addr = "http://proxy.com"
-    port = 80
-  }
+    proxy_address = "http://proxy.com"
+    proxy_port = 80
+  
 }
 ```
 
