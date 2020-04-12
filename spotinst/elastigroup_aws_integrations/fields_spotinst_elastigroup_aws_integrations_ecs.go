@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -120,20 +119,14 @@ func SetupEcs(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			egWrapper := resourceObject.(*commons.ElastigroupWrapper)
 			elastigroup := egWrapper.GetElastigroup()
 			var result []interface{} = nil
-			log.Printf("#### elastigroup.Integration:  %v", elastigroup.Integration)
-			log.Printf("#### elastigroup.Integration.EC2ContainerService: %v", elastigroup.Integration.EC2ContainerService)
-			if elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil {
-				log.Printf("#### inside the if elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil  ")
+			if elastigroup != nil && elastigroup.Integration != nil && elastigroup.Integration.EC2ContainerService != nil {
 				result = flattenECSIntegration(elastigroup.Integration.EC2ContainerService)
 			}
 
-			log.Printf("#### result before the if: %s", result)
 			if result != nil {
-				log.Printf("#### result in the if: %s", result)
-
-				//if err := resourceData.Set(string(IntegrationEcs), result); err != nil {
-				//	return fmt.Errorf(string(commons.FailureFieldReadPattern), string(IntegrationEcs), err)
-				//}
+				if err := resourceData.Set(string(IntegrationEcs), result); err != nil {
+					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(IntegrationEcs), err)
+				}
 			}
 			return nil
 		},
