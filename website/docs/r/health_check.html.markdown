@@ -19,10 +19,10 @@ resource "spotinst_health_check" "http_check" {
 
   check {
     protocol = "http"
-    end_point = "http://endpoint.com"
+    endpoint = "http://endpoint.com"
     port     = 1337
     interval = 10
-    time_out  = 10
+    timeout  = 10
     healthy   = 1
     unhealthy = 1
   }
