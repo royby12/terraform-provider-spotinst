@@ -3,6 +3,7 @@
 ENHANCEMENTS:
 * resource/spotinst_ocean_ecs_launch_spec: added `tags`
 * resource/spotinst_subscription: update the doc
+* resource/spotinst_mrscaler_aws: added `termination_policies`
 
 ## 1.14.7 (Unreleased)
 ​
