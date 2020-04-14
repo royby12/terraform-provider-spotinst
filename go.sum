@@ -187,6 +187,8 @@ github.com/spotinst/spotinst-sdk-go v1.44.1 h1:ld3XGR/X9XVBHVeQ9SD2QIqkulCY6Xsb9
 github.com/spotinst/spotinst-sdk-go v1.44.1/go.mod h1:nWi2DyjUi1WUZclpsqZFXvImsU0T39ppqqHwC4/T5mw=
 github.com/spotinst/spotinst-sdk-go v1.45.0 h1:2Vpt5Ye4ZSIrvWrewx2I0o61QtC97O2Rdeo6VP37iHQ=
 github.com/spotinst/spotinst-sdk-go v1.45.0/go.mod h1:nWi2DyjUi1WUZclpsqZFXvImsU0T39ppqqHwC4/T5mw=
+github.com/spotinst/spotinst-sdk-go v1.48.0 h1:st2kG5liRyHrAYoJfy7Qx5K+Q6Fp+CUTYugQJrZKSGE=
+github.com/spotinst/spotinst-sdk-go v1.48.0/go.mod h1:nWi2DyjUi1WUZclpsqZFXvImsU0T39ppqqHwC4/T5mw=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=

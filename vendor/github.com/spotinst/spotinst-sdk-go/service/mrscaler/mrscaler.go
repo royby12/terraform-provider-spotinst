@@ -223,9 +223,10 @@ type InstanceGroup struct {
 }
 
 type InstanceGroupCapacity struct {
-	Target  *int `json:"target,omitempty"`
-	Minimum *int `json:"minimum,omitempty"`
-	Maximum *int `json:"maximum,omitempty"`
+	Target  *int    `json:"target,omitempty"`
+	Minimum *int    `json:"minimum,omitempty"`
+	Maximum *int    `json:"maximum,omitempty"`
+	Unit    *string `json:"unit,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -1270,6 +1271,13 @@ func (o *InstanceGroupCapacity) SetMinimum(v *int) *InstanceGroupCapacity {
 func (o *InstanceGroupCapacity) SetMaximum(v *int) *InstanceGroupCapacity {
 	if o.Maximum = v; v == nil {
 		o.nullFields = append(o.nullFields, "Maximum")
+	}
+	return o
+}
+
+func (o *InstanceGroupCapacity) SetUnit(v *string) *InstanceGroupCapacity {
+	if o.Unit = v; o.Unit == nil {
+		o.nullFields = append(o.nullFields, "Unit")
 	}
 	return o
 }
