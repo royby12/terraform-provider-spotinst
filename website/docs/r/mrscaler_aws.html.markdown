@@ -109,7 +109,8 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   core_desired_capacity = 1
   core_lifecycle        = "ON_DEMAND"
   core_ebs_optimized    = false
-  
+  core_unit = "instance"
+
   core_ebs_block_device {
     volumes_per_instance = 2
     volume_type          = "gp2"
@@ -124,7 +125,8 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   task_desired_capacity = 1
   task_lifecycle        = "SPOT"
   task_ebs_optimized    = false
-  
+  task_unit = "instance"
+
   task_ebs_block_device {
     volumes_per_instance = 2
     volume_type          = "gp2"
@@ -184,7 +186,8 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   core_desired_capacity = 1
   core_lifecycle        = "ON_DEMAND"
   core_ebs_optimized    = false
-  
+  core_unit = "instance"
+
   core_ebs_block_device {
     volumes_per_instance = 2
     volume_type          = "gp2"
@@ -199,7 +202,8 @@ resource "spotinst_mrscaler_aws" "Terraform-MrScaler-01" {
   task_desired_capacity = 1
   task_lifecycle        = "SPOT"
   task_ebs_optimized    = false
-  
+  task_unit = "instance"
+
   task_ebs_block_device {
     volumes_per_instance = 2
     volume_type          = "gp2"
@@ -306,6 +310,7 @@ The following arguments are supported:
 * `task_target` - (Required) amount of instances in task group.
 * `task_maximum` - (Optional) maximal amount of instances in task group.
 * `task_minimum` - (Optional) The minimal amount of instances in task group.
+* `task_unit` - (Optional, Default: `instance`) Unit of task group for target, min and max. The unit could be `instance` or `weight`. instance - amount of instances. weight - amount of vCPU.
 * `task_lifecycle` - (Required) The MrScaler lifecycle for instances in task group. Allowed values are 'SPOT' and 'ON_DEMAND'.
 * `task_ebs_optimized` - (Optional) EBS Optimization setting for instances in group.
 * `task_ebs_block_device` - (Required) This determines the ebs configuration for your task group instances. Only a single block is allowed.
@@ -320,6 +325,7 @@ The following arguments are supported:
 * `core_target` - (Required) amount of instances in core group.
 * `core_maximum` - (Optional) maximal amount of instances in core group.
 * `core_minimum` - (Optional) The minimal amount of instances in core group.
+* `core_unit` - (Optional, Default: `instance`) Unit of task group for target, min and max. The unit could be `instance` or `weight`. instance - amount of instances. weight - amount of vCPU.
 * `core_lifecycle` - (Required) The MrScaler lifecycle for instances in core group. Allowed values are 'SPOT' and 'ON_DEMAND'.
 * `core_ebs_optimized` - (Optional) EBS Optimization setting for instances in group.
 * `core_ebs_block_device` - (Required) This determines the ebs configuration for your core group instances. Only a single block is allowed.
