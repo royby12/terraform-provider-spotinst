@@ -267,7 +267,8 @@ resource "spotinst_mrscaler_aws" "example-scaler-2" {
   task_min_size   = 0
   task_max_size   = 4
   task_lifecycle = "SPOT"
-  
+  task_unit = "instance"
+
   task_ebs_block_device {
     volumes_per_instance = 1
     volume_type          = "gp2"

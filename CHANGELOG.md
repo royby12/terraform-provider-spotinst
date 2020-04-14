@@ -5,6 +5,8 @@ ENHANCEMENTS:
 * resource/spotinst_ocean_gke_import: added `autoscale`
 * resource/spotinst_subscription: update the doc
 * resource/spotinst_mrscaler_aws: added `termination_policies`
+* resource/spotinst_mrscaler_aws: added `core_unit`
+* resource/spotinst_mrscaler_aws: added `task_unit`
 
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `max_size`
