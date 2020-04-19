@@ -161,6 +161,9 @@ func SetupTaskGroup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			scaler := mrsWrapper.GetMRScalerAWS()
 
 			if v, ok := resourceData.Get(string(TaskUnit)).(string); ok && v != "" {
+				if scaler.Compute.InstanceGroups.TaskGroup == nil {
+					scaler.Compute.InstanceGroups.SetTaskGroup(&mrscaler.InstanceGroup{})
+				}
 				if scaler.Compute.InstanceGroups.TaskGroup.Capacity == nil {
 					scaler.Compute.InstanceGroups.TaskGroup.SetCapacity(&mrscaler.InstanceGroupCapacity{})
 				}
