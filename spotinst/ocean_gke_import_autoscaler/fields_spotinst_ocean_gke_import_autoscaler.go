@@ -1,6 +1,7 @@
 package ocean_gke_import_autoscaler
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/gcp"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -110,19 +111,19 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		},
 
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			//clusterWrapper := resourceObject.(*commons.GKEImportClusterWrapper)
-			//cluster := clusterWrapper.GetCluster()
-			//var result []interface{} = nil
-			//
-			//if cluster != nil && cluster.AutoScaler != nil {
-			//	result = flattenAutoscaler(cluster.AutoScaler)
-			//}
-			//
-			//if len(result) > 0 {
-			//	if err := resourceData.Set(string(Autoscaler), result); err != nil {
-			//		return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Autoscaler), err)
-			//	}
-			//}
+			clusterWrapper := resourceObject.(*commons.GKEImportClusterWrapper)
+			cluster := clusterWrapper.GetCluster()
+			var result []interface{} = nil
+
+			if cluster != nil && cluster.AutoScaler != nil {
+				result = flattenAutoscaler(cluster.AutoScaler)
+			}
+
+			if len(result) > 0 {
+				if err := resourceData.Set(string(Autoscaler), result); err != nil {
+					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Autoscaler), err)
+				}
+			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
@@ -311,11 +312,11 @@ func flattenAutoscaler(autoScaler *gcp.AutoScaler) []interface{} {
 			result[string(Headroom)] = flattenAutoScaleHeadroom(autoScaler.Headroom)
 		}
 
-		if autoScaler.Headroom != nil {
+		if autoScaler.Down != nil {
 			result[string(Down)] = flattenAutoScaleDown(autoScaler.Down)
 		}
 
-		if autoScaler.Headroom != nil {
+		if autoScaler.ResourceLimits != nil {
 			result[string(ResourceLimits)] = flattenAutoScaleResourceLimits(autoScaler.ResourceLimits)
 		}
 

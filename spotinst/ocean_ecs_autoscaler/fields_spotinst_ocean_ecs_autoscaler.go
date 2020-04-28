@@ -1,6 +1,7 @@
 package ocean_ecs_autoscaler
 
 import (
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/aws"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -97,6 +98,18 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		},
 
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
+			clusterWrapper := resourceObject.(*commons.ECSClusterWrapper)
+			cluster := clusterWrapper.GetECSCluster()
+			var result []interface{} = nil
+
+			if cluster != nil && cluster.AutoScaler != nil {
+				result = flattenAutoscaler(cluster.AutoScaler)
+			}
+			if len(result) > 0 {
+				if err := resourceData.Set(string(Autoscaler), result); err != nil {
+					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Autoscaler), err)
+				}
+			}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
@@ -250,4 +263,58 @@ func expandOceanAWSAutoScalerDown(data interface{}) (*aws.ECSAutoScalerDown, err
 	}
 
 	return nil, nil
+}
+
+func flattenAutoscaler(autoScaler *aws.ECSAutoScaler) []interface{} {
+	var out []interface{}
+
+	if autoScaler != nil {
+
+		result := make(map[string]interface{})
+
+		result[string(IsEnabled)] = spotinst.BoolValue(autoScaler.IsEnabled)
+		result[string(Cooldown)] = spotinst.IntValue(autoScaler.Cooldown)
+		result[string(IsAutoConfig)] = spotinst.BoolValue(autoScaler.IsAutoConfig)
+
+		if autoScaler.Headroom != nil {
+			result[string(Headroom)] = flattenAutoScaleHeadroom(autoScaler.Headroom)
+		}
+
+		if autoScaler.Down != nil {
+			result[string(Down)] = flattenAutoScaleDown(autoScaler.Down)
+		}
+
+		if autoScaler.ResourceLimits != nil {
+			result[string(ResourceLimits)] = flattenAutoScaleResourceLimits(autoScaler.ResourceLimits)
+		}
+
+		if len(result) > 0 {
+			out = append(out, result)
+		}
+	}
+
+	return out
+}
+
+func flattenAutoScaleDown(autoScaleDown *aws.ECSAutoScalerDown) []interface{} {
+	down := make(map[string]interface{})
+	down[string(MaxScaleDownPercentage)] = spotinst.IntValue(autoScaleDown.MaxScaleDownPercentage)
+
+	return []interface{}{down}
+}
+
+func flattenAutoScaleHeadroom(autoScaleHeadroom *aws.ECSAutoScalerHeadroom) []interface{} {
+	headRoom := make(map[string]interface{})
+	headRoom[string(CpuPerUnit)] = spotinst.IntValue(autoScaleHeadroom.CPUPerUnit)
+	headRoom[string(MemoryPerUnit)] = spotinst.IntValue(autoScaleHeadroom.MemoryPerUnit)
+	headRoom[string(NumOfUnits)] = spotinst.IntValue(autoScaleHeadroom.NumOfUnits)
+
+	return []interface{}{headRoom}
+}
+
+func flattenAutoScaleResourceLimits(autoScalerResourceLimits *aws.ECSAutoScalerResourceLimits) []interface{} {
+	down := make(map[string]interface{})
+	down[string(MaxVCpu)] = spotinst.IntValue(autoScalerResourceLimits.MaxVCPU)
+	down[string(MaxMemoryGib)] = spotinst.IntValue(autoScalerResourceLimits.MaxMemoryGiB)
+	return []interface{}{down}
 }
