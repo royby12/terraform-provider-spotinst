@@ -115,24 +115,24 @@ The following arguments are supported:
 
 ```hcl
   autoscaler {
-    autoscale_is_enabled     = false
+    autoscale_is_enabled     = true
     autoscale_is_auto_config = false
     autoscale_cooldown       = 300
 
     autoscale_headroom {
       cpu_per_unit    = 1024
-      gpu_per_unit    = 1
+      gpu_per_unit    = 0
       memory_per_unit = 512
       num_of_units    = 2
     }
 
     autoscale_down {
-      max_scale_down_percentage = 10
+      max_scale_down_percentage = 60
     }
 
     resource_limits {
       max_vcpu       = 1024
-      max_memory_gib = 20
+      max_memory_gib = 1500
     }
   }
 ```
