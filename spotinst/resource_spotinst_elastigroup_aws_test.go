@@ -3021,18 +3021,18 @@ func TestAccSpotinstElastigroupAWS_IntegrationECS(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "integration_ecs.0.autoscale_attributes.2266469793.value", "test.value.ecs.update"),
 				),
 			},
-			{
-				ResourceName: resourceName,
-				Config: createElastigroupTerraform(&GroupConfigMetadata{
-					groupName:      groupName,
-					fieldsToAppend: testIntegrationECSGroupConfig_EmptyFields,
-				}),
-				Check: resource.ComposeTestCheckFunc(
-					testCheckElastigroupExists(&group, resourceName),
-					testCheckElastigroupAttributes(&group, groupName),
-					resource.TestCheckResourceAttr(resourceName, "integration_ecs.#", "0"),
-				),
-			},
+			//{
+			//	ResourceName: resourceName,
+			//	Config: createElastigroupTerraform(&GroupConfigMetadata{
+			//		groupName:      groupName,
+			//		fieldsToAppend: testIntegrationECSGroupConfig_EmptyFields,
+			//	}),
+			//	Check: resource.ComposeTestCheckFunc(
+			//		testCheckElastigroupExists(&group, resourceName),
+			//		testCheckElastigroupAttributes(&group, groupName),
+			//		resource.TestCheckResourceAttr(resourceName, "integration_ecs.#", "0"),
+			//	),
+			//},
 		},
 	})
 }
@@ -3093,10 +3093,10 @@ const testIntegrationECSGroupConfig_Update = `
  // --------------------------------
 `
 
-const testIntegrationECSGroupConfig_EmptyFields = `
- // --- INTEGRATION: ECS -----------
- // --------------------------------
-`
+//const testIntegrationECSGroupConfig_EmptyFields = `
+// // --- INTEGRATION: ECS -----------
+// // --------------------------------
+//`
 
 // endregion
 
