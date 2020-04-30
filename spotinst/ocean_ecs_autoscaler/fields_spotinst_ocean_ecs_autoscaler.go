@@ -269,7 +269,6 @@ func flattenAutoscaler(autoScaler *aws.ECSAutoScaler) []interface{} {
 	var out []interface{}
 
 	if autoScaler != nil {
-
 		result := make(map[string]interface{})
 
 		result[string(IsEnabled)] = spotinst.BoolValue(autoScaler.IsEnabled)

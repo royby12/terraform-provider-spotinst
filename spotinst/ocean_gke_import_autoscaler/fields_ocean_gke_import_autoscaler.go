@@ -301,7 +301,6 @@ func flattenAutoscaler(autoScaler *gcp.AutoScaler) []interface{} {
 	var out []interface{}
 
 	if autoScaler != nil {
-
 		result := make(map[string]interface{})
 
 		result[string(IsEnabled)] = spotinst.BoolValue(autoScaler.IsEnabled)
