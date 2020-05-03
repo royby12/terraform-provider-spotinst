@@ -1,7 +1,6 @@
 package ocean_gke_import_autoscaler
 
 import (
-	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/spotinst/spotinst-sdk-go/service/ocean/providers/gcp"
 	"github.com/spotinst/spotinst-sdk-go/spotinst"
@@ -111,19 +110,19 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		},
 
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
-			clusterWrapper := resourceObject.(*commons.GKEImportClusterWrapper)
-			cluster := clusterWrapper.GetCluster()
-			var result []interface{} = nil
-
-			if cluster != nil && cluster.AutoScaler != nil {
-				result = flattenAutoscaler(cluster.AutoScaler)
-			}
-
-			if len(result) > 0 {
-				if err := resourceData.Set(string(Autoscaler), result); err != nil {
-					return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Autoscaler), err)
-				}
-			}
+			//clusterWrapper := resourceObject.(*commons.GKEImportClusterWrapper)
+			//cluster := clusterWrapper.GetCluster()
+			//var result []interface{} = nil
+			//
+			//if cluster != nil && cluster.AutoScaler != nil {
+			//	result = flattenAutoscaler(cluster.AutoScaler)
+			//}
+			//
+			//if len(result) > 0 {
+			//	if err := resourceData.Set(string(Autoscaler), result); err != nil {
+			//		return fmt.Errorf(string(commons.FailureFieldReadPattern), string(Autoscaler), err)
+			//	}
+			//}
 			return nil
 		},
 		func(resourceObject interface{}, resourceData *schema.ResourceData, meta interface{}) error {
@@ -296,58 +295,58 @@ func expandOceanAWSAutoScalerResourceLimits(data interface{}) (*gcp.AutoScalerRe
 	return nil, nil
 }
 
-func flattenAutoscaler(autoScaler *gcp.AutoScaler) []interface{} {
-	var out []interface{}
+//func flattenAutoscaler(autoScaler *gcp.AutoScaler) []interface{} {
+//	var out []interface{}
+//
+//	if autoScaler != nil {
+//		result := make(map[string]interface{})
+//
+//		result[string(IsEnabled)] = spotinst.BoolValue(autoScaler.IsEnabled)
+//		result[string(Cooldown)] = spotinst.IntValue(autoScaler.Cooldown)
+//		result[string(IsAutoConfig)] = spotinst.BoolValue(autoScaler.IsAutoConfig)
+//		result[string(AutoHeadroomPercentage)] = spotinst.IntValue(autoScaler.AutoHeadroomPercentage)
+//
+//		if autoScaler.Headroom != nil {
+//			result[string(Headroom)] = flattenAutoScaleHeadroom(autoScaler.Headroom)
+//		}
+//
+//		if autoScaler.Down != nil {
+//			result[string(Down)] = flattenAutoScaleDown(autoScaler.Down)
+//		}
+//
+//		if autoScaler.ResourceLimits != nil {
+//			result[string(ResourceLimits)] = flattenAutoScaleResourceLimits(autoScaler.ResourceLimits)
+//		}
+//
+//		if len(result) > 0 {
+//			out = append(out, result)
+//		}
+//	}
+//
+//	return out
+//}
 
-	if autoScaler != nil {
-		result := make(map[string]interface{})
+//func flattenAutoScaleHeadroom(autoScaleHeadroom *gcp.AutoScalerHeadroom) []interface{} {
+//	headRoom := make(map[string]interface{})
+//	headRoom[string(CpuPerUnit)] = spotinst.IntValue(autoScaleHeadroom.CPUPerUnit)
+//	headRoom[string(MemoryPerUnit)] = spotinst.IntValue(autoScaleHeadroom.MemoryPerUnit)
+//	headRoom[string(NumOfUnits)] = spotinst.IntValue(autoScaleHeadroom.NumOfUnits)
+//	headRoom[string(GPUPerUnit)] = spotinst.IntValue(autoScaleHeadroom.GPUPerUnit)
+//
+//	return []interface{}{headRoom}
+//}
 
-		result[string(IsEnabled)] = spotinst.BoolValue(autoScaler.IsEnabled)
-		result[string(Cooldown)] = spotinst.IntValue(autoScaler.Cooldown)
-		result[string(IsAutoConfig)] = spotinst.BoolValue(autoScaler.IsAutoConfig)
-		result[string(AutoHeadroomPercentage)] = spotinst.IntValue(autoScaler.AutoHeadroomPercentage)
+//func flattenAutoScaleDown(autoScaleDown *gcp.AutoScalerDown) []interface{} {
+//	down := make(map[string]interface{})
+//	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
+//	down[string(MaxScaleDownPercentage)] = spotinst.Float64Value(autoScaleDown.MaxScaleDownPercentage)
+//
+//	return []interface{}{down}
+//}
 
-		if autoScaler.Headroom != nil {
-			result[string(Headroom)] = flattenAutoScaleHeadroom(autoScaler.Headroom)
-		}
-
-		if autoScaler.Down != nil {
-			result[string(Down)] = flattenAutoScaleDown(autoScaler.Down)
-		}
-
-		if autoScaler.ResourceLimits != nil {
-			result[string(ResourceLimits)] = flattenAutoScaleResourceLimits(autoScaler.ResourceLimits)
-		}
-
-		if len(result) > 0 {
-			out = append(out, result)
-		}
-	}
-
-	return out
-}
-
-func flattenAutoScaleHeadroom(autoScaleHeadroom *gcp.AutoScalerHeadroom) []interface{} {
-	headRoom := make(map[string]interface{})
-	headRoom[string(CpuPerUnit)] = spotinst.IntValue(autoScaleHeadroom.CPUPerUnit)
-	headRoom[string(MemoryPerUnit)] = spotinst.IntValue(autoScaleHeadroom.MemoryPerUnit)
-	headRoom[string(NumOfUnits)] = spotinst.IntValue(autoScaleHeadroom.NumOfUnits)
-	headRoom[string(GPUPerUnit)] = spotinst.IntValue(autoScaleHeadroom.GPUPerUnit)
-
-	return []interface{}{headRoom}
-}
-
-func flattenAutoScaleDown(autoScaleDown *gcp.AutoScalerDown) []interface{} {
-	down := make(map[string]interface{})
-	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
-	down[string(MaxScaleDownPercentage)] = spotinst.Float64Value(autoScaleDown.MaxScaleDownPercentage)
-
-	return []interface{}{down}
-}
-
-func flattenAutoScaleResourceLimits(autoScalerResourceLimits *gcp.AutoScalerResourceLimits) []interface{} {
-	down := make(map[string]interface{})
-	down[string(MaxVCpu)] = spotinst.IntValue(autoScalerResourceLimits.MaxVCPU)
-	down[string(MaxMemoryGib)] = spotinst.IntValue(autoScalerResourceLimits.MaxMemoryGiB)
-	return []interface{}{down}
-}
+//func flattenAutoScaleResourceLimits(autoScalerResourceLimits *gcp.AutoScalerResourceLimits) []interface{} {
+//	down := make(map[string]interface{})
+//	down[string(MaxVCpu)] = spotinst.IntValue(autoScalerResourceLimits.MaxVCPU)
+//	down[string(MaxMemoryGib)] = spotinst.IntValue(autoScalerResourceLimits.MaxMemoryGiB)
+//	return []interface{}{down}
+//}
