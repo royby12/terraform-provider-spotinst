@@ -325,7 +325,7 @@ func expandOceanAWSAutoScalerResourceLimits(data interface{}) (*gcp.AutoScalerRe
 //
 //	return out
 //}
-
+//
 //func flattenAutoScaleHeadroom(autoScaleHeadroom *gcp.AutoScalerHeadroom) []interface{} {
 //	headRoom := make(map[string]interface{})
 //	headRoom[string(CpuPerUnit)] = spotinst.IntValue(autoScaleHeadroom.CPUPerUnit)
@@ -335,7 +335,7 @@ func expandOceanAWSAutoScalerResourceLimits(data interface{}) (*gcp.AutoScalerRe
 //
 //	return []interface{}{headRoom}
 //}
-
+//
 //func flattenAutoScaleDown(autoScaleDown *gcp.AutoScalerDown) []interface{} {
 //	down := make(map[string]interface{})
 //	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
@@ -343,7 +343,7 @@ func expandOceanAWSAutoScalerResourceLimits(data interface{}) (*gcp.AutoScalerRe
 //
 //	return []interface{}{down}
 //}
-
+//
 //func flattenAutoScaleResourceLimits(autoScalerResourceLimits *gcp.AutoScalerResourceLimits) []interface{} {
 //	down := make(map[string]interface{})
 //	down[string(MaxVCpu)] = spotinst.IntValue(autoScalerResourceLimits.MaxVCPU)
