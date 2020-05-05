@@ -15,6 +15,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 		&schema.Schema{
 			Type:     schema.TypeList,
 			Optional: true,
+			Computed: true,
 			MaxItems: 1,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
@@ -238,8 +239,7 @@ func expandOceanGCPAutoScalerDown(data interface{}) (*gcp.AutoScalerDown, error)
 
 			if v, ok := m[string(MaxScaleDownPercentage)].(float64); ok && v > 0 {
 				autoScaleDown.SetMaxScaleDownPercentage(spotinst.Float64(v))
-			} else {
-				autoScaleDown.SetMaxScaleDownPercentage(nil)
+
 			}
 		}
 		return autoScaleDown, nil
