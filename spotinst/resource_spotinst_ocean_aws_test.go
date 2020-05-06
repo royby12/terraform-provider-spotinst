@@ -802,18 +802,9 @@ func TestAccSpotinstOceanAWS_Autoscaler(t *testing.T) {
 					testCheckOceanAWSExists(&cluster, resourceName),
 					testCheckOceanAWSAttributes(&cluster, clusterName),
 					resource.TestCheckResourceAttr(resourceName, "autoscaler.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_cooldown", "300"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.0.evaluation_periods", "300"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_headroom.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_headroom.0.cpu_per_unit", "1024"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_headroom.0.memory_per_unit", "512"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_headroom.0.num_of_units", "2"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_is_auto_config", "false"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_is_enabled", "false"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.resource_limits.#", "1"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.resource_limits.0.max_memory_gib", "20"),
-					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.resource_limits.0.max_vcpu", "1024"),
+					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_down.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.autoscale_headroom.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "autoscaler.0.resource_limits.#", "0"),
 				),
 			},
 		},
@@ -881,26 +872,7 @@ const testScalingConfig_Update = `
 
 const testScalingConfig_EmptyFields = `
  // --- AUTOSCALER -----------------
- autoscaler = {
-    autoscale_is_enabled = false
-    autoscale_is_auto_config = false
-    autoscale_cooldown = 300
-
-    autoscale_headroom = {
-      cpu_per_unit = 1024
-      memory_per_unit = 512
-      num_of_units = 2
-    }
-
-    autoscale_down = {
-      evaluation_periods = 300
-    }
-
-    resource_limits = {
-      max_vcpu   = 1024
-      max_memory_gib = 20
-    }
- }
+ autoscaler {}
  // --------------------------------
 `
 
