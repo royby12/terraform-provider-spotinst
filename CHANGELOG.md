@@ -6,6 +6,7 @@ ENHANCEMENTS:
 * resource/spotinst_mrscaler_aws: added `termination_policies`
 * resource/spotinst_mrscaler_aws: added `core_unit`
 * resource/spotinst_mrscaler_aws: added `task_unit`
+* resource/spotinst_ocean_aws_launch_spec: added `elastic_ip_pool`
 
 ## 1.14.7 (Unreleased)
 ​
