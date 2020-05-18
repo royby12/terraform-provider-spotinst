@@ -22,10 +22,12 @@ type LaunchSpec struct {
 	RootVolumeSize     *int                `json:"rootVolumeSize,omitempty"`
 	SecurityGroupIDs   []string            `json:"securityGroupIds,omitempty"`
 	SubnetIDs          []string            `json:"subnetIds,omitempty"`
+	ResourceLimits     *ResourceLimits     `json:"resourceLimits,omitempty"`
 	IAMInstanceProfile *IAMInstanceProfile `json:"iamInstanceProfile,omitempty"`
+	AutoScale          *AutoScale          `json:"autoScale,omitempty"`
+	ElasticIPPool      *ElasticIPPool      `json:"elasticIpPool,omitempty"`
 	Labels             []*Label            `json:"labels,omitempty"`
 	Taints             []*Taint            `json:"taints,omitempty"`
-	AutoScale          *AutoScale          `json:"autoScale,omitempty"`
 	Tags               []*Tag              `json:"tags,omitempty"`
 
 	// Read-only fields.
@@ -47,6 +49,13 @@ type LaunchSpec struct {
 	// null. It is an error if a field in this list has a non-empty value.
 	// This may be used to include null fields in Patch requests.
 	nullFields []string
+}
+
+type ResourceLimits struct {
+	MaxInstanceCount *int `json:"maxInstanceCount,omitempty"`
+
+	forceSendFields []string
+	nullFields      []string
 }
 
 type Label struct {
@@ -78,6 +87,21 @@ type AutoScaleHeadroom struct {
 	GPUPerUnit    *int `json:"gpuPerUnit,omitempty"`
 	MemoryPerUnit *int `json:"memoryPerUnit,omitempty"`
 	NumOfUnits    *int `json:"numOfUnits,omitempty"`
+
+	forceSendFields []string
+	nullFields      []string
+}
+
+type ElasticIPPool struct {
+	TagSelector *TagSelector `json:"tagSelector,omitempty"`
+
+	forceSendFields []string
+	nullFields      []string
+}
+
+type TagSelector struct {
+	Key   *string `json:"tagKey,omitempty"`
+	Value *string `json:"tagValue,omitempty"`
 
 	forceSendFields []string
 	nullFields      []string
@@ -374,6 +398,44 @@ func (o *LaunchSpec) SetAutoScale(v *AutoScale) *LaunchSpec {
 	return o
 }
 
+func (o *LaunchSpec) SetElasticIPPool(v *ElasticIPPool) *LaunchSpec {
+	if o.ElasticIPPool = v; o.ElasticIPPool == nil {
+		o.nullFields = append(o.nullFields, "ElasticIPPool")
+	}
+	return o
+}
+
+func (o *LaunchSpec) SetTags(v []*Tag) *LaunchSpec {
+	if o.Tags = v; o.Tags == nil {
+		o.nullFields = append(o.nullFields, "Tags")
+	}
+	return o
+}
+
+func (o *LaunchSpec) SetResourceLimits(v *ResourceLimits) *LaunchSpec {
+	if o.ResourceLimits = v; o.ResourceLimits == nil {
+		o.nullFields = append(o.nullFields, "ResourceLimits")
+	}
+	return o
+}
+
+// endregion
+
+// region ResourceLimits
+
+func (o ResourceLimits) MarshalJSON() ([]byte, error) {
+	type noMethod ResourceLimits
+	raw := noMethod(o)
+	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
+}
+
+func (o *ResourceLimits) SetMaxInstanceCount(v *int) *ResourceLimits {
+	if o.MaxInstanceCount = v; o.MaxInstanceCount == nil {
+		o.nullFields = append(o.nullFields, "MaxInstanceCount")
+	}
+	return o
+}
+
 // endregion
 
 // region Label
@@ -484,9 +546,43 @@ func (o *AutoScaleHeadroom) SetNumOfUnits(v *int) *AutoScaleHeadroom {
 	return o
 }
 
-func (o *LaunchSpec) SetTags(v []*Tag) *LaunchSpec {
-	if o.Tags = v; o.Tags == nil {
-		o.nullFields = append(o.nullFields, "Tags")
+// endregion
+
+// region ElasticIPPool
+
+func (o ElasticIPPool) MarshalJSON() ([]byte, error) {
+	type noMethod ElasticIPPool
+	raw := noMethod(o)
+	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
+}
+
+func (o *ElasticIPPool) SetTagSelector(v *TagSelector) *ElasticIPPool {
+	if o.TagSelector = v; o.TagSelector == nil {
+		o.nullFields = append(o.nullFields, "TagSelector")
+	}
+	return o
+}
+
+// endregion
+
+// region TagSelector
+
+func (o TagSelector) MarshalJSON() ([]byte, error) {
+	type noMethod TagSelector
+	raw := noMethod(o)
+	return jsonutil.MarshalJSON(raw, o.forceSendFields, o.nullFields)
+}
+
+func (o *TagSelector) SetTagKey(v *string) *TagSelector {
+	if o.Key = v; o.Key == nil {
+		o.nullFields = append(o.nullFields, "Key")
+	}
+	return o
+}
+
+func (o *TagSelector) SetTagValue(v *string) *TagSelector {
+	if o.Value = v; o.Value == nil {
+		o.nullFields = append(o.nullFields, "Value")
 	}
 	return o
 }
