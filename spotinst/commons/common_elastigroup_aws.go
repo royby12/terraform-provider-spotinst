@@ -15,6 +15,10 @@ const (
 	ElastigroupAWSResourceName ResourceName = "spotinst_elastigroup_aws"
 )
 
+const (
+	GroupAWSResourceName ResourceName = "spotinst_aws_group"
+)
+
 var ElastigroupResource *ElastigroupTerraformResource
 
 type ElastigroupTerraformResource struct {

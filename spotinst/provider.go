@@ -28,6 +28,7 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			// Elastigroup.
 			string(commons.ElastigroupAWSResourceName):          resourceSpotinstElastigroupAWS(),
+			string(commons.GroupAWSResourceName):                resourceSpotinstElastigroupAWS(),
 			string(commons.ElastigroupGCPResourceName):          resourceSpotinstElastigroupGCP(),
 			string(commons.ElastigroupGKEResourceName):          resourceSpotinstElastigroupGKE(),
 			string(commons.ElastigroupAWSBeanstalkResourceName): resourceSpotinstElastigroupAWSBeanstalk(),

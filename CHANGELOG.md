@@ -1,6 +1,7 @@
 ## 1.14.8 (Unreleased)
 
 ENHANCEMENTS:
+* resource/spotinst_ocean_aws_launch_spec: added `resource_limits`
 * resource/spotinst_ocean_ecs_launch_spec: added `tags`
 * resource/spotinst_subscription: update the doc
 * resource/spotinst_mrscaler_aws: added `termination_policies`
