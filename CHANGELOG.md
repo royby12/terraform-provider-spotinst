@@ -9,6 +9,9 @@ ENHANCEMENTS:
 * resource/spotinst_mrscaler_aws: added `task_unit`
 * resource/spotinst_ocean_aws_launch_spec: added `elastic_ip_pool`
 
+BUG FIXES:
+* resource/spotinst_ocean_aws: resolved errors with `max_scale_down_percentage` 
+
 ## 1.14.7 (Unreleased)
 ​
 ENHANCEMENTS:

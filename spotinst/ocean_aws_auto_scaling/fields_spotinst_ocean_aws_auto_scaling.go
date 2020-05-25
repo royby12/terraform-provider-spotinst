@@ -39,7 +39,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 						Elem: &schema.Resource{
 							Schema: map[string]*schema.Schema{
 								string(MaxScaleDownPercentage): {
-									Type:     schema.TypeInt,
+									Type:     schema.TypeFloat,
 									Optional: true,
 								},
 								string(EvaluationPeriods): {
@@ -287,8 +287,8 @@ func expandOceanAWSAutoScalerDown(data interface{}) (*aws.AutoScalerDown, error)
 				autoScaleDown.SetEvaluationPeriods(spotinst.Int(v))
 			}
 
-			if v, ok := m[string(MaxScaleDownPercentage)].(int); ok && v > 0 {
-				autoScaleDown.SetMaxScaleDownPercentage(spotinst.Int(v))
+			if v, ok := m[string(MaxScaleDownPercentage)].(float64); ok && v > 0 {
+				autoScaleDown.SetMaxScaleDownPercentage(spotinst.Float64(v))
 			} else {
 				autoScaleDown.SetMaxScaleDownPercentage(nil)
 			}
@@ -343,7 +343,7 @@ func flattenAutoScaleHeadroom(autoScaleHeadroom *aws.AutoScalerHeadroom) []inter
 func flattenAutoScaleDown(autoScaleDown *aws.AutoScalerDown) []interface{} {
 	down := make(map[string]interface{})
 	down[string(EvaluationPeriods)] = spotinst.IntValue(autoScaleDown.EvaluationPeriods)
-	down[string(MaxScaleDownPercentage)] = spotinst.IntValue(autoScaleDown.MaxScaleDownPercentage)
+	down[string(MaxScaleDownPercentage)] = spotinst.Float64Value(autoScaleDown.MaxScaleDownPercentage)
 
 	return []interface{}{down}
 }
