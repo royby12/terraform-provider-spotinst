@@ -116,7 +116,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			clusterWrapper := resourceObject.(*commons.ECSClusterWrapper)
 			cluster := clusterWrapper.GetECSCluster()
 			if v, ok := resourceData.GetOk(string(Autoscaler)); ok {
-				if autoscaler, err := expandAutoscaler(v, false); err != nil {
+				if autoscaler, err := expandAutoscaler(v); err != nil {
 					return err
 				} else {
 					cluster.SetAutoScaler(autoscaler)
@@ -130,7 +130,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			var value *aws.ECSAutoScaler = nil
 
 			if v, ok := resourceData.GetOk(string(Autoscaler)); ok {
-				if autoscaler, err := expandAutoscaler(v, true); err != nil {
+				if autoscaler, err := expandAutoscaler(v); err != nil {
 					return err
 				} else {
 					value = autoscaler
@@ -147,7 +147,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Utils
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func expandAutoscaler(data interface{}, nullify bool) (*aws.ECSAutoScaler, error) {
+func expandAutoscaler(data interface{}) (*aws.ECSAutoScaler, error) {
 	autoscaler := &aws.ECSAutoScaler{}
 	list := data.([]interface{})
 	if list == nil || list[0] == nil {

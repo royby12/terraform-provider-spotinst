@@ -131,7 +131,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			clusterWrapper := resourceObject.(*commons.AWSClusterWrapper)
 			cluster := clusterWrapper.GetCluster()
 			if v, ok := resourceData.GetOk(string(Autoscaler)); ok {
-				if autoscaler, err := expandAutoscaler(v, false); err != nil {
+				if autoscaler, err := expandAutoscaler(v); err != nil {
 					return err
 				} else {
 					cluster.SetAutoScaler(autoscaler)
@@ -146,7 +146,7 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 			var value *aws.AutoScaler = nil
 
 			if v, ok := resourceData.GetOk(string(Autoscaler)); ok {
-				if autoscaler, err := expandAutoscaler(v, true); err != nil {
+				if autoscaler, err := expandAutoscaler(v); err != nil {
 					return err
 				} else {
 					value = autoscaler
@@ -163,16 +163,17 @@ func Setup(fieldsMap map[commons.FieldName]*commons.GenericField) {
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //            Utils
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-func expandAutoscaler(data interface{}, nullify bool) (*aws.AutoScaler, error) {
+func expandAutoscaler(data interface{}) (*aws.AutoScaler, error) {
 	autoscaler := &aws.AutoScaler{}
 	list := data.([]interface{})
 	if list == nil || list[0] == nil {
 		return autoscaler, nil
 	}
 	m := list[0].(map[string]interface{})
-
 	if v, ok := m[string(AutoscaleCooldown)].(int); ok && v > 0 {
 		autoscaler.SetCooldown(spotinst.Int(v))
+	} else {
+		autoscaler.SetCooldown(nil)
 	}
 
 	if v, ok := m[string(AutoscaleDown)]; ok {
@@ -182,6 +183,8 @@ func expandAutoscaler(data interface{}, nullify bool) (*aws.AutoScaler, error) {
 		}
 		if down != nil {
 			autoscaler.SetDown(down)
+		} else {
+			autoscaler.SetDown(nil)
 		}
 	}
 
@@ -193,7 +196,7 @@ func expandAutoscaler(data interface{}, nullify bool) (*aws.AutoScaler, error) {
 		if headroom != nil {
 			autoscaler.SetHeadroom(headroom)
 		} else {
-			autoscaler.Headroom = nil
+			autoscaler.SetHeadroom(nil)
 		}
 	}
 
@@ -213,10 +216,9 @@ func expandAutoscaler(data interface{}, nullify bool) (*aws.AutoScaler, error) {
 		if resLimits != nil {
 			autoscaler.SetResourceLimits(resLimits)
 		} else {
-			autoscaler.ResourceLimits = nil
+			autoscaler.SetResourceLimits(nil)
 		}
 	}
-
 	return autoscaler, nil
 }
 
