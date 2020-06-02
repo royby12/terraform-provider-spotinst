@@ -11,6 +11,7 @@ ENHANCEMENTS:
 
 BUG FIXES:
 * resource/spotinst_ocean_aws: resolved errors with `max_scale_down_percentage` 
+* resource/ocean_aws_launch_spec: resolved errors with `name`
 
 ## 1.14.7 (Unreleased)
 ​
